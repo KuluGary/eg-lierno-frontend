@@ -1,16 +1,14 @@
 import { useState } from "react";
 import Head from "next/head";
-import { Grid, Box, Typography, Button, FormControlLabel, Container, Avatar, TextField, Checkbox } from "@mui/material";
+import { Grid, Box, Typography, Button, FormControlLabel, Container, Avatar, TextField, Paper } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Copyright, Link } from "../../components";
 import { StringUtil } from "../../helpers/string-util";
-import useStyles from "./index.styles";
 import Router from "next/router";
 import { toast } from "react-toastify";
 import Api from "../../helpers/api";
 
 export default function register() {
-  const classes = useStyles();
   const regex = StringUtil.regex;
   const [credentials, setCredentials] = useState({
     username: "",
@@ -90,14 +88,35 @@ export default function register() {
   };
 
   return (
-    <Grid container spacing={0} className={classes.root}>
+    <Grid container component="main" sx={{ height: "100vh" }}>
       <Head>
         <title>Lierno App | Registrarse</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Grid item lg={6} sm={12}>
-        <Container component="main" maxWidth="xs">
-          <Box className={classes.form}>
+      <Grid
+        item
+        mobile={false}
+        tablet={4}
+        laptop={6}
+        sx={{
+          backgroundImage:
+            "url(art/login-bg.jpg)",
+          backgroundRepeat: "no-repeat",
+          backgroundColor: (t) => (t.palette.mode === "light" ? t.palette.grey[50] : t.palette.grey[900]),
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+      <Grid item mobile={12} tablet={8} laptop={6} component={Paper} elevation={6} square>
+      <Box
+          sx={{
+            my: 8,
+            mx: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
             <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
               <LockOutlinedIcon />
             </Avatar>
@@ -107,9 +126,9 @@ export default function register() {
             <Typography component="div" variant="subtitle2" textAlign="center" marginTop=".5em">
               En Lierno App podrás llevar la cuenta de tus personajes y campañas de forma fácil e intuitiva.
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, maxWidth: "60%" }}>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid item mobile={12} laptop={6}>
                   <TextField
                     autoComplete="given-name"
                     name="firstName"
@@ -123,7 +142,7 @@ export default function register() {
                     helperText={errors["metadata"]["first_name"]}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item mobile={12} laptop={6}>
                   <TextField
                     required
                     fullWidth
@@ -137,7 +156,7 @@ export default function register() {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid item mobile={12}>
                   <TextField
                     required
                     fullWidth
@@ -150,7 +169,7 @@ export default function register() {
                     helperText={errors["metadata"]["email"]}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item mobile={12}>
                   <TextField
                     margin="normal"
                     required
@@ -165,7 +184,7 @@ export default function register() {
                     helperText={errors["username"]}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item mobile={12}>
                   <TextField
                     required
                     fullWidth
@@ -191,12 +210,8 @@ export default function register() {
                 </Grid>
               </Grid>
             </Box>
-          </Box>
           <Copyright sx={{ mt: 5 }} />
-        </Container>
-      </Grid>
-      <Grid item lg={6} className={classes.splashArt} sm={0}>
-        <img src={"art/authentication.svg "} />
+        </Box>
       </Grid>
     </Grid>
   );

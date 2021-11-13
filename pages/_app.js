@@ -4,6 +4,7 @@ import Head from "next/head";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { CacheProvider } from "@emotion/react";
+import { Provider as AuthProvider } from "next-auth/client";
 import theme from "../helpers/theme";
 import createEmotionCache from "../helpers/createEmotionCache";
 import { NavBar, SecondaryNav } from "../components";
@@ -13,25 +14,26 @@ import { Layout } from "../components/Layout/Layout";
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
-  const { Component, emotionCache = clientSideEmotionCache, pageProps, token } = props;
+  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [isAuthenticated] = React.useState(!!token);
 
   return (
-    <CacheProvider value={emotionCache}>
-      <Head>
-        <title>My page</title>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <NavBar open={drawerOpen} handleDrawer={() => setDrawerOpen(!drawerOpen)} isAuthenticated={isAuthenticated} />
-        <SecondaryNav open={drawerOpen} handleDrawer={() => setDrawerOpen(!drawerOpen)} />
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </ThemeProvider>
-    </CacheProvider>
+    <AuthProvider options={{ clientMaxAge: 0, keepAlive: 0 }} session={pageProps.session}>
+      <CacheProvider value={emotionCache}>
+        <Head>
+          <title>My page</title>
+          <meta name="viewport" content="initial-scale=1, width=device-width" />
+        </Head>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <NavBar open={drawerOpen} handleDrawer={() => setDrawerOpen(!drawerOpen)} />
+          <SecondaryNav open={drawerOpen} handleDrawer={() => setDrawerOpen(!drawerOpen)} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ThemeProvider>
+      </CacheProvider>
+    </AuthProvider>
   );
 }
 
@@ -40,10 +42,3 @@ MyApp.propTypes = {
   emotionCache: PropTypes.object,
   pageProps: PropTypes.object.isRequired,
 };
-
-MyApp.getStaticProps = async (ctx) => {
-  console.log(ctx);
-  const res = await fetch('https://api.github.com/repos/vercel/next.js')
-  const json = await res.json()
-  return { stars: json.stargazers_count }
-}
