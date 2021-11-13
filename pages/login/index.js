@@ -47,7 +47,7 @@ export default function login({ providers }) {
       </Head>
       <Grid
         item
-        mobile={false}
+        mobile={0}
         tablet={4}
         laptop={6}
         sx={{

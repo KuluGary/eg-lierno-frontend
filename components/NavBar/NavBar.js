@@ -6,7 +6,7 @@ import { signIn, signOut, useSession } from "next-auth/client";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import { useTheme } from '@mui/material/styles';
 
-export function NavBar({ open, handleDrawer, isAuthenticated, ...props }) {
+export function NavBar({ open, handleDrawer, ...props }) {
   const [session] = useSession();
   const [anchorEl, setAnchorEl] = useState(null);
   const menuOpen = Boolean(anchorEl);
