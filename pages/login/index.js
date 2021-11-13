@@ -6,7 +6,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Copyright, Link } from "../../components";
 import { StringUtil } from "../../helpers/string-util";
 
-export default function login({ providers }) {
+export default function Login({ providers }) {
   const regex = StringUtil.regex;
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState({ username: "", password: "" });

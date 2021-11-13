@@ -1,6 +1,6 @@
 import Head from "next/head";
-import { Box, Button, Container, Divider, Grid, Paper, Typography } from "@mui/material";
-import { attributes, react as HomeContent } from "../content/home.md";
+import { Box, Divider, Paper, Typography } from "@mui/material";
+import { attributes } from "../content/home.md";
 
 export default function Home() {
   const { title, cats } = attributes;
@@ -10,7 +10,7 @@ export default function Home() {
       <Head>
         <title>Lierno App | Inicio</title>
         <link rel="icon" href="/favicon.ico" />
-        <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+        <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
       </Head>
 
       <Box

@@ -8,7 +8,7 @@ import Router from "next/router";
 import { toast } from "react-toastify";
 import Api from "../../helpers/api";
 
-export default function register() {
+export default function Register() {
   const regex = StringUtil.regex;
   const [credentials, setCredentials] = useState({
     username: "",

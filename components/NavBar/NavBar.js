@@ -61,7 +61,6 @@ export function NavBar({ open, handleDrawer, ...props }) {
       >
         {session && (
           <IconButton
-            edge="start"
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawer}
