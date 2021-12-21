@@ -59,7 +59,7 @@ export async function getServerSideProps(context) {
 
   const campaigns = await Api.fetchInternal("/campaigns", {
     headers,
-  });
+  }).catch(err => null)
 
   return {
     props: {
