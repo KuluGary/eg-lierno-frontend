@@ -7,6 +7,7 @@ import jwt from "next-auth/jwt";
 import Router from "next/router";
 
 export default function Campaigns({ campaigns }) {
+  console.log(campaigns)
   return (
     <Layout>
       <Head>
@@ -22,26 +23,29 @@ export default function Campaigns({ campaigns }) {
           </Box>
         }
       >
-          <Table
-            schema={{
-                _id: "_id",
-                name: "name",
-                avatar: null,
-                description: "flavor.synopsis"
-            }}
-            data={campaigns}
-            onView={(id) => Router.push(`/campaigns/${id}`)}
-            onEdit={(id) => Router.push(`/campaigns/add/${id}`)} />
+        <Table
+          schema={{
+            _id: "_id",
+            name: "name",
+            avatar: null,
+            description: "flavor.synopsis",
+          }}
+          data={campaigns}
+          onView={(id) => Router.push(`/campaigns/${id}`)}
+          onEdit={(id) => Router.push(`/campaigns/add/${id}`)}
+        />
       </Container>
     </Layout>
   );
 }
 
 export async function getServerSideProps(context) {
-    const { req } = context;
+  const { req } = context;
   const secret = process.env.SECRET;
 
   const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+
+  console.log(token)
 
   const headers = {
     Accept: "application/json",
