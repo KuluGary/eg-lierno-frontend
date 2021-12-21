@@ -2,11 +2,11 @@ import { useState } from "react";
 import Head from "next/head";
 import { Grid, Box, Typography, Button, FormControlLabel, Container, Avatar, TextField, Paper } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { Copyright, Link } from "../../components";
-import { StringUtil } from "../../helpers/string-util";
+import { Copyright, Link } from "components";
+import { StringUtil } from "helpers/string-util";
 import Router from "next/router";
 import { toast } from "react-toastify";
-import Api from "../../helpers/api";
+import Api from "helpers/api";
 
 export default function Register() {
   const regex = StringUtil.regex;

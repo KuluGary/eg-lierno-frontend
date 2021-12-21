@@ -1,6 +1,17 @@
 import React from "react";
 import clsx from "clsx";
-import { List, Divider, IconButton, ListItem, ListItemIcon, ListItemText, Paper, Link, Toolbar } from "@mui/material";
+import {
+  List,
+  Divider,
+  IconButton,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Link,
+  Toolbar,
+  Drawer,
+} from "@mui/material";
 import {
   ChevronLeft as ChevronLeftIcon,
   AccountCircle as AccountCircleIcon,
@@ -8,7 +19,7 @@ import {
   Explore as ExploreIcon,
 } from "@mui/icons-material";
 import { useRouter } from "next/router";
-import { Drawer } from "./SecondaryNav.styles";
+import { useTheme } from "@emotion/react";
 
 const items = [
   {
@@ -43,8 +54,8 @@ const BottomNavigation = () => {
         height: 80,
         display: {
           mobile: "block",
-          laptop: "none"
-        }
+          laptop: "none",
+        },
       }}
     >
       <List>
@@ -69,10 +80,42 @@ const BottomNavigation = () => {
 };
 
 const SideNavigation = (props) => {
+  const theme = useTheme();
   const router = useRouter();
 
   return (
-    <Drawer open={props.open}>
+    <Drawer
+    variant="permanent"
+      open={props.open}
+      sx={{
+        "& .MuiDrawer-paper": {
+          display: {
+            mobile: "none",
+            laptop: "block"
+          },          
+          position: "relative",
+          whiteSpace: "nowrap",
+          width: 240,
+          transition: theme.transitions.create("width", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+          }),
+          boxSizing: "border-box",
+          ...(!props.open && {
+            overflowX: "hidden",
+            transition: theme.transitions.create("width", {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.leavingScreen,
+            }),
+            width: theme.spacing(7),
+            
+            // [theme.breakpoints.up("sm")]: {
+            //   width: theme.spacing(9),
+            // },
+          }),
+        },
+      }}
+    >
       <Toolbar
         sx={{
           display: "flex",

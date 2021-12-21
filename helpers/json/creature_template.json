@@ -1,0 +1,56 @@
+{
+    "name" : "Nuevo personaje",
+    "flavor" : {
+        "alignment": "",
+        "appearance": "",
+        "backstory": "",
+        "campaign": [],
+        "class": "",
+        "description": "",
+        "environment": "",
+        "faction": "",
+        "personality": "",
+        "portrait": {},
+        "traits": {}
+    },
+    "stats" : {
+        "abilityScores": {
+            "strength": 10,
+            "dexterity": 10,
+            "constitution": 10,
+            "intelligence": 10,
+            "wisdom": 10,
+            "charisma": 10
+        },
+        "actions": [],
+        "additionalAbilities": [],
+        "armorClass": 10,
+        "challengeRating": 0.5,
+        "conditionImmunities": [],
+        "damageImmunities": [],
+        "damageResistances": [],
+        "damageVulnerabilities": [],
+        "hitDie": {
+            "num": 1,
+            "size": 8
+        },
+        "hitPoints": {
+            "current": 10,
+            "max": 10
+        },
+        "lairActions": [],
+        "legendaryActions": [],
+        "legendaryActionsPerRound": 3,
+        "proficiencyBonus": 2,
+        "race": {
+            "name": "",
+            "size": ""
+        },
+        "reactions": [],
+        "senses": [],
+        "skills": {},
+        "speed": {
+            "land": 30
+        }
+    }
+}

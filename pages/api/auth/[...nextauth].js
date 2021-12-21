@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
+import jwt from "jsonwebtoken";
 
 export default NextAuth({
   database: process.env.DATABASE_URL,
@@ -15,7 +16,6 @@ export default NextAuth({
       },
       async authorize(credentials, req) {
         const url = process.env.NEXT_PUBLIC_ENDPOINT + "v1/auth/signin";
-        console.log(url)
 
         const headers = {
           Accept: "application/json",
@@ -31,8 +31,6 @@ export default NextAuth({
         });
 
         const user = await res.json();
-
-        console.log(user)
 
         if (res.ok && !!user) {
           return user;
@@ -63,4 +61,37 @@ export default NextAuth({
   },
   theme: "light",
   debug: false,
+  callbacks: {
+    async jwt(token, user, account) {
+      if (account?.access_token) {
+        token.access_token = account.access_token;
+      }
+
+      if (user) {
+        const userToReturn = { ...user, userId: user.id };
+        delete userToReturn.id;
+
+        return { ...userToReturn };
+      }
+
+      return token; // Every subsequent request should just return the previous token
+    },
+    async session(_, token) {
+      return token; // Pass the jwt to the session
+    },
+  },
+  jwt: {
+    secret: process.env.SECRET,
+    algorithms: ["HS256"],
+    encode: async ({ secret, token, maxAge }) => {
+      const encodedToken = jwt.sign(token, secret);
+
+      return encodedToken;
+    },
+    decode: async ({ secret, token, maxAge }) => {
+      const verify = jwt.verify(token, secret);
+
+      return verify;
+    },
+  },
 });

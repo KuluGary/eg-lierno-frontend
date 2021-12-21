@@ -1,17 +1,41 @@
-import { useState } from "react";
-import { AppBar, IconButton, Toolbar, Typography, Button, Menu, MenuItem } from "@mui/material";
+import { useState, useEffect } from "react";
+import { AppBar, IconButton, Toolbar, Typography, Button, Menu, MenuItem, Container } from "@mui/material";
 import { Link } from "../Link/Link";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { signIn, signOut, useSession } from "next-auth/client";
-import UserAvatar from "../UserAvatar/UserAvatar";
-import { useTheme } from '@mui/material/styles';
+import { Avatar } from "../"
+import { useTheme } from "@mui/material/styles";
+import { useRouter } from "next/router";
+import { StringUtil } from "helpers/string-util";
 
-export function NavBar({ open, handleDrawer, ...props }) {
+export function NavBar({ open, handleDrawer, mode = "normal", containerRef = null, ...props }) {
+  const router = useRouter();
   const [session] = useSession();
   const [anchorEl, setAnchorEl] = useState(null);
+  const isMainScreen = router.pathname === "/";
+  const [isIntersecting, setIsIntersecting] = useState(false);
   const menuOpen = Boolean(anchorEl);
   const theme = useTheme();
   const drawerWidth = 240;
+
+  useEffect(() => {
+    if (isMainScreen) {
+      const observer = new IntersectionObserver((entries, sectionObserver) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            setIsIntersecting(true);
+          } else {
+            setIsIntersecting(false);
+          }
+        });
+      }, { rootMargin: "-200px 0px 0px 0px" });
+
+      if (containerRef?.current) observer.observe(containerRef.current);
+      return () => {
+        if (containerRef?.current) observer.unobserve(containerRef.current);
+      };
+    }
+  }, [containerRef]);
 
   const handleMenu = (event) => setAnchorEl(event.currentTarget);
 
@@ -26,7 +50,7 @@ export function NavBar({ open, handleDrawer, ...props }) {
     <AppBar
       elevation={0}
       variant={"outlined"}
-      position="sticky"
+      position={isMainScreen ? "fixed" : "sticky"}
       open={props.open}
       sx={{
         display: "flex",
@@ -34,18 +58,32 @@ export function NavBar({ open, handleDrawer, ...props }) {
         color: "inherit",
         height: "100%",
         zIndex: theme.zIndex.drawer + 1,
-        backgroundColor: 'theme.palette.mode === "light" ? theme.palette.common.white : theme.palette.background.paper',
         transition: theme.transitions.create(["width", "margin"], {
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.leavingScreen,
         }),
         [theme.breakpoints.up("tablet")]: {
-          "-webkit-backdrop-filter": "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
           backdropFilter: "blur(20px)",
           backgroundColor: theme.palette.mode === "light" ? "rgba(255,255,255,.3)" : "rgba(0,0,0,.3)",
+          ...(isMainScreen && {
+            WebkitBackdropFilter: "none",
+            backdropFilter: "none",
+            height: "auto",
+            background: "transparent",
+            color: "primary.contrastText",
+            border: "none",
+            transition: theme.transitions.create(["background-color", "color"], {
+              duration: theme.transitions.duration.standard,
+            }),
+            ...(isIntersecting && {
+              background: theme.palette.background.default,
+              borderBottom: `1px solid ${theme.palette.divider}`,
+              color: "inherit",
+            }),
+          }),
         },
         ...(open && {
-          marginLeft: drawerWidth,
           width: `calc(100% - ${drawerWidth}px)`,
           transition: theme.transitions.create(["width", "margin"], {
             easing: theme.transitions.easing.sharp,
@@ -59,7 +97,7 @@ export function NavBar({ open, handleDrawer, ...props }) {
           pr: "24px", // keep right padding when drawer closed
         }}
       >
-        {session && (
+        {session && !isMainScreen && (
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -76,10 +114,13 @@ export function NavBar({ open, handleDrawer, ...props }) {
         <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
           Lierno
         </Typography>
+        {isMainScreen && !!session && <Link href="/characters" sx={{ mr: 6, color: "inherit" }}>Ir al Panel</Link>}
         {!!session ? (
+          <>
           <IconButton onClick={handleMenu} color="inherit">
-            <UserAvatar src={session.user.image} />
+            <Avatar src={session?.image} fallBackText={StringUtil.getInitials(session?.name || "")} />
           </IconButton>
+          </>
         ) : (
           <Link
             href={`/api/auth/signin`}
@@ -88,7 +129,7 @@ export function NavBar({ open, handleDrawer, ...props }) {
               signIn();
             }}
           >
-            <Button variant="outlined">Entrar</Button>
+            <Button variant="outlined" color={!isMainScreen ? "primary" : "inherit"}>Entrar</Button>
           </Link>
         )}
       </Toolbar>
