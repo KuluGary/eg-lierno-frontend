@@ -22,8 +22,9 @@ export function Discord({ campaign, setCampaign }) {
           InputProps={{
             endAdornment: (
               <a
-                href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-"
                 target="_blank"
+                rel="noreferrer"
+                href="https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-"
               >
                 <InfoOutlined color="secondary" />
               </a>
@@ -39,7 +40,9 @@ export function Discord({ campaign, setCampaign }) {
           value={campaign.discordData?.privadas ?? []}
           options={[]}
           renderTags={(value, getTagProps) =>
-            value.map((option, index) => <Chip variant="outlined" label={option} {...getTagProps({ index })} />)
+            value.map((option, index) => (
+              <Chip key={index} variant="outlined" label={option} {...getTagProps({ index })} />
+            ))
           }
           renderInput={(params) => (
             <TextField {...params} color="secondary" variant="outlined" placeholder="Añadir canales secundarios..." />

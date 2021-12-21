@@ -108,6 +108,7 @@ export default function AddCharacter({ character, classes, spells }) {
             >
               {tabs.map(({ label, Icon }, index) => (
                 <Tab
+                  key={index}
                   label={label}
                   icon={<Icon color={activeStep === index ? colors.active : colors.inactive} size={28} />}
                   {...a11yProps(index)}
@@ -117,7 +118,7 @@ export default function AddCharacter({ character, classes, spells }) {
           </Box>
           <MuiContainer maxWidth="xs" sx={{ width: "75%" }}>
             {tabs.map(({ Component }, index) => (
-              <TabPanel value={activeStep} index={index}>
+              <TabPanel key={index} value={activeStep} index={index}>
                 <Component creature={creature} setCreature={handleCreatureChange} classes={classes} spells={spells} />
               </TabPanel>
             ))}

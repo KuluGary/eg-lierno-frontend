@@ -31,6 +31,7 @@ export function Proficiencies({ creature, setCreature }) {
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
               <Chip
+                key={index}
                 variant="outlined"
                 label={option}
                 {...getTagProps({ index })}
@@ -74,6 +75,7 @@ export function Proficiencies({ creature, setCreature }) {
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
               <Chip
+                key={index}
                 variant="outlined"
                 label={option}
                 {...getTagProps({ index })}
@@ -110,6 +112,7 @@ export function Proficiencies({ creature, setCreature }) {
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
               <Chip
+                key={index}
                 variant="outlined"
                 label={option}
                 {...getTagProps({ index })}

@@ -31,8 +31,8 @@ export function CreatureStats({ Header, containerStyle, data }) {
         <Box component="ul" sx={{ p: 0, listStyleType: "none" }}>
           {data.proficiencies
             ?.filter(({ title, content }) => !!title && !!content)
-            .map(({ title, content }) => (
-              <Box component="li" sx={{ marginBlock: 0.5 }}>
+            .map(({ title, content }, index) => (
+              <Box key={index} component="li" sx={{ marginBlock: 0.5 }}>
                 <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
                   {title + "."}
                 </Typography>
@@ -52,7 +52,7 @@ export function CreatureStats({ Header, containerStyle, data }) {
         {data.abilities
           ?.filter(({ content }) => content?.length > 0 || Object.keys(content ?? {})?.length > 0)
           .map(({ title }, index) => (
-            <Tab id={`tab-${index}`} aria-controls={`tabpanel-${index}`} label={title} />
+            <Tab key={index} id={`tab-${index}`} aria-controls={`tabpanel-${index}`} label={title} />
           ))}
       </Tabs>
       <Divider />
@@ -62,11 +62,11 @@ export function CreatureStats({ Header, containerStyle, data }) {
           .map(({ title, content }, index) => {
             if (title === "Ataques") {
               return (
-                <Box component="div" role="tabpanel" id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
+                <Box key={index} component="div" role="tabpanel" id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
                   <Box component="ul" sx={{ listStyle: "none", p: 0 }}>
                     {tab === index &&
-                      content.map((attack) => (
-                        <Box component="li" sx={{ marginBlock: 2 }}>
+                      content.map((attack, i) => (
+                        <Box component="li" sx={{ marginBlock: 2 }} key={i}>
                           <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
                             {attack.name + "."}
                           </Typography>
@@ -88,11 +88,11 @@ export function CreatureStats({ Header, containerStyle, data }) {
               const { characterSpells, spellData } = content;
 
               return (
-                <Box component="div" role="tabpanel" id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
+                <Box key={index} component="div" role="tabpanel" id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
                   <Box component="ul" sx={{ listStyle: "none", p: 0 }}>
                     {tab === index && 
-                      characterSpells.map((spells) => (
-                        <Box component="li" sx={{ marginBlock: 2 }}>
+                      characterSpells.map((spells, index) => (
+                        <Box component="li" sx={{ marginBlock: 2 }} key={index}>
                           <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
                             {"Lanzamiento de conjuros" + (data.classes ? " de " + data.classes.find(charClass => charClass.classId === spells.caster)?.className?.toLowerCase() : "") + "."}
                           </Typography>
@@ -111,13 +111,13 @@ export function CreatureStats({ Header, containerStyle, data }) {
             }
 
             return (
-              <Box component="div" role="tabpanel" id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
+              <Box key={index} component="div" role="tabpanel" id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
                 <Box component="ul" sx={{ listStyle: "none", p: 0 }}>
                   {tab === index &&
                     content
                       ?.filter(({ name, description }) => !!name || !!description)
-                      .map(({ name, description }) => (
-                        <Box component="li" sx={{ marginBlock: 2 }}>
+                      .map(({ name, description }, index) => (
+                        <Box key={index} component="li" sx={{ marginBlock: 2 }}>
                           <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
                             {name + "."}
                           </Typography>

@@ -27,10 +27,13 @@ const MessageContainer = ({ message, getAvatar, getDisplayName }) => {
         <Box component="div">
           <Box component="div" sx={{ display: "flex", alignItems: "flex-end" }}>
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>{`${displayName}`}</Typography>
-            <Typography variant="caption" sx={{ marginInline: "1em" }}>{`${message.timestamp.replace(/T.*$/, "")}`}</Typography>
+            <Typography variant="caption" sx={{ marginInline: "1em" }}>{`${message.timestamp.replace(
+              /T.*$/,
+              ""
+            )}`}</Typography>
           </Box>
           <Box component="div">
-          <HTMLContainer content={newContent} />
+            <HTMLContainer content={newContent} />
           </Box>
         </Box>
       </Box>
@@ -95,13 +98,11 @@ export function CampaignLogs({ campaign, dm, players, characters }) {
       <Grid item laptop={3}>
         <Container sx={{ height: "35vw" }}>
           <List>
-            {logs?.map(({ _id, name }, index) => {
-              return (
-                <ListItemButton key={index} selected={selectedChannel === _id} onClick={() => setSelectedChannel(_id)}>
-                  {name}
-                </ListItemButton>
-              );
-            })}
+            {logs?.map(({ _id, name }, index) => (
+              <ListItemButton key={index} selected={selectedChannel === _id} onClick={() => setSelectedChannel(_id)}>
+                {name}
+              </ListItemButton>
+            ))}
           </List>
         </Container>
       </Grid>
@@ -110,8 +111,8 @@ export function CampaignLogs({ campaign, dm, players, characters }) {
           <List>
             {logs
               .find((log) => log._id === selectedChannel)
-              ?.messages?.map((message) => (
-                <MessageContainer message={message} getAvatar={getAvatar} getDisplayName={getDisplayName} />
+              ?.messages?.map((message, index) => (
+                <MessageContainer key={index} message={message} getAvatar={getAvatar} getDisplayName={getDisplayName} />
               ))
               .reverse()}
             <AlwaysScrollToBottom />

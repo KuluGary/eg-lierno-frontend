@@ -530,7 +530,7 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                       options={spellAutocomplete.filter((spell) => spell.stats.level === level).sort()}
                       renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
-                          <Chip variant="outlined" label={option.name} {...getTagProps({ index })} />
+                          <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
                         ))
                       }
                       renderInput={(params) => (
@@ -574,7 +574,7 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                     getOptionLabel={(option) => option.name ?? option}
                     renderTags={(value, getTagProps) =>
                       value.map((option, index) => (
-                        <Chip variant="outlined" label={option.name} {...getTagProps({ index })} />
+                        <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
                       ))
                     }
                     renderInput={(params) => <TextField color="secondary" {...params} label={"Trucos (a voluntad)"} />}
@@ -613,7 +613,7 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                     getOptionLabel={(option) => option.name ?? option}
                     renderTags={(value, getTagProps) =>
                       value.map((option, index) => (
-                        <Chip variant="outlined" label={option.name} {...getTagProps({ index })} />
+                        <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
                       ))
                     }
                     onChange={(event, newSpells) => {
@@ -669,7 +669,7 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                   renderInput={(params) => <TextField color="secondary" {...params} label={"A voluntad"} />}
                   renderTags={(value, getTagProps) =>
                     value.map((option, index) => (
-                      <Chip variant="outlined" label={option.name} {...getTagProps({ index })} />
+                      <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
                     ))
                   }
                   onChange={(event, newData) => {
@@ -708,7 +708,7 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                   renderInput={(params) => <TextField color="secondary" {...params} label={"3/día"} />}
                   renderTags={(value, getTagProps) =>
                     value.map((option, index) => (
-                      <Chip variant="outlined" label={option.name} {...getTagProps({ index })} />
+                      <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
                     ))
                   }
                   onChange={(event, newData) => {
@@ -747,7 +747,7 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                   renderInput={(params) => <TextField color="secondary" {...params} label={"2/día"} />}
                   renderTags={(value, getTagProps) =>
                     value.map((option, index) => (
-                      <Chip variant="outlined" label={option.name} {...getTagProps({ index })} />
+                      <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
                     ))
                   }
                   onChange={(event, newData) => {
@@ -786,7 +786,7 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                   renderInput={(params) => <TextField color="secondary" {...params} label={"1/día"} />}
                   renderTags={(value, getTagProps) =>
                     value.map((option, index) => (
-                      <Chip variant="outlined" label={option.name} {...getTagProps({ index })} />
+                      <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
                     ))
                   }
                   onChange={(event, newData) => {

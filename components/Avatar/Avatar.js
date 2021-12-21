@@ -6,7 +6,7 @@ function Avatar({ src, fallBackText, size=32 }) {
   const randColor = colors[Math.floor(Math.random() * colors.length)];
   
 
-  return <MuiAvatar src={src} sx={{ bgcolor: randColor}} sx={{ width: size, height: size }}>{fallBackText}</MuiAvatar>;
+  return <MuiAvatar src={src} sx={{bgcolor: randColor, width: size, height: size }}>{fallBackText}</MuiAvatar>;
 }
 
 export { Avatar }

@@ -85,8 +85,8 @@ export default function AddCampaign({ campaignData }) {
             >
               {tabs.map(({ label }, index) => (
                 <Tab
+                  key={index}
                   label={label}
-                //   icon={<Icon color={activeStep === index ? colors.active : colors.inactive} size={28} />}
                   {...a11yProps(index)}
                 />
               ))}
@@ -94,7 +94,7 @@ export default function AddCampaign({ campaignData }) {
           </Box>
           <MuiContainer maxWidth="xs" sx={{ width: "75%" }}>
              {tabs.map(({ Component }, index) => (
-              <TabPanel value={activeStep} index={index}>
+              <TabPanel value={activeStep} key={index}>
                 <Component campaign={campaign} setCampaign={handleCampaignChange} />
               </TabPanel>
             ))} 

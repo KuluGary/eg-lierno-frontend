@@ -25,7 +25,7 @@ export function Details({ campaign, setCampaign }) {
 
   useEffect(() => {
     fetchCharacterListData();
-  }, [campaign.players])
+  }, [campaign.players]);
 
   const fetchFriendListData = async () => {
     Api.fetchInternal("/auth/me").then(async (res) => {
@@ -35,7 +35,7 @@ export function Details({ campaign, setCampaign }) {
         await Api.fetchInternal("/auth/users/" + userId).then((res) =>
           newFriendList.push({ label: res.username, id: userId })
         );
-      }      
+      }
 
       setFriendList(newFriendList);
     });
@@ -46,18 +46,18 @@ export function Details({ campaign, setCampaign }) {
       const newCharacterList = [];
 
       for await (const userId of campaign.players ?? []) {
-        await Api.fetchInternal("/user/" + userId + "/characters").then(res => {
-          newCharacterList.push(...res)
-        })
+        await Api.fetchInternal("/user/" + userId + "/characters").then((res) => {
+          newCharacterList.push(...res);
+        });
       }
 
       if (campaign.dm) {
-        await Api.fetchInternal("/user/" + campaign.dm + "/characters").then(res => {
-          newCharacterList.push(...res)
-        })
+        await Api.fetchInternal("/user/" + campaign.dm + "/characters").then((res) => {
+          newCharacterList.push(...res);
+        });
       }
 
-      setCharacterList(newCharacterList);      
+      setCharacterList(newCharacterList);
     }
   };
 
@@ -120,6 +120,7 @@ export function Details({ campaign, setCampaign }) {
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
               <Chip
+                key={index}
                 variant="outlined"
                 label={friendList.find((friend) => friend.id === option)?.label}
                 {...getTagProps({ index })}
@@ -150,17 +151,27 @@ export function Details({ campaign, setCampaign }) {
           options={characterList}
           getOptionLabel={(option) => option.name}
           renderTags={(value, getTagProps) =>
-            value.map((option, index) => <Chip variant="outlined" label={characterList.find((friend) => friend._id === option)?.name} {...getTagProps({ index })} />)
+            value.map((option, index) => (
+              <Chip
+                key={index}
+                variant="outlined"
+                label={characterList.find((friend) => friend._id === option)?.name}
+                {...getTagProps({ index })}
+              />
+            ))
           }
           renderInput={(params) => (
             <TextField {...params} color="secondary" variant="outlined" placeholder="Añadir personajes" />
           )}
           onChange={(_, newData) => {
-            setCampaign("characters", newData.map((element) => {
-              if (typeof element === "string") return element;
+            setCampaign(
+              "characters",
+              newData.map((element) => {
+                if (typeof element === "string") return element;
 
-              return element.id;
-            }))
+                return element.id;
+              })
+            );
           }}
         />
       </Grid>

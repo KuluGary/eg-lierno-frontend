@@ -143,6 +143,7 @@ export function Stats({ creature, setCreature }) {
                 <Grid
                   item
                   laptop={2}
+                  key={index}
                   sx={{
                     display: "flex",
                     flexDirection: "column",
@@ -165,67 +166,65 @@ export function Stats({ creature, setCreature }) {
             })}
             <Grid item laptop={12}>
               <Divider sx={{ mb: "1em" }} />
-              {creature?.stats.abilityScoreBonus?.map(({ modifier, bonus, description }, index) => {
-                return (
-                  <Grid item laptop={12} container spacing={3}>
-                    <Grid item laptop={8}>
-                      <FormControl fullWidth>
-                        <Select
-                          color="secondary"
-                          labelId="hitDie-select-label"
-                          id="hitDie-select"
-                          value={modifier}
-                          onChange={(e) => {
-                            const newBonuses = [...creature?.stats.abilityScoreBonus];
-                            newBonuses[index].modifier = e.target.value;
-
-                            setCreature("stats.abilityScoreBonus", newBonuses);
-                          }}
-                        >
-                          {Object.keys(statLabels).map((key, index) => (
-                            <MenuItem key={index} value={key}>
-                              {statLabels[key]}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item laptop={4}>
-                      <TextField
-                        fullWidth
+              {creature?.stats.abilityScoreBonus?.map(({ modifier, bonus, description }, index) => (
+                <Grid key={index} item laptop={12} container spacing={3}>
+                  <Grid item laptop={8}>
+                    <FormControl fullWidth>
+                      <Select
                         color="secondary"
-                        type="number"
-                        placeholder="Bonificador"
-                        InputProps={{ inputProps: { min: 1, max: 20 }, style: { textAlign: "center" } }}
-                        value={bonus}
+                        labelId="hitDie-select-label"
+                        id="hitDie-select"
+                        value={modifier}
                         onChange={(e) => {
                           const newBonuses = [...creature?.stats.abilityScoreBonus];
-                          newBonuses[index].bonus = e.target.value;
+                          newBonuses[index].modifier = e.target.value;
 
                           setCreature("stats.abilityScoreBonus", newBonuses);
                         }}
-                      />
-                    </Grid>
-                    <Grid item laptop={12}>
-                      <HTMLEditor
-                        fullWidth
-                        color="secondary"
-                        placeholder="Causa del modificador"
-                        value={description ?? ""}
-                        onChange={(e) => {
-                          const newBonuses = [...creature?.stats.abilityScoreBonus];
-                          newBonuses[index].description = e.target.value;
-
-                          setCreature("stats.abilityScoreBonus", newBonuses);
-                        }}
-                      />
-                    </Grid>
-                    <Grid item laptop={12}>
-                      <Divider sx={{ mb: "1em" }} />
-                    </Grid>
+                      >
+                        {Object.keys(statLabels).map((key, index) => (
+                          <MenuItem key={index} value={key}>
+                            {statLabels[key]}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </Grid>
-                );
-              })}
+                  <Grid item laptop={4}>
+                    <TextField
+                      fullWidth
+                      color="secondary"
+                      type="number"
+                      placeholder="Bonificador"
+                      InputProps={{ inputProps: { min: 1, max: 20 }, style: { textAlign: "center" } }}
+                      value={bonus}
+                      onChange={(e) => {
+                        const newBonuses = [...creature?.stats.abilityScoreBonus];
+                        newBonuses[index].bonus = e.target.value;
+
+                        setCreature("stats.abilityScoreBonus", newBonuses);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item laptop={12}>
+                    <HTMLEditor
+                      fullWidth
+                      color="secondary"
+                      placeholder="Causa del modificador"
+                      value={description ?? ""}
+                      onChange={(e) => {
+                        const newBonuses = [...creature?.stats.abilityScoreBonus];
+                        newBonuses[index].description = e.target.value;
+
+                        setCreature("stats.abilityScoreBonus", newBonuses);
+                      }}
+                    />
+                  </Grid>
+                  <Grid item laptop={12}>
+                    <Divider sx={{ mb: "1em" }} />
+                  </Grid>
+                </Grid>
+              ))}
               <Button
                 onClick={() => {
                   const newBonuses = [
@@ -268,7 +267,7 @@ export function Stats({ creature, setCreature }) {
                 <Container>
                   <InputBase
                     type="number"
-                    inputProps={{ min: 1, max: 999, step:1, style: { textAlign: "center" } }}
+                    inputProps={{ min: 1, max: 999, step: 1, style: { textAlign: "center" } }}
                     value={creature?.stats.hitDie.num ?? 0}
                     onChange={(e) => setCreature("stats.hitDie.num", parseInt(e.target.value))}
                   />

@@ -177,6 +177,7 @@ export function Abilities({ creature, setCreature, spells, classes }) {
             },
           }).map(([key, { title, content }]) => (
             <Section
+              key={key}
               data={content}
               title={title}
               section={key}
