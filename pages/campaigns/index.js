@@ -6,8 +6,9 @@ import Head from "next/head";
 import jwt from "next-auth/jwt";
 import Router from "next/router";
 
-export default function Campaigns({ campaigns }) {
-  console.log(campaigns)
+export default function Campaigns({ campaigns, headers }) {
+  console.log(headers);
+  
   return (
     <Layout>
       <Head>
@@ -45,8 +46,6 @@ export async function getServerSideProps(context) {
 
   const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
-  console.log(token)
-
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -59,11 +58,12 @@ export async function getServerSideProps(context) {
 
   const campaigns = await Api.fetchInternal("/campaigns", {
     headers,
-  }).catch(err => null)
+  }).catch((_) => null)
 
   return {
     props: {
       campaigns,
+      headers
     },
   };
 }

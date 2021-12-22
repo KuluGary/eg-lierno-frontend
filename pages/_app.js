@@ -24,24 +24,24 @@ export default function MyApp(props) {
   React.useEffect(() => {
     if (typeof window !== undefined) {
       const preferredMode = localStorage.getItem("prefers-color-scheme");
-      
+
       if (!!preferredMode) {
-        setMode(localStorage.getItem("prefers-color-scheme"))
+        setMode(localStorage.getItem("prefers-color-scheme"));
       }
-    };
-  }, [])
+    }
+  }, []);
 
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
         setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-        
+
         if (typeof window !== undefined) {
           localStorage.setItem("prefers-color-scheme", mode === "light" ? "dark" : "light");
         }
       },
     }),
-    []
+    [mode]
   );
 
   const theme = React.useMemo(

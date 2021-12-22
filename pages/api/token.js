@@ -2,7 +2,9 @@ import jwt from "next-auth/jwt";
 
 const secret = process.env.SECRET;
 
-export default token = async (req, res) => {
+
+
+const token = async (req, res) => {
   const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   if (token) {
@@ -14,3 +16,5 @@ export default token = async (req, res) => {
   }
   res.end();
 };
+
+export default token;

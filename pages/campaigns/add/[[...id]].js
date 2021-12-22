@@ -49,7 +49,7 @@ export default function AddCampaign({ campaignData }) {
 
   useEffect(() => {
       Api.fetchInternal("/auth/me").then(res => handleCampaignChange("dm", res._id))
-  }, [])
+  }, [handleCampaignChange])
 
   const handleStepChange = (_, newValue) => {
     setActiveStep(newValue);
