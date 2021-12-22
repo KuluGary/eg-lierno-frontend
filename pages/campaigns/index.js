@@ -6,8 +6,8 @@ import Head from "next/head";
 import jwt from "next-auth/jwt";
 import Router from "next/router";
 
-export default function Campaigns({ campaigns, headers }) {
-  console.log(headers);
+export default function Campaigns({ campaigns, headers, ...other }) {
+  console.log(other);
 
   return (
     <Layout>
