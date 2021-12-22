@@ -8,7 +8,7 @@ import Router from "next/router";
 
 export default function Campaigns({ campaigns, headers }) {
   console.log(headers);
-  
+
   return (
     <Layout>
       <Head>
@@ -63,7 +63,9 @@ export async function getServerSideProps(context) {
   return {
     props: {
       campaigns,
-      headers
+      headers,
+      token,
+      secret
     },
   };
 }
