@@ -24,7 +24,7 @@ export default function NpcProfile({ npc, spells }) {
             containerStyle={{
               height: "90vh",
               overflowY: "scroll",
-              ...theme.mixins.noScrollbar
+              ...theme.mixins.noScrollbar,
             }}
             data={{
               sections: [
@@ -120,7 +120,7 @@ export default function NpcProfile({ npc, spells }) {
             containerStyle={{
               height: "90vh",
               overflowY: "scroll",
-              ...theme.mixins.noScrollbar
+              ...theme.mixins.noScrollbar,
             }}
             data={{
               stats: npc["stats"]["abilityScores"],
@@ -191,9 +191,7 @@ export default function NpcProfile({ npc, spells }) {
                 {
                   title: "Hechizos",
                   content:
-                    npc.stats.spells?.length > 0
-                      ? { characterSpells: npc.stats.spells, spellData: spells }
-                      : null,
+                    npc.stats.spells?.length > 0 ? { characterSpells: npc.stats.spells, spellData: spells } : null,
                 },
                 { title: "Acciones legendarias", content: npc["stats"]["legendaryActions"] },
                 { title: "Objetos", content: npc["stats"]["items"] },
@@ -224,7 +222,7 @@ export async function getServerSideProps(context) {
 
   const npc = await Api.fetchInternal("/npc/" + query.id, {
     headers,
-  });
+  }).catch((_) => null);
   let spells = null;
 
   if (!!npc.stats.spells && npc.stats.spells.length > 0) {
@@ -240,13 +238,13 @@ export async function getServerSideProps(context) {
       method: "POST",
       body: JSON.stringify(spellIds.map((spell) => spell.spellId)),
       headers,
-    });
+    }).catch((_) => null);
   }
 
   return {
     props: {
       npc,
-      spells
+      spells,
     },
   };
 }

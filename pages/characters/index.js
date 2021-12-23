@@ -121,11 +121,11 @@ export async function getServerSideProps(context) {
 
   const characters = await Api.fetchInternal("/characters", {
     headers,
-  });
+  }).catch((_) => null)
 
   const npcs = await Api.fetchInternal("/npcs", {
     headers,
-  });
+  }).catch((_) => null)
 
   return {
     props: {

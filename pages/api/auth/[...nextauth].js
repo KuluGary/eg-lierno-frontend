@@ -17,8 +17,6 @@ export default NextAuth({
       async authorize(credentials, req) {
         const url = process.env.NEXT_PUBLIC_ENDPOINT + "v1/auth/signin";
 
-        console.log(url, credentials);
-
         const headers = {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -31,8 +29,6 @@ export default NextAuth({
           credentials: "include",
           body: JSON.stringify(credentials),
         });
-
-        console.log(res);
 
         const user = await res.json();
 

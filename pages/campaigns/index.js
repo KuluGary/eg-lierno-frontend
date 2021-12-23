@@ -6,9 +6,7 @@ import Head from "next/head";
 import jwt from "next-auth/jwt";
 import Router from "next/router";
 
-export default function Campaigns({ campaigns, headers, ...other }) {
-  console.log(other);
-
+export default function Campaigns({ campaigns }) {
   return (
     <Layout>
       <Head>
@@ -63,9 +61,6 @@ export async function getServerSideProps(context) {
   return {
     props: {
       campaigns,
-      headers,
-      token,
-      secret
     },
   };
 }

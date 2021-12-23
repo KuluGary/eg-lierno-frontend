@@ -143,7 +143,6 @@ export function Details({ campaign, setCampaign }) {
         />
       </Grid>
       <Grid item laptop={6}>
-        {console.log(characterList)}
         <Autocomplete
           multiple
           id="tags-standard"
