@@ -53,7 +53,6 @@ export default function CharacterProfile({ character, spells, items }) {
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary" key="twcard" />
-        <meta name="twitter:creator" content={twitterHandle} key="twhandle" />
 
         {/* Open Graph */}
         <meta property="og:url" content={"https://inspiring-pasteur-4aba3d.netlify.app/"} key="ogurl" />
