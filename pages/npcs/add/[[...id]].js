@@ -1,13 +1,12 @@
 import { Tabs, Box, Tab, Typography, useTheme, Container as MuiContainer, Button } from "@mui/material";
 import { useState } from "react";
 import { Container, Layout } from "components";
-import { Details, Class, Stats, Proficiencies, Abilities } from "components/CharacterCreation";
+import { Details, Stats, Proficiencies, Abilities } from "components/CharacterCreation";
 import {
   MuscleUp as MuscleUpIcon,
   Juggler as JugglerIcon,
   SpellBolt as SpellBoltIcon,
   Character as CharacterIcon,
-  SwordShield as SwordShieldIcon,
 } from "components/icons";
 import { StringUtil } from "helpers/string-util";
 import character_template from "helpers/json/character_template.json";
@@ -15,6 +14,7 @@ import Api from "helpers/api";
 import jwt from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { NextResponse } from "next/server";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -45,7 +45,6 @@ function a11yProps(index) {
 
 const tabs = [
   { label: "Detalles", Icon: CharacterIcon, Component: Details },
-  // { label: "Clase", Icon: SwordShieldIcon, Component: Class },
   { label: "Estadísticas", Icon: MuscleUpIcon, Component: Stats },
   { label: "Proficiencias", Icon: JugglerIcon, Component: Proficiencies },
   { label: "Habilidades", Icon: SpellBoltIcon, Component: Abilities },
@@ -128,6 +127,8 @@ export async function getServerSideProps(context) {
   const secret = process.env.SECRET;
 
   const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+
+  if (!token) return NextResponse.redirect("/");
 
   const headers = {
     Accept: "application/json",

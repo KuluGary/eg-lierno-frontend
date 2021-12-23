@@ -7,7 +7,6 @@ import {
   SwordShield as SwordShieldIcon,
   Juggler as JugglerIcon,
   SpellBolt as SpellBoltIcon,
-  Backpack as BackpackIcon,
   Character as CharacterIcon,
   AlienStare as AlienStareIcon,
   Barbute as BarbuteIcon,
@@ -18,6 +17,7 @@ import Api from "helpers/api";
 import jwt from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { NextResponse } from "next/server";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -135,11 +135,13 @@ export default function AddCharacter({ character, classes, spells }) {
   );
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context) {  
   const { req, query } = context;
   const secret = process.env.SECRET;
 
   const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+
+  if (!token) return NextResponse.redirect("/");
 
   const headers = {
     Accept: "application/json",

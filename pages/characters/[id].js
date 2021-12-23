@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Typography, Box, IconButton, Divider, Grid } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
-import { Layout } from "components";
+import { Layout, Metadata } from "components";
 import { StringUtil } from "helpers/string-util";
 import { useTheme } from "@mui/material/styles";
 import Api from "helpers/api";
@@ -48,21 +48,11 @@ export default function CharacterProfile({ character, spells, items }) {
 
   return (
     <Layout>
-      <Head>
-        <meta name="description" content={character?.flavor.personality} />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary" key="twcard" />
-
-        {/* Open Graph */}
-        <meta property="og:url" content={"https://inspiring-pasteur-4aba3d.netlify.app/"} key="ogurl" />
-        <meta property="og:image" content={character?.flavor.portrait?.avatar} key="ogimage" />
-        <meta property="og:site_name" content={"Lierno App"} key="ogsitename" />
-        <meta property="og:title" content={character?.name + " | Lierno App"} key="ogtitle" />
-        <meta property="og:description" content={character?.flavor.personality} key="ogdesc" />
-
-        <title>{character?.name + " | Lierno App"}</title>
-      </Head>
+      <Metadata
+        title={(character?.name ?? "") + " | Lierno App"}
+        image={character?.flavor.portrait?.avatar}
+        description={character?.flavor.personality}
+      />
       <Grid container spacing={1} sx={{ height: "99%" }}>
         <Grid item laptop={6} tablet={12}>
           <CreatureFlavor

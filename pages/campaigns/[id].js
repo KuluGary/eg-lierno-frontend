@@ -1,5 +1,5 @@
 import { Grid, Typography, Divider, Box, Tabs, Tab } from "@mui/material";
-import { Container, Layout } from "components";
+import { Container, Layout, Metadata } from "components";
 import { CampaignCreatures, CampaignDetails, CampaignDiary, CampaignLogs, CampaignMap } from "components/CampaignProfile";
 import Api from "helpers/api";
 import jwt from "next-auth/jwt";
@@ -53,6 +53,9 @@ export default function CampaignProfile({ campaign, playerData = {}, characterDa
 
   return (
     <Layout>
+      <Metadata
+        title={(campaign?.name ?? "") + " | Lierno App"}
+        description={campaign?.flavor.synopsis} />
       <Grid container spacing={2}>
         <Grid item laptop={12}>
           <Container noPadding>

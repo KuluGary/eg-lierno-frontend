@@ -7,6 +7,7 @@ import jwt from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { Details, Discord, Map } from "components/CampaignCreation";
+import { NextResponse } from "next/server";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -116,6 +117,8 @@ export async function getServerSideProps(context) {
   const secret = process.env.SECRET;
 
   const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+
+  if (!token) return NextResponse.redirect("/");
 
   const headers = {
     Accept: "application/json",

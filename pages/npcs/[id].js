@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Typography, Box, IconButton, Divider, Grid } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
-import { Layout } from "components";
+import { Layout, Metadata } from "components";
 import { StringUtil } from "helpers/string-util";
 import { useTheme } from "@mui/material/styles";
 import Api from "helpers/api";
@@ -15,6 +15,11 @@ export default function NpcProfile({ npc, spells }) {
 
   return (
     <Layout>
+      <Metadata
+        title={(npc?.name ?? "") + " | Lierno App"}
+        image={npc?.flavor.portrait?.original}
+        description={npc?.flavor.personality}
+      />
       <Head>
         <title>{npc?.name + " | Lierno App"}</title>
       </Head>

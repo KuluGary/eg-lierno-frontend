@@ -10,3 +10,4 @@ export * from "./Container/Container";
 export * from "./Tooltip/Tooltip";
 export * from "./HTMLEditor/HTMLEditor";
 export * from "./HTMLContainer/HTMLContainer";
+export * from "./Metadata/Metadata";
