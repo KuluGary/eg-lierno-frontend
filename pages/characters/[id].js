@@ -49,6 +49,19 @@ export default function CharacterProfile({ character, spells, items }) {
   return (
     <Layout>
       <Head>
+        <meta name="description" content={character?.flavor.personality} />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary" key="twcard" />
+        <meta name="twitter:creator" content={twitterHandle} key="twhandle" />
+
+        {/* Open Graph */}
+        <meta property="og:url" content={"https://inspiring-pasteur-4aba3d.netlify.app/"} key="ogurl" />
+        <meta property="og:image" content={character?.flavor.portrait?.avatar} key="ogimage" />
+        <meta property="og:site_name" content={"Lierno App"} key="ogsitename" />
+        <meta property="og:title" content={character?.name + " | Lierno App"} key="ogtitle" />
+        <meta property="og:description" content={character?.flavor.personality} key="ogdesc" />
+
         <title>{character?.name + " | Lierno App"}</title>
       </Head>
       <Grid container spacing={1} sx={{ height: "99%" }}>
@@ -166,7 +179,7 @@ export default function CharacterProfile({ character, spells, items }) {
                     character.stats.hitPoints.max
                   } (${character.stats.classes
                     .map((charClass) => `${charClass.classLevel}d${charClass.hitDie}`)
-                    .join(", ")} + ${CreatureCalculations.modifier(character.stats.abilityScores.constitution)})`,                  
+                    .join(", ")} + ${CreatureCalculations.modifier(character.stats.abilityScores.constitution)})`,
                 },
                 { title: "Velocidad", content: CreatureCalculations.getSpeedString(character.stats.speed) },
                 {
