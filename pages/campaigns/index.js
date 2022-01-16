@@ -5,6 +5,7 @@ import Api from "helpers/api";
 import Head from "next/head";
 import jwt from "next-auth/jwt";
 import Router from "next/router";
+import { useSession } from "next-auth/client";
 
 export default function Campaigns({ campaigns }) {
   return (
@@ -28,6 +29,7 @@ export default function Campaigns({ campaigns }) {
             name: "name",
             avatar: null,
             description: "flavor.synopsis",
+            owner: "dm"
           }}
           data={campaigns}
           onView={(id) => Router.push(`/campaigns/${id}`)}

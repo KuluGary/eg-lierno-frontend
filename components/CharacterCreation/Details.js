@@ -265,7 +265,7 @@ export function Details({ creature, setCreature }) {
               ))}
             </Select>
             <FormHelperText>
-              {alignments.find((alignment) => alignment.label === selectedAlignment)?.description}
+              {alignments.find((alignment) => alignment.label === creature.flavor.alignment)?.description}
             </FormHelperText>
           </FormControl>
         </Grid>

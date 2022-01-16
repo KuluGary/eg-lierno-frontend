@@ -2,7 +2,7 @@ import { Table as MuiTable, TableBody, Box } from "@mui/material";
 import { useState } from "react";
 import { TableRow, TableFooter, TableHeader } from ".";
 
-function Table({ schema, data, onEdit, onDelete, onView, headerProps }) {
+function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerProps }) {
   const [displayData, setDisplayData] = useState(data);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -43,13 +43,15 @@ function Table({ schema, data, onEdit, onDelete, onView, headerProps }) {
               <TableRow
                 key={element._id}
                 onEdit={() => onEdit(element._id)}
-                onView={() => onView(element._id)}
+                src={src}
                 onDelete={onDelete}
+                isEditable={isEditable}
                 data={{
                   _id: getNestedKey(schema["_id"], element),
                   name: getNestedKey(schema["name"], element),
                   avatar: schema["avatar"] && getNestedKey(schema["avatar"], element),
                   description: schema["description"] && getNestedKey(schema["description"], element),
+                  owner: schema["owner"] && getNestedKey(schema["owner"], element)
                 }}
               />
             ))}

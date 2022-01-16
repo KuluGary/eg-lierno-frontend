@@ -1,6 +1,6 @@
 import { Modal, Box } from "@mui/material";
 
-export function FullScreenModal({ children, containerStyles, open, onClose }) {
+export function FullScreenModal({ children, containerStyles = {}, open, onClose }) {
   return (
     <Modal open={open} onClose={onClose}>
       <Box
@@ -12,7 +12,7 @@ export function FullScreenModal({ children, containerStyles, open, onClose }) {
           minWidth: "65vw",
           minHeight: "70vh",
           maxHeight: "95vh",
-          bgcolor: "background.paper",
+          backgroundColor: "background.paper",
           borderRadius: "12px",
           boxShadow: 24,
           p: 4,

@@ -65,9 +65,11 @@ export default function Character({ characters = [], npcs = [] }) {
               name: "name",
               avatar: "flavor.portrait.avatar",
               description: "flavor.personality",
+              owner: "createdBy"
             }}
             data={characters}
-            onView={(id) => Router.push(`/characters/${id}`)}
+            src={"/characters/{ID}"}
+            // onView={(id) => Router.push(`/characters/${id}`)}
             onEdit={(id) => Router.push(`/characters/add/${id}`)}
             onDelete={() => {}}
             headerProps={{
@@ -88,9 +90,11 @@ export default function Character({ characters = [], npcs = [] }) {
               name: "name",
               avatar: "flavor.portrait.avatar",
               description: "flavor.description",
+              owner: "createdBy"
             }}
             data={npcs}
-            onView={(id) => Router.push(`/npcs/${id}`)}
+            src={"/npcs/{ID}"}
+            // onView={(id) => Router.push(`/npcs/${id}`)}
             onEdit={(id) => Router.push(`/npcs/add/${id}`)}
             onDelete={() => {}}
             headerProps={{

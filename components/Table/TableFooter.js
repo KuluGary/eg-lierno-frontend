@@ -6,7 +6,7 @@ export function TableFooter({ data, page, handleChangePage, rowsPerPage, handleC
     <MuiTableFooter>
       <TableRow sx={{ borderBottom: "none" }}>
         <TablePagination
-          count={data.length}
+          count={(data ?? []).length}
           onPageChange={handleChangePage}
           page={page}
           rowsPerPageOptions={[5, 10, 15]}

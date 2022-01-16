@@ -7,7 +7,6 @@ import jwt from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { Details, Discord, Map } from "components/CampaignCreation";
-import { NextResponse } from "next/server";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -50,7 +49,7 @@ export default function AddCampaign({ campaignData }) {
 
   useEffect(() => {
       Api.fetchInternal("/auth/me").then(res => handleCampaignChange("dm", res._id))
-  }, [handleCampaignChange])
+  }, [])
 
   const handleStepChange = (_, newValue) => {
     setActiveStep(newValue);
@@ -61,10 +60,17 @@ export default function AddCampaign({ campaignData }) {
   };
 
   const handleSubmit = () => {
-    Api.fetchInternal(`/npc`, {
-      method: campaign._id ? "PUT" : "POST",
-      body: JSON.stringify(campaign),
-    }).then(() => router.back());
+    if (campaign._id) {
+      Api.fetchInternal(`/campaigns/${campaign._id}`, {
+        method: "PUT",
+        body: JSON.stringify(campaign)
+      }).then(() => router.back());
+    } else {
+      Api.fetchInternal("/campaigns", {
+        method: "POST",
+        body: JSON.stringify(campaign),
+      }).then(() => router.back());
+    }
   };
 
   return (
@@ -95,7 +101,7 @@ export default function AddCampaign({ campaignData }) {
           </Box>
           <MuiContainer maxWidth="xs" sx={{ width: "75%" }}>
              {tabs.map(({ Component }, index) => (
-              <TabPanel value={activeStep} key={index}>
+              <TabPanel key={index} value={activeStep} index={index}>
                 <Component campaign={campaign} setCampaign={handleCampaignChange} />
               </TabPanel>
             ))} 
@@ -118,7 +124,14 @@ export async function getServerSideProps(context) {
 
   const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
-  if (!token) return NextResponse.redirect("/");
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
   const headers = {
     Accept: "application/json",

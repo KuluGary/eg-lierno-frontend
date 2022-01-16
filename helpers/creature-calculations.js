@@ -1302,24 +1302,36 @@ export const CreatureCalculations = {
           }${damageBonus} ${dmg.type.toLowerCase()} si es usado con dos manos`;
         }
 
+        if (key === "extraDamage") {
+          const median = ((dmg.dieSize + 1) * dmg.numDie) / dmg.numDie;
+          
+          return `y ${median} (${dmg.numDie}d${dmg.dieSize}) ${dmg.type.toLowerCase()} de daño adicional`
+        }
+
         return `${dmg.numDie}d${dmg.dieSize} ${damageBonus >= 0 ? "+" : ""}${damageBonus} ${dmg.type.toLowerCase()}`;
       })
-      .join(" o ")}.`;
+      .join(", ")}.`;
   },
-  getSpellSlots: (spellLevel, classes) => {
-    let classLevel = 0;
+  getSpellSlots: (spellLevel, classes, spellcasting) => {
+    if (classes.length > 10) {
+      return fullcaster[spellcasting.level]?.spellSlots[spellLevel];
+    } else {
 
-    classes?.forEach((charClass) => {
-      if (casterType.fullcaster.includes(charClass.className)) {
-        classLevel += charClass.classLevel;
-      } else if (casterType.halfcaster.includes(charClass.className)) {
-        classLevel += Math.floor(charClass.classLevel / 2);
-      } else {
-        classLevel += Math.floor(charClass.classLevel / 3);
-      }
-    });
-
-    return fullcaster[classLevel]?.spellSlots[spellLevel];
+      let classLevel = 0;
+      
+    
+      classes?.forEach((charClass) => {
+        if (casterType.fullcaster.includes(charClass.className)) {
+          classLevel += charClass.classLevel;
+        } else if (casterType.halfcaster.includes(charClass.className)) {
+          classLevel += Math.floor(charClass.classLevel / 2);
+        } else {
+          classLevel += Math.floor(charClass.classLevel / 3);
+        }
+      });
+      
+      return fullcaster[classLevel]?.spellSlots[spellLevel];
+    }
   },
   getSpellStrings: (spellcasting, spellData, abilityScores, name, classes, proficiency) => {
     const { spells, modifier, caster } = spellcasting;
@@ -1365,7 +1377,7 @@ export const CreatureCalculations = {
         spellString.description += `<li>${
           parseInt(key) === 0
             ? "<b>Trucos (a voluntad)</b>"
-            : `<b>Nivel ${key} (${CreatureCalculations.getSpellSlots(parseInt(key) - 1, classes)} huecos)</b>`
+            : `<b>Nivel ${key} (${CreatureCalculations.getSpellSlots(parseInt(key) - 1, classes, spellcasting)} huecos)</b>`
         }: ${spellStr}.</li>`;
       }
     });

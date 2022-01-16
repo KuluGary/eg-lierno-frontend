@@ -21,11 +21,11 @@ export function Details({ campaign, setCampaign }) {
   useEffect(() => {
     fetchFriendListData();
     fetchCharacterListData();
-  }, [fetchCharacterListData]);
+  }, []);
 
   useEffect(() => {
     fetchCharacterListData();
-  }, [campaign.players, fetchCharacterListData]);
+  }, [campaign.players]);
 
   const fetchFriendListData = async () => {
     Api.fetchInternal("/auth/me").then(async (res) => {

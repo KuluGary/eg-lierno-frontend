@@ -25,6 +25,7 @@ import { ModalFooter, ModalHeader } from ".";
 import { statLabels, spellcasters } from "helpers/creature-calculations";
 import { useEffect, useState } from "react";
 import Api from "helpers/api";
+import { useRouter } from "next/router";
 import { HTMLEditor } from "components";
 
 const schoolOptions = [
@@ -53,6 +54,8 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
     stats: {},
   });
   const [sectionToAdd, setSectionToAdd] = useState(null);
+  const router = useRouter();
+  const isCharacter = router.pathname.includes("characters");
 
   useEffect(() => fetchApiSpells(), []);
 
@@ -455,29 +458,41 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                   })
                 }
               >
-                <Divider textAlign="center">
-                  <ListSubheader sx={{ fontWeight: "bold" }}>Tus clases</ListSubheader>
-                </Divider>
-                {classes
-                  ?.filter((a) => creature?.stats.classes.findIndex((charClass) => charClass.classId === a._id) >= 0)
-                  .map(({ _id, name }) => (
+                {!isCharacter &&
+                  classes.map(({ _id, name }) => (
                     <MenuItem key={_id} value={_id}>
                       <Typography variant="body1">{name}</Typography>
                     </MenuItem>
                   ))}
-                <Divider textAlign="center">
-                  <ListSubheader sx={{ fontWeight: "bold" }}>Otras</ListSubheader>
-                </Divider>
+                {isCharacter && (
+                  <>
+                    <Divider textAlign="center">
+                      <ListSubheader sx={{ fontWeight: "bold", backgroundColor: "transparent" }}>Tus clases</ListSubheader>
+                    </Divider>
+                    {classes
+                      ?.filter(
+                        (a) => creature?.stats.classes.findIndex((charClass) => charClass.classId === a._id) >= 0
+                      )
+                      .map(({ _id, name }) => (
+                        <MenuItem key={_id} value={_id}>
+                          <Typography variant="body1">{name}</Typography>
+                        </MenuItem>
+                      ))}
+                    <Divider textAlign="center">
+                      <ListSubheader sx={{ fontWeight: "bold", backgroundColor: "transparent" }}>Otras</ListSubheader>
+                    </Divider>
+                    {classes
+                      ?.filter((a) => creature?.stats.classes.findIndex((charClass) => charClass.classId === a._id) < 0)
+                      .map(({ _id, name }) => (
+                        <MenuItem key={_id} value={_id}>
+                          <Typography variant="body1">{name}</Typography>
+                        </MenuItem>
+                      ))}
+                  </>
+                )}
                 <MenuItem key={"00000"} value={"00000"}>
                   <Typography variant="body1">{"Innato"}</Typography>
                 </MenuItem>
-                {classes
-                  ?.filter((a) => creature?.stats.classes.findIndex((charClass) => charClass.classId === a._id) < 0)
-                  .map(({ _id, name }) => (
-                    <MenuItem key={_id} value={_id}>
-                      <Typography variant="body1">{name}</Typography>
-                    </MenuItem>
-                  ))}
               </Select>
             </FormControl>
           </Grid>

@@ -1,7 +1,16 @@
 import { Tabs, Box, Tab, Typography, useTheme, Container as MuiContainer, Button } from "@mui/material";
 import { useState } from "react";
 import { Container, Layout } from "components";
-import { Details, Race, Class, Stats, Proficiencies, Abilities, Background } from "components/CharacterCreation";
+import {
+  Details,
+  Race,
+  Class,
+  Stats,
+  Proficiencies,
+  Abilities,
+  Background,
+  Equipment,
+} from "components/CharacterCreation";
 import {
   MuscleUp as MuscleUpIcon,
   SwordShield as SwordShieldIcon,
@@ -10,6 +19,7 @@ import {
   Character as CharacterIcon,
   AlienStare as AlienStareIcon,
   Barbute as BarbuteIcon,
+  Backpack as BackpackIcon,
 } from "components/icons";
 import { StringUtil } from "helpers/string-util";
 import character_template from "helpers/json/character_template.json";
@@ -17,7 +27,7 @@ import Api from "helpers/api";
 import jwt from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { NextResponse } from "next/server";
+import { getSession } from 'next-auth/client'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -54,9 +64,10 @@ const tabs = [
   { label: "Trasfondo", Icon: BarbuteIcon, Component: Background },
   { label: "Proficiencias", Icon: JugglerIcon, Component: Proficiencies },
   { label: "Habilidades", Icon: SpellBoltIcon, Component: Abilities },
+  { label: "Equipamiento", Icon: BackpackIcon, Component: Equipment },
 ];
 
-export default function AddCharacter({ character, classes, spells }) {
+export default function AddCharacter({ character, classes, spells, items }) {
   const theme = useTheme();
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
@@ -119,7 +130,7 @@ export default function AddCharacter({ character, classes, spells }) {
           <MuiContainer maxWidth="xs" sx={{ width: "75%" }}>
             {tabs.map(({ Component }, index) => (
               <TabPanel key={index} value={activeStep} index={index}>
-                <Component creature={creature} setCreature={handleCreatureChange} classes={classes} spells={spells} />
+                <Component creature={creature} setCreature={handleCreatureChange} classes={classes} spells={spells} items={items} />
               </TabPanel>
             ))}
             <Box sx={{ m: 3, float: "right" }}>
@@ -135,13 +146,21 @@ export default function AddCharacter({ character, classes, spells }) {
   );
 }
 
-export async function getServerSideProps(context) {  
+export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
   const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const { userId } = await getSession({ req });
 
-  if (!token) return NextResponse.redirect("/");
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
   const headers = {
     Accept: "application/json",
@@ -161,6 +180,15 @@ export async function getServerSideProps(context) {
       headers,
     }).catch(() => null);
 
+    if (!character || character.createdBy !== userId) {
+      return {
+        redirect: {
+          destination: "/characters",
+          permanent: false,
+        },
+      };
+    }
+
     if (character?.stats.spells?.length > 0) {
       const spellIds = character.stats.spells.map((spell) => spell.spellId);
 
@@ -176,11 +204,16 @@ export async function getServerSideProps(context) {
     headers,
   }).catch(() => null);
 
+  const items = await Api.fetchInternal("/items", {
+    headers,
+  }).catch(() => null);
+
   return {
     props: {
       character,
       classes,
       spells,
+      items,
     },
   };
 }

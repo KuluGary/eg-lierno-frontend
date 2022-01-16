@@ -75,8 +75,8 @@ const lightTheme = {
       "&::-webkit-scrollbar": {
         display: "none",
       },
-      "-ms-overflow-style": "none" /* IE and Edge */,
-      "scrollbar-width": "none"
+     msOverflowStyle: "none" /* IE and Edge */,
+      scrollBarWidth: "none"
     }
   }
 };
@@ -86,7 +86,7 @@ const darkTheme = {
     primary: {
       light: "#E2E5E8",
       200: "#8591A1",
-      main: "#54657B",
+      main: "#8591a1",
       dark: "#091F3C",
       800: "#05152B",
     },
@@ -130,9 +130,9 @@ const darkTheme = {
       white: "#FFFFFF",
     },
     background: {
-      body: "#030C1D",
-      paper: "#091F3C",
-      container: "#051327"
+      body: "#15202b",
+      paper: "#253341",
+      container: "#192734"
     },
     divider: "#BDC8F033",
   },

@@ -10,7 +10,7 @@ export default function Home() {
   const heroRef = useRef(null)
 
   return (
-    <Box component="main" sx={{ marginBottom: "120px" }}>
+    <Box component="main" sx={{ paddingBottom: "120px", backgroundColor: (t) => t.palette.background.container }}>
       <Head>
         <title>Lierno App | Inicio</title>
         <link rel="icon" href="/favicon.ico" />

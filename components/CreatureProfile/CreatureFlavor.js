@@ -1,5 +1,5 @@
 import { Typography, Box } from "@mui/material";
-import { Container } from "..";
+import { Container, HTMLContainer } from "..";
 import Image from "../Image/Image";
 
 export function CreatureFlavor({ Header, data, containerStyle }) {
@@ -16,7 +16,7 @@ export function CreatureFlavor({ Header, data, containerStyle }) {
                 {title}
               </Typography>
               <Box component="p">
-                <Typography variant="body1" component="div" dangerouslySetInnerHTML={{ __html: content }} />
+                <HTMLContainer content={content} />
               </Box>
             </Box>
           );

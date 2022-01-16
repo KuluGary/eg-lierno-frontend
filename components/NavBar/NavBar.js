@@ -3,7 +3,7 @@ import { AppBar, IconButton, Toolbar, Typography, Button, Menu, MenuItem, Contai
 import { Link } from "../Link/Link";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { signIn, signOut, useSession } from "next-auth/client";
-import { Avatar } from "../"
+import { Avatar } from "../";
 import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/router";
 import { StringUtil } from "helpers/string-util";
@@ -20,15 +20,18 @@ export function NavBar({ open, handleDrawer, mode = "normal", containerRef = nul
 
   useEffect(() => {
     if (isMainScreen) {
-      const observer = new IntersectionObserver((entries, sectionObserver) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) {
-            setIsIntersecting(true);
-          } else {
-            setIsIntersecting(false);
-          }
-        });
-      }, { rootMargin: "-200px 0px 0px 0px" });
+      const observer = new IntersectionObserver(
+        (entries, sectionObserver) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) {
+              setIsIntersecting(true);
+            } else {
+              setIsIntersecting(false);
+            }
+          });
+        },
+        { rootMargin: "-200px 0px 0px 0px" }
+      );
 
       if (containerRef?.current) observer.observe(containerRef.current);
       return () => {
@@ -65,7 +68,7 @@ export function NavBar({ open, handleDrawer, mode = "normal", containerRef = nul
         [theme.breakpoints.up("tablet")]: {
           WebkitBackdropFilter: "blur(20px)",
           backdropFilter: "blur(20px)",
-          backgroundColor: theme.palette.mode === "light" ? "rgba(255,255,255,.3)" : "rgba(0,0,0,.3)",
+          backgroundColor: theme.palette.background.body,
           ...(isMainScreen && {
             WebkitBackdropFilter: "none",
             backdropFilter: "none",
@@ -77,9 +80,9 @@ export function NavBar({ open, handleDrawer, mode = "normal", containerRef = nul
               duration: theme.transitions.duration.standard,
             }),
             ...(isIntersecting && {
-              background: theme.palette.background.default,
+              background: theme.palette.background.body,
               borderBottom: `1px solid ${theme.palette.divider}`,
-              color: "inherit",
+              color: theme.palette.text.primary,
             }),
           }),
         },
@@ -114,22 +117,37 @@ export function NavBar({ open, handleDrawer, mode = "normal", containerRef = nul
         <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
           Lierno
         </Typography>
-        {isMainScreen && !!session && <Link href="/characters" sx={{ mr: 6, color: "inherit" }}>Ir al Panel</Link>}
+        {isMainScreen && !!session && (
+          <Link
+            href="/characters"
+            sx={{
+              mr: 6,
+              color: "inherit",
+              textDecoration: "none",
+              "&:hover": { color: (t) => t.palette.secondary.main },
+            }}
+          >
+            Ir al Panel
+          </Link>
+        )}
         {!!session ? (
           <>
-          <IconButton onClick={handleMenu} color="inherit">
-            <Avatar src={session?.image} fallBackText={StringUtil.getInitials(session?.name || "")} />
-          </IconButton>
+            <IconButton onClick={handleMenu} color="inherit">
+              <Avatar src={session?.image} fallBackText={StringUtil.getInitials(session?.name || "")} />
+            </IconButton>
           </>
         ) : (
           <Link
             href={`/api/auth/signin`}
+            sx={{ textDecoration: "none" }}
             onClick={(e) => {
               e.preventDefault();
               signIn();
             }}
           >
-            <Button variant="outlined" color={!isMainScreen ? "primary" : "inherit"}>Entrar</Button>
+            <Button variant="outlined" color={!isMainScreen ? "primary" : "inherit"}>
+              Entrar
+            </Button>
           </Link>
         )}
       </Toolbar>

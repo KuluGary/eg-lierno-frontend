@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container } from "..";
+import { Container, HTMLContainer } from "..";
 import { Box, Divider, Typography, Tabs, Tab } from "@mui/material";
 import StatComponent from "./StatComponent";
 import { StringUtil } from "helpers/string-util";
@@ -62,7 +62,13 @@ export function CreatureStats({ Header, containerStyle, data }) {
           .map(({ title, content }, index) => {
             if (title === "Ataques") {
               return (
-                <Box key={index} component="div" role="tabpanel" id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
+                <Box
+                  key={index}
+                  component="div"
+                  role="tabpanel"
+                  id={`tabpanel-${index}`}
+                  aria-labelledby={`tab-${index}`}
+                >
                   <Box component="ul" sx={{ listStyle: "none", p: 0 }}>
                     {tab === index &&
                       content.map((attack, i) => (
@@ -70,12 +76,8 @@ export function CreatureStats({ Header, containerStyle, data }) {
                           <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
                             {attack.name + "."}
                           </Typography>
-                          <Typography
-                            variant="body"
-                            component="div"
-                            dangerouslySetInnerHTML={{
-                              __html: CreatureCalculations.getAttackStrings(attack, data.stats, data.proficiencyBonus),
-                            }}
+                          <HTMLContainer
+                            content={CreatureCalculations.getAttackStrings(attack, data.stats, data.proficiencyBonus)}
                           />
                         </Box>
                       ))}
@@ -88,30 +90,45 @@ export function CreatureStats({ Header, containerStyle, data }) {
               const { characterSpells, spellData } = content;
 
               return (
-                <Box key={index} component="div" role="tabpanel" id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
+                <Box
+                  key={index}
+                  component="div"
+                  role="tabpanel"
+                  id={`tabpanel-${index}`}
+                  aria-labelledby={`tab-${index}`}
+                >
                   <Box component="ul" sx={{ listStyle: "none", p: 0 }}>
-                    {tab === index && 
+                    {tab === index &&
                       characterSpells.map((spells, index) => (
                         <Box component="li" sx={{ marginBlock: 2 }} key={index}>
                           <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
-                            {"Lanzamiento de conjuros" + (data.classes ? " de " + data.classes.find(charClass => charClass.classId === spells.caster)?.className?.toLowerCase() : "") + "."}
+                            {StringUtil.getSpellcastingName(spells.caster, data.classes)}
                           </Typography>
-                          <Typography
-                            variant="body"
-                            component="div"
-                            dangerouslySetInnerHTML={{
-                              __html: CreatureCalculations.getSpellStrings(spells, spellData, data.stats, data.name, data.classes, data.proficiencyBonus)
-                            }} />
+                          <HTMLContainer
+                            content={CreatureCalculations.getSpellStrings(
+                              spells,
+                              spellData,
+                              data.stats,
+                              data.name,
+                              data.classes,
+                              data.proficiencyBonus
+                            )}
+                          />
                         </Box>
-                      ))
-                    }
+                      ))}
                   </Box>
                 </Box>
-              )
+              );
             }
 
             return (
-              <Box key={index} component="div" role="tabpanel" id={`tabpanel-${index}`} aria-labelledby={`tab-${index}`}>
+              <Box
+                key={index}
+                component="div"
+                role="tabpanel"
+                id={`tabpanel-${index}`}
+                aria-labelledby={`tab-${index}`}
+              >
                 <Box component="ul" sx={{ listStyle: "none", p: 0 }}>
                   {tab === index &&
                     content
@@ -121,11 +138,7 @@ export function CreatureStats({ Header, containerStyle, data }) {
                           <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
                             {name + "."}
                           </Typography>
-                          <Typography
-                            variant="body"
-                            component="div"
-                            dangerouslySetInnerHTML={{ __html: StringUtil.replaceMarkDownWithHtml(description) }}
-                          />
+                          <HTMLContainer content={StringUtil.replaceMarkDownWithHtml(description)} />
                         </Box>
                       ))}
                 </Box>

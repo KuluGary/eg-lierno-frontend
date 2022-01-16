@@ -16,12 +16,12 @@ export function Map({ campaign, setCampaign }) {
           fullWidth
           color="secondary"
           label="URL de tu mapa"
-          value={campaign.map ?? ""}
-          onChange={(e) => setCampaign("map", e.target.value)}
+          value={campaign.flavor?.map ?? ""}
+          onChange={(e) => setCampaign("flavor.map", e.target.value)}
         />
       </Grid>
       <Grid item laptop={12}>
-          {!!campaign?.map && <iframe style={{ width: "100%", minHeight: "40vh", border: "none" }} src={campaign.map} />}
+          {!!campaign?.flavor.map && <iframe style={{ width: "100%", minHeight: "40vh", border: "none" }} src={campaign.flavor.map} />}
       </Grid>
     </Grid>
   );

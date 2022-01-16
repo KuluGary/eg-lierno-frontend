@@ -40,7 +40,7 @@ export function Stats({ creature, setCreature }) {
           Selecciona los datos referentes a las estadísticas de tu personaje.
         </Typography>
       </Grid>
-      <Grid item laptop={8}>
+      <Grid item laptop={isCharacter ? 8 : 6}>
         <Container>
           <Grid item laptop={12} container spacing={3}>
             <Grid
@@ -109,7 +109,51 @@ export function Stats({ creature, setCreature }) {
           </Grid>
         </Container>
       </Grid>
-      <Grid item laptop={4}>
+      {!isCharacter && <Grid item laptop={isCharacter ? 4 : 3}>
+        <Container>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="button">CLASE</Typography>
+            <Typography variant="overline">DE DESAFÍO</Typography>
+            <Container>
+              <InputBase
+                type="number"
+                value={creature.stats?.challengeRating}
+                inputProps={{ min: 0, max: 50, step: 0.25, style: { textAlign: "center" } }}
+                onChange={(e) => {
+                  let newValue = parseFloat(e.target.value);
+                  let oldValue = creature.stats.challengeRating;
+
+                  if (newValue > 1) {
+                    if (newValue > oldValue) {
+                      newValue = Math.ceil(newValue);
+                    } else {
+                      newValue = Math.floor(newValue);
+                    }
+                  } else {
+                    if (newValue === 0.75) {
+                      if (newValue > oldValue) {
+                        newValue = 1;
+                      } else {
+                        newValue = 0.5;
+                      }
+                    }
+                  }
+
+                  setCreature("stats.challengeRating", newValue);
+                }}
+              />
+            </Container>
+          </Box>
+        </Container>
+      </Grid>}
+      <Grid item laptop={isCharacter ? 4 : 3}>
         <Container>
           <Box
             sx={{

@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { Typography, Box, IconButton, Divider, Grid } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
@@ -10,8 +9,10 @@ import Router from "next/router";
 import jwt from "next-auth/jwt";
 import { CreatureCalculations } from "helpers/creature-calculations";
 import download from "downloadjs";
+import { useSession } from "next-auth/client";
 
 export default function CharacterProfile({ character, spells, items }) {
+  const [session] = useSession();
   const theme = useTheme();
 
   const downloadPdf = () => {
@@ -85,66 +86,68 @@ export default function CharacterProfile({ character, spells, items }) {
                     </Typography>
                   </Box>
                 </Box>
-                <Box sx={{ display: "flex", height: "100%" }}>
-                  <Box component="div" sx={{ margin: "0 .25em" }}>
-                    <IconButton
-                      color="secondary"
-                      sx={{
-                        border: "1px solid rgba(63, 176, 172, 0.5);",
-                        borderRadius: "8px",
-                        padding: ".25em",
-                        transition: theme.transitions.create(["border"], {
-                          easing: theme.transitions.easing.sharp,
-                          duration: theme.transitions.duration.leavingScreen,
-                        }),
-                        "&:hover": {
-                          border: "1px solid rgba(63, 176, 172, 1);",
-                        },
-                      }}
-                    >
-                      <EditIcon onClick={() => Router.push(`/characters/add/${character._id}`)} fontSize="small" />
-                    </IconButton>
+                {!!session && session?.userId === character.createdBy && (
+                  <Box sx={{ display: "flex", height: "100%" }}>
+                    <Box component="div" sx={{ margin: "0 .25em" }}>
+                      <IconButton
+                        color="secondary"
+                        sx={{
+                          border: "1px solid rgba(63, 176, 172, 0.5);",
+                          borderRadius: "8px",
+                          padding: ".25em",
+                          transition: theme.transitions.create(["border"], {
+                            easing: theme.transitions.easing.sharp,
+                            duration: theme.transitions.duration.leavingScreen,
+                          }),
+                          "&:hover": {
+                            border: "1px solid rgba(63, 176, 172, 1);",
+                          },
+                        }}
+                      >
+                        <EditIcon onClick={() => Router.push(`/characters/add/${character._id}`)} fontSize="small" />
+                      </IconButton>
+                    </Box>
+                    <Box component="div" sx={{ margin: "0 .25em" }}>
+                      <IconButton
+                        color="secondary"
+                        sx={{
+                          border: "1px solid rgba(63, 176, 172, 0.5);",
+                          borderRadius: "8px",
+                          padding: ".25em",
+                          transition: theme.transitions.create(["border"], {
+                            easing: theme.transitions.easing.sharp,
+                            duration: theme.transitions.duration.leavingScreen,
+                          }),
+                          "&:hover": {
+                            border: "1px solid rgba(63, 176, 172, 1);",
+                          },
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                    <Box component="div" sx={{ margin: "0 .25em" }}>
+                      <IconButton
+                        color="secondary"
+                        onClick={downloadPdf}
+                        sx={{
+                          border: "1px solid rgba(63, 176, 172, 0.5);",
+                          borderRadius: "8px",
+                          padding: ".25em",
+                          transition: theme.transitions.create(["border"], {
+                            easing: theme.transitions.easing.sharp,
+                            duration: theme.transitions.duration.leavingScreen,
+                          }),
+                          "&:hover": {
+                            border: "1px solid rgba(63, 176, 172, 1);",
+                          },
+                        }}
+                      >
+                        <FileDownloadIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
                   </Box>
-                  <Box component="div" sx={{ margin: "0 .25em" }}>
-                    <IconButton
-                      color="secondary"
-                      sx={{
-                        border: "1px solid rgba(63, 176, 172, 0.5);",
-                        borderRadius: "8px",
-                        padding: ".25em",
-                        transition: theme.transitions.create(["border"], {
-                          easing: theme.transitions.easing.sharp,
-                          duration: theme.transitions.duration.leavingScreen,
-                        }),
-                        "&:hover": {
-                          border: "1px solid rgba(63, 176, 172, 1);",
-                        },
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                  <Box component="div" sx={{ margin: "0 .25em" }}>
-                    <IconButton
-                      color="secondary"
-                      onClick={downloadPdf}
-                      sx={{
-                        border: "1px solid rgba(63, 176, 172, 0.5);",
-                        borderRadius: "8px",
-                        padding: ".25em",
-                        transition: theme.transitions.create(["border"], {
-                          easing: theme.transitions.easing.sharp,
-                          duration: theme.transitions.duration.leavingScreen,
-                        }),
-                        "&:hover": {
-                          border: "1px solid rgba(63, 176, 172, 1);",
-                        },
-                      }}
-                    >
-                      <FileDownloadIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                </Box>
+                )}
               </Box>
             )}
           />
@@ -161,7 +164,6 @@ export default function CharacterProfile({ character, spells, items }) {
               stats: character["stats"]["abilityScores"],
               proficiencyBonus: character["stats"]["proficiencyBonus"],
               proficiencies: [
-                { title: "Clase de armadura", content: character.stats.armorClass },
                 {
                   title: "Puntos de vida",
                   content: `${character.stats.hitPoints.current ?? character.stats.hitPoints.max} / ${
@@ -169,6 +171,13 @@ export default function CharacterProfile({ character, spells, items }) {
                   } (${character.stats.classes
                     .map((charClass) => `${charClass.classLevel}d${charClass.hitDie}`)
                     .join(", ")} + ${CreatureCalculations.modifier(character.stats.abilityScores.constitution)})`,
+                },
+                {
+                  title: "Clase de armadura",
+                  content: `${character.stats.armorClass} (${character.stats.equipment.armor
+                    .filter(armor => armor.equipped)
+                    .map((armor) => items.find((item) => item.id === armor.id)?.name?.toLowerCase())
+                    .join(", ")})`,
                 },
                 { title: "Velocidad", content: CreatureCalculations.getSpeedString(character.stats.speed) },
                 {
@@ -210,6 +219,7 @@ export default function CharacterProfile({ character, spells, items }) {
                       : null,
                 },
                 { title: "Objetos", content: items },
+                { title: "Trasfondo", content: [character.flavor.background].map(back => ({...back, description: back.trait}))  }
               ],
             }}
           />

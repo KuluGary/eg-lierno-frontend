@@ -1,12 +1,13 @@
 import { Tabs, Box, Tab, Typography, useTheme, Container as MuiContainer, Button } from "@mui/material";
 import { useState } from "react";
 import { Container, Layout } from "components";
-import { Details, Stats, Proficiencies, Abilities } from "components/CharacterCreation";
+import { Details, Stats, Proficiencies, Abilities, Equipment } from "components/CharacterCreation";
 import {
   MuscleUp as MuscleUpIcon,
   Juggler as JugglerIcon,
   SpellBolt as SpellBoltIcon,
   Character as CharacterIcon,
+  Backpack as BackpackIcon,
 } from "components/icons";
 import { StringUtil } from "helpers/string-util";
 import character_template from "helpers/json/character_template.json";
@@ -14,7 +15,6 @@ import Api from "helpers/api";
 import jwt from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { NextResponse } from "next/server";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -48,9 +48,10 @@ const tabs = [
   { label: "Estadísticas", Icon: MuscleUpIcon, Component: Stats },
   { label: "Proficiencias", Icon: JugglerIcon, Component: Proficiencies },
   { label: "Habilidades", Icon: SpellBoltIcon, Component: Abilities },
+  { label: "Equipamiento", Icon: BackpackIcon, Component: Equipment },
 ];
 
-export default function AddNpc({ npc }) {
+export default function AddNpc({ npc, spells, classes, items }) {
   const theme = useTheme();
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
@@ -106,7 +107,7 @@ export default function AddNpc({ npc }) {
           <MuiContainer maxWidth="xs" sx={{ width: "75%" }}>
             {tabs.map(({ Component }, index) => (
               <TabPanel key={index} value={activeStep} index={index}>
-                <Component creature={creature} setCreature={handleCreatureChange} />
+                <Component creature={creature} setCreature={handleCreatureChange} spells={spells} items={items} classes={classes} />
               </TabPanel>
             ))}
             <Box sx={{ m: 3, float: "right" }}>
@@ -128,7 +129,14 @@ export async function getServerSideProps(context) {
 
   const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
-  if (!token) return NextResponse.redirect("/");
+  if (!token) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
 
   const headers = {
     Accept: "application/json",
@@ -141,16 +149,37 @@ export async function getServerSideProps(context) {
   }
 
   let npc = null;
+  let spells = null;
 
   if (!!query.id && query.id.length > 0) {
     npc = await Api.fetchInternal("/npc/" + query.id[0], {
       headers,
     }).catch(() => null);
+
+    if (npc?.stats.spells?.length > 0) {
+      const spellIds = npc.stats.spells.map((spell) => spell.spellId);
+
+      spells = await Api.fetchInternal("/spells", {
+        method: "POST",
+        body: JSON.stringify(spellIds),
+        headers,
+      });
+    }
   }
+
+  const items = await Api.fetchInternal("/items", {
+    headers,
+  }).catch(() => null);
+
+  const classes = await Api.fetchInternal("/classes/", {
+    headers,
+  }).catch(() => null);
 
   return {
     props: {
       npc,
+      items,
+      classes,
     },
   };
 }

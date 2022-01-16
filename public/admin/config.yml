@@ -1,5 +1,7 @@
 backend:
   name: git-gateway
+  repo: KuluGary/eg-lierno-frontend-nextjs
+  branch: main
 media_folder: public/img
 public_folder: img
 collections:

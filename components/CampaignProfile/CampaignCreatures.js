@@ -61,6 +61,7 @@ export function CampaignCreatures({ campaign }) {
                   name: "name",
                   avatar: "flavor.portrait.avatar",
                   description: "flavor.description",
+                  owner: "createdBy"
                 }}
                 data={creatures.npcs}
                 onView={(id) => Router.push(`/npcs/${id}`)}
@@ -86,6 +87,7 @@ export function CampaignCreatures({ campaign }) {
                   name: "name",
                   avatar: "flavor.portrait.original",
                   description: "flavor.description",
+                  owner: "createdBy"
                 }}
                 data={creatures.monsters}
                 onView={(id) => Router.push(`/bestiary/${id}`)}

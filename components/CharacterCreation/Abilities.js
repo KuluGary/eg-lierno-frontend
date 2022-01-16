@@ -74,7 +74,7 @@ const Section = ({ data, title, onDragEnd, section, setModalOpen, setSelectedInd
   );
 };
 
-export function Abilities({ creature, setCreature, spells, classes }) {
+export function Abilities({ creature, setCreature, classes }) {
   const [modalOpen, setModalOpen] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
 
@@ -87,7 +87,7 @@ export function Abilities({ creature, setCreature, spells, classes }) {
       return setCreature(`stats.${destination.droppableId}`, result);
     } else {
       const current = creature.stats[source.droppableId];
-      const next = creature.stats[destination.droppableId];
+      const next = creature.stats[destination.droppableId] ?? [];
       const target = current[source.index];
 
       current.splice(source.index, 1);

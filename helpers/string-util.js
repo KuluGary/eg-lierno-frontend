@@ -61,6 +61,49 @@ export const StringUtil = {
 
     return claseToReturn;
   },
+  getCharacterSubtitle: (character) => {
+    const subtitle = [];
+
+    let classes = "";
+
+    if (character.stats.classes?.length > 0) {
+      classes = character.stats.classes
+        .map((charClasses) => {
+          const classString =
+            StringUtil.generizaClase(charClasses["className"], character.flavor.traits.pronoun) +
+            " nivel " +
+            charClasses["classLevel"];
+          let subclassString = "";
+
+          if (charClasses["subclassName"]) {
+            subclassString = `( ${charClasses["subclassName"]} )`;
+          }
+
+          return classString + " " + subclassString;
+        })
+        .join(" / ");
+    } else {
+      classes = `${StringUtil.generizaClase("Novato", character.flavor.pronoun)} nivel 0`;
+    }
+
+    if (character.stats.race?.name) subtitle.push(character.stats.race?.name);
+    subtitle.push(classes);
+
+    return subtitle.join(", ");
+  },
+  getSpellcastingName: (caster, classes) => {
+    if (caster === "00000") return "Lanzamiento de conjuros innato.";
+
+    if (!!classes) {
+      const className = classes.find((charClass) => charClass.classId === caster)?.className?.toLowerCase();
+
+      if (!!className) {
+        return `Lanzamiento de conjuros de ${className}.`;
+      }
+    }
+
+    return "Lanzamiento de conjuros.";
+  },
   getOperatorString: (modifier) => `${modifier > 0 ? "+" : ""}${modifier}`,
   replaceMarkDownWithHtml: (md) => {
     let arr = md?.split(/\n/g);
