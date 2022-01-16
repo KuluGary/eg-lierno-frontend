@@ -66,6 +66,7 @@ export default function Home({ posts }) {
       <Box sx={{ display: "flex", justifyContent: "center" }}>
         {posts.map((post, index) => (
           <Box
+            key={index}
             sx={{
               position: "relative",
               width: "calc(70vw / 3)",
