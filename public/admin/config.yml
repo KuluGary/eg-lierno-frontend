@@ -5,19 +5,17 @@ backend:
 media_folder: public/img
 public_folder: img
 collections:
-  - name: "pages"
-    label: "Pages"
-    files:
-    - label: "Home"
-      name: "home"
-      file: "content/home.md"
-      fields:
-        - { label: "Title", name: "title", widget: "string"}
-        - { label: "Publish Date", name: "date", widget: "datetime" }
-        - { label: "Body", name: "body", widget: "markdown"}
-        - label: 'Cats'
-          name: "cats"
-          widget: list
-          fields:
-            - { label: "Name", name: "name", widget: "string"}
-            - { label: "Description", name: "description", widget: "text"}
+  - name: "blog"
+    label: "Blog"
+    folder: "content"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Descripción", name: "description", widget: "string" }
+      - { label: "Autor", name: "author", widget: "string" }
+      - { label: "Fecha", name: "date", widget: "datetime" }
+      - { label: "Etiquetas", name: "tags", widget: "list", default: ["post"] }
+      - { label: "Imagen principal", name: "image", widget: "image" }
+      - { label: "Descripción de la imagen", name: "imageAlt", widget: "string" }
+      - { label: "Cuerpo del texto", name: "body", widget: "markdown" }

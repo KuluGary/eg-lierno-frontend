@@ -1,13 +1,18 @@
+import fs from "fs";
 import { useRef } from "react";
 import Head from "next/head";
-import { Box, Button, Divider, Paper, Typography } from "@mui/material";
-import { attributes } from "../content/home.md";
+import matter from "gray-matter";
+import ReactMarkdown from "react-markdown";
+import { Box, Button, Typography } from "@mui/material";
+// import { attributes } from "../content/home.md";
 import { signIn } from "next-auth/client";
-import { Link, NavBar } from "../components";
+import { Container, Link, NavBar } from "../components";
 
-export default function Home() {
-  const { title, cats } = attributes;
-  const heroRef = useRef(null)
+export default function Home({ posts }) {
+  const heroRef = useRef(null);
+  // const { title, cats } = posts;
+
+  // console.log(title)
 
   return (
     <Box component="main" sx={{ paddingBottom: "120px", backgroundColor: (t) => t.palette.background.container }}>
@@ -57,7 +62,49 @@ export default function Home() {
           </Box>
         </Box>
       </Box>
-      <Box
+
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        {posts.map((post, index) => (
+          <Box
+            sx={{
+              position: "relative",
+              width: "calc(70vw / 3)",
+              height: "calc(80vw / 3)",
+              margin: 1,
+              marginTop: -10,
+              backgroundImage: `url(${post.image})`,
+              backgroundPosition: "center",
+              border: "none",
+              outline: (theme) => `1px solid ${theme.palette.divider}`,
+              display: "flex",
+              alignItems: "end",
+              "&::before": {
+                content: "''",
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                width: "100%",
+                height: "100%",
+                background: "rgb(0,0,0)",
+                background: "linear-gradient(30deg, rgba(0,0,0,.7) 30%, rgba(0,0,0,0) 45%)",
+              },
+            }}
+          >
+            {console.log(post)}
+            <Box sx={{ zIndex: 1, m: 1 }}>
+              <Typography variant="h5" component="h2" sx={{ color: (theme) => theme.palette.text.primary }}>
+                {post.title}
+              </Typography>
+              <Typography variant="body1" sx={{ color: (theme) => theme.palette.text.primary }}>
+                {post.description}
+              </Typography>
+            </Box>
+          </Box>
+        ))}
+      </Box>
+      {/* <Box
         component={Paper}
         elevation={6}
         sx={{
@@ -66,17 +113,40 @@ export default function Home() {
           p: 5,
         }}
       >
-        <Typography variant="h3">{title}</Typography>
-        <Divider sx={{ mt: 2, mb: 2 }} />
-        <ul>
-          {cats.map((cat, k) => (
-            <li key={k}>
-              <h2>{cat.name}</h2>
-              <p>{cat.description}</p>
-            </li>
-          ))}
-        </ul>
-      </Box>
+        {posts.map((post, index) => (
+          <Box key={index}>            
+          {console.log(post)}
+            <Typography variant="h3">{post.title}</Typography>
+            <Box component="img" src={post.image} />
+            <ReactMarkdown>
+              {post.markdown}
+            </ReactMarkdown>
+          </Box>
+        ))}
+      </Box> */}
     </Box>
   );
+}
+
+export async function getStaticProps() {
+  const filesInContent = fs.readdirSync("content");
+
+  const posts = filesInContent.map((filename) => {
+    const file = fs.readFileSync(`content/${filename}`, "utf-8");
+    const matterData = matter(file);
+    let frontmatter = matterData.data;
+    const markdown = matterData.content;
+
+    return {
+      ...matterData.data,
+      markdown,
+      // slug: filename.splice(0, filename.indexOf(".")),
+    };
+  });
+
+  return {
+    props: {
+      posts,
+    },
+  };
 }
