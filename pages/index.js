@@ -135,11 +135,11 @@ export async function getStaticProps() {
   const posts = filesInContent.map((filename) => {
     const file = fs.readFileSync(`content/${filename}`, "utf-8");
     const matterData = matter(file);
-    let frontmatter = matterData.data;
+    let frontmatter = JSON.parse(JSON.stringify(matterData.data));
     const markdown = matterData.content;
 
     return {
-      ...matterData.data,
+      ...frontmatter,
       markdown,
       // slug: filename.splice(0, filename.indexOf(".")),
     };
