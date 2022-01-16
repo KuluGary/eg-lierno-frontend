@@ -83,12 +83,17 @@ export default function ExplorePage({ items, spells }) {
             aria-label="item tabs"
           >
             {Object.keys(items).map((key, index) => (
-              <Tab id={`item-tabpanel-${index}`} aria-controls={`item-tabpanel-${index}`} label={itemLabels[key]} />
+              <Tab
+                key={key}
+                id={`item-tabpanel-${index}`}
+                aria-controls={`item-tabpanel-${index}`}
+                label={itemLabels[key]}
+              />
             ))}
           </Tabs>
           <Divider />
           {Object.keys(items).map((key, index) => (
-            <TabPanel value={itemTabValue} index={index}>
+            <TabPanel key={key} value={itemTabValue} index={index}>
               <Table
                 schema={{
                   _id: "_id",
@@ -112,6 +117,7 @@ export default function ExplorePage({ items, spells }) {
           >
             {Object.keys(spells).map((key, index) => (
               <Tab
+                key={key}
                 id={`spell-tabpanel-${index}`}
                 aria-controls={`spell-tabpanel-${index}`}
                 label={key === "0" ? "Trucos" : `Nivel ${key}`}
@@ -120,7 +126,7 @@ export default function ExplorePage({ items, spells }) {
           </Tabs>
           <Divider />
           {Object.keys(spells).map((key, index) => (
-            <TabPanel value={spellTabValue} index={index}>
+            <TabPanel key={key} value={spellTabValue} index={index}>
               <Table
                 schema={{
                   _id: "_id",
@@ -144,6 +150,7 @@ export default function ExplorePage({ items, spells }) {
           >
             {Object.keys(references).map((key, index) => (
               <Tab
+                key={key}
                 id={`reference-tabpanel-${index}`}
                 aria-controls={`reference-tabpanel-${index}`}
                 label={referenceLabels[key]}
@@ -152,7 +159,7 @@ export default function ExplorePage({ items, spells }) {
           </Tabs>
           <Divider />
           {Object.keys(references).map((key, index) => (
-            <TabPanel value={referenceTabValue} index={index}>
+            <TabPanel key={key} value={referenceTabValue} index={index}>
               <Table
                 schema={{
                   _id: "title",

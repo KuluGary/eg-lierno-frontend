@@ -3,7 +3,6 @@ import { Container, HTMLContainer, Layout, Metadata } from "components";
 import references from "helpers/json/references.json";
 
 export default function Reference({ reference }) {
-  console.log(reference);
   return (
     <Layout>
       <Metadata title={`${reference.title} | Lierno App`} description={reference.description} />
@@ -20,8 +19,8 @@ export default function Reference({ reference }) {
             <HTMLContainer content={reference.description} />
           </Box>
           <Box component="ul">
-            {reference.bullets?.map((bullet) => (
-              <Box component="li">
+            {reference.bullets?.map((bullet, index) => (
+              <Box component="li" key={index}>
                 {/* {bullet} */}
                 <HTMLContainer content={bullet} />
               </Box>
