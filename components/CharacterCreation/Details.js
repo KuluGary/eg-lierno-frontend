@@ -69,15 +69,14 @@ export function Details({ creature, setCreature }) {
     },
   ];
   const pronouns = ["El", "La", "Le"];
-  const [selectedAlignment] = useState(creature?.flavor?.alignment ?? alignments[0].label);
   const isCharacter = router.pathname.includes("characters");
   const sizes = [
-    StringUtil.generiza("Diminuto", "Diminuta", "Diminute", creature.flavor.traits.pronoun),
-    StringUtil.generiza("Pequeño", "Pequeña", "Pequeñe", creature.flavor.traits.pronoun),
-    StringUtil.generiza("Mediano", "Mediana", "Mediane", creature.flavor.traits.pronoun),
+    StringUtil.generiza("Diminuto", "Diminuta", "Diminute", creature?.flavor?.traits.pronoun),
+    StringUtil.generiza("Pequeño", "Pequeña", "Pequeñe", creature?.flavor?.traits.pronoun),
+    StringUtil.generiza("Mediano", "Mediana", "Mediane", creature?.flavor?.traits.pronoun),
     "Grande",
     "Enorme",
-    StringUtil.generiza("Gigantesco", "Gigantesca", "Gigantesque", creature.flavor.traits.pronoun),
+    StringUtil.generiza("Gigantesco", "Gigantesca", "Gigantesque", creature?.flavor?.traits.pronoun),
   ];
   const [openUploader, setOpenUploader] = useState();
 
@@ -216,7 +215,7 @@ export function Details({ creature, setCreature }) {
               fullWidth
               color="secondary"
               placeholder="Raza"
-              value={creature?.stats?.race?.name}
+              value={creature?.flavor?.race?.name}
               onChange={(e) => setCreature("flavor.race.name", e.target.value)}
             />
           )}
@@ -237,7 +236,7 @@ export function Details({ creature, setCreature }) {
                 labelId="pronoun-select-label"
                 id="pronoun-select"
                 value={creature.stats?.race?.size || sizes[3]}
-                onChange={(e) => setCreature("flavor.traits.pronoun", e.target.value)}
+                onChange={(e) => setCreature("stats.race.size", e.target.value)}
               >
                 {sizes.map((size, index) => (
                   <MenuItem key={index} value={size}>
@@ -252,7 +251,7 @@ export function Details({ creature, setCreature }) {
           <FormControl fullWidth>
             <Select
               color="secondary"
-              value={creature.flavor.alignment}
+              value={creature?.flavor?.alignment}
               onChange={(e) => setCreature("flavor.alignment", e.target.value)}
               labelId="alignment-selection-label"
               id="alignment-selection"
@@ -265,7 +264,7 @@ export function Details({ creature, setCreature }) {
               ))}
             </Select>
             <FormHelperText>
-              {alignments.find((alignment) => alignment.label === creature.flavor.alignment)?.description}
+              {alignments.find((alignment) => alignment.label === creature?.flavor?.alignment)?.description}
             </FormHelperText>
           </FormControl>
         </Grid>
@@ -273,9 +272,8 @@ export function Details({ creature, setCreature }) {
           <TextField
             color="secondary"
             fullWidth
-            onClick={() => console.log("click")}
             placeholder="Añadir una imagen..."
-            value={creature?.flavor.portrait?.original}
+            value={creature?.flavor?.portrait?.original}
             InputProps={{
               readOnly: true,
               endAdornment: (

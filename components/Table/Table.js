@@ -1,16 +1,33 @@
 import { Table as MuiTable, TableBody, Box } from "@mui/material";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { TableRow, TableFooter, TableHeader } from ".";
 
 function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerProps }) {
   const [displayData, setDisplayData] = useState(data);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [querySearch, setQuerySearch] = useState("");
+  const { query, pathname, push } = useRouter();
   const [page, setPage] = useState(0);
+  const { qs } = query;
+
+  useEffect(() => {
+    if (!!qs) {
+      const newData = data.filter((element) => element.name.toLowerCase().includes(qs.toLowerCase()));
+      setDisplayData(newData);
+      setQuerySearch(qs);
+    } else {
+      setDisplayData(data);
+      setQuerySearch("");
+    }
+  }, []);
 
   const getNestedKey = (string, element) => string.split(".").reduce((p, c) => (p && p[c]) || null, element);
 
   const onSearch = (event) => {
     const { value } = event.target;
+
+    push({ pathname, query: { ...query, qs: value } });
 
     if (value?.length >= 3) {
       const newData = data.filter((element) => element.name.toLowerCase().includes(value.toLowerCase()));
@@ -19,6 +36,7 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
     } else if (value?.length !== data.length) {
       setDisplayData(data);
     }
+    setQuerySearch(value);
   };
 
   const handleChangePage = (_, newPage) => {
@@ -33,7 +51,7 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
   return (
     <>
       <Box sx={{ m: 2 }}>
-        <TableHeader onSearch={onSearch} {...headerProps} />
+        <TableHeader querySearch={querySearch} onSearch={onSearch} {...headerProps} />
       </Box>
       <MuiTable>
         <TableBody>
@@ -51,7 +69,7 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
                   name: getNestedKey(schema["name"], element),
                   avatar: schema["avatar"] && getNestedKey(schema["avatar"], element),
                   description: schema["description"] && getNestedKey(schema["description"], element),
-                  owner: schema["owner"] && getNestedKey(schema["owner"], element)
+                  owner: schema["owner"] && getNestedKey(schema["owner"], element),
                 }}
               />
             ))}

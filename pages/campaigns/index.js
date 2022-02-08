@@ -32,7 +32,7 @@ export default function Campaigns({ campaigns }) {
             owner: "dm"
           }}
           data={campaigns}
-          onView={(id) => Router.push(`/campaigns/${id}`)}
+          src={"/campaigns/{ID}"}
           onEdit={(id) => Router.push(`/campaigns/add/${id}`)}
         />
       </Container>

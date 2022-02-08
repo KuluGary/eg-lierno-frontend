@@ -132,6 +132,30 @@ export const StringUtil = {
 
     return element;
   },
+  isValidURL: (str) => {
+    const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+
+    return !!pattern.test(str)
+  },
+  stringToHsl: (string) => {
+    let hash = 0;
+    
+    if (!string || string.length === 0) {
+      return hash;
+    }
+
+    for (let i = 0; i < string.length; i++) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+      hash = hash & hash; // Convert to 32bit integer
+    }
+
+    return "hsl(" + (hash % 360) + ",100%,65%)";
+  },
 };
 
 export const ArrayUtil = {

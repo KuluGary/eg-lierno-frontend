@@ -4,7 +4,7 @@ import { useTheme } from "@mui/system";
 import { Box, Collapse, IconButton, InputAdornment, TextField } from "@mui/material";
 import { Search as SearchIcon, FilterList as FilterListIcon, Add as AddIcon } from "@mui/icons-material";
 
-const TableHeader = ({ onSearch, Filters, onAdd }) => {
+const TableHeader = ({ onSearch, querySearch, Filters, onAdd }) => {
   const theme = useTheme();
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -17,6 +17,7 @@ const TableHeader = ({ onSearch, Filters, onAdd }) => {
               size="small"
               placeholder={"Buscar por nombre..."}
               sx={{ m: "1em" }}
+              value={querySearch}
               onChange={onSearch}
               color="secondary"
               InputProps={{

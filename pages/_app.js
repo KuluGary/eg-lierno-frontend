@@ -60,7 +60,7 @@ export default function MyApp(props) {
     <AuthProvider options={{ clientMaxAge: 0, keepAlive: 0 }} session={pageProps.session}>
       <CacheProvider value={emotionCache}>
         <Head>
-          <title>My page</title>
+          <title>Lierno App</title>
           <meta name="viewport" content="initial-scale=1, width=device-width" />
         </Head>
         <CssBaseline />

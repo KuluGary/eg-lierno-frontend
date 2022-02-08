@@ -312,7 +312,7 @@ export function Stats({ creature, setCreature }) {
                   <InputBase
                     type="number"
                     inputProps={{ min: 1, max: 999, step: 1, style: { textAlign: "center" } }}
-                    value={creature?.stats.hitDie.num ?? 0}
+                    value={creature?.stats.hitDie?.num ?? 0}
                     onChange={(e) => setCreature("stats.hitDie.num", parseInt(e.target.value))}
                   />
                 </Container>
@@ -332,7 +332,7 @@ export function Stats({ creature, setCreature }) {
                   <InputBase
                     type="number"
                     inputProps={{ min: 4, max: 12, step: 2, style: { textAlign: "center" } }}
-                    value={creature?.stats.hitDie.size ?? 0}
+                    value={creature?.stats.hitDie?.size ?? 0}
                     onChange={(e) => setCreature("stats.hitDie.size", parseInt(e.target.value))}
                   />
                 </Container>
@@ -454,7 +454,7 @@ export function Stats({ creature, setCreature }) {
                   <FontAwesomeIcon size="lg" icon={faDice} style={{ marginRight: "1em" }} />
                   {isCharacter
                     ? creature?.stats.classes?.map(({ classLevel, hitDie }) => `${classLevel}d${hitDie}`).join(" + ")
-                    : `${creature?.stats.hitDie.num}d${creature?.stats.hitDie.size}`}
+                    : `${creature?.stats.hitDie?.num}d${creature?.stats.hitDie?.size}`}
                 </Button>
               </Container>
             </Grid>

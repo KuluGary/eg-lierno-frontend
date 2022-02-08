@@ -9,9 +9,6 @@ function Step1({ setUpImg }) {
     acceptedFiles.forEach((file) => {
       const reader = new FileReader();
 
-      reader.onabort = () => console.log("file reading was aborted");
-      reader.onerror = () => console.log("file reading has failed");
-
       reader.onload = () => {
         const blob = new Blob([reader.result]);
 
@@ -37,30 +34,6 @@ function Step1({ setUpImg }) {
           <Box component="p">Arrastra tus imagenes o haz click aquí</Box>
         </Container>
       </Box>
-      {/* <Box
-        component="div"
-        {...getRootProps()}
-        sx={{
-          backgroundColor: "action.hover",
-          borderWidth: "2px",
-          borderStyle: "dashed",
-          borderColor: "action.disabled",
-          color: "action.disabled",
-          borderRadius: "12px",
-          textAlign: "center",
-          p: 4,
-          transition: theme.transitions.create(["border"], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.shortest,
-          }),
-          "&:hover": {
-            borderColor: "secondary.main",
-          },
-        }}
-      >
-        <Box component="input" {...getInputProps()} />
-        <Box component="p">Arrastra tus imagenes o haz click aquí</Box>
-      </Box> */}
     </section>
   );
 }

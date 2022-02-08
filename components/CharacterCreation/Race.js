@@ -3,7 +3,6 @@ import { HTMLEditor } from "components";
 import { StringUtil } from "helpers/string-util";
 
 export function Race({ creature, setCreature }) {
-  const theme = useTheme();
   const sizes = [
     StringUtil.generiza("Diminuto", "Diminuta", "Diminute", creature.flavor.traits.pronoun),
     StringUtil.generiza("Pequeño", "Pequeña", "Pequeñe", creature.flavor.traits.pronoun),
@@ -83,7 +82,6 @@ export function Race({ creature, setCreature }) {
           multiline
           placeholder="Descripción de la subraza"
           value={creature?.stats.race?.subrace?.description ?? ""}
-          // onChange={(content) => setCreature("stats.race.subrace.description", content)}
           onChange={(content) => {setCreature("stats.race.subrace.description", content)}}
         />
       </Grid>

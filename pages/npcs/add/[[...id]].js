@@ -10,7 +10,7 @@ import {
   Backpack as BackpackIcon,
 } from "components/icons";
 import { StringUtil } from "helpers/string-util";
-import character_template from "helpers/json/character_template.json";
+import creature_template from "helpers/json/creature_template.json";
 import Api from "helpers/api";
 import jwt from "next-auth/jwt";
 import Head from "next/head";
@@ -55,7 +55,7 @@ export default function AddNpc({ npc, spells, classes, items }) {
   const theme = useTheme();
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
-  const { commoner } = character_template;
+  const commoner = creature_template;
   const [creature, setCreature] = useState({ ...(npc ?? commoner) });
   const colors = {
     active: theme.palette.secondary.main,

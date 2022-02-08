@@ -2,17 +2,14 @@ import fs from "fs";
 import { useRef } from "react";
 import Head from "next/head";
 import matter from "gray-matter";
-import ReactMarkdown from "react-markdown";
 import { Box, Button, Typography } from "@mui/material";
 // import { attributes } from "../content/home.md";
 import { signIn } from "next-auth/client";
 import { Container, Link, NavBar } from "../components";
+import Router from "next/router";
 
 export default function Home({ posts }) {
   const heroRef = useRef(null);
-  // const { title, cats } = posts;
-
-  // console.log(title)
 
   return (
     <Box component="main" sx={{ paddingBottom: "120px", backgroundColor: (t) => t.palette.background.container }}>
@@ -67,6 +64,7 @@ export default function Home({ posts }) {
         {posts.map((post, index) => (
           <Box
             key={index}
+            onClick={() => Router.push(`/post/${post.slug}`)}
             sx={{
               position: "relative",
               width: "calc(70vw / 3)",
@@ -79,6 +77,18 @@ export default function Home({ posts }) {
               outline: (theme) => `1px solid ${theme.palette.divider}`,
               display: "flex",
               alignItems: "end",
+              borderRadius: 1,
+              transform: "scale(1)",
+              transition: (theme) =>
+                theme.transitions.create(["transform"], {
+                  easing: theme.transitions.easing.sharp,
+                  duration: theme.transitions.duration.leavingScreen,
+                }),
+              "&:hover": {
+                transform: "scale(1.05)",
+                zIndex: 1000,
+                cursor: "pointer"
+              },
               "&::before": {
                 content: "''",
                 position: "absolute",
@@ -88,43 +98,31 @@ export default function Home({ posts }) {
                 right: 0,
                 width: "100%",
                 height: "100%",
+                borderRadius: 1,
                 background: "rgb(0,0,0)",
                 background: "linear-gradient(30deg, rgba(0,0,0,.7) 30%, rgba(0,0,0,0) 45%)",
               },
             }}
           >
-            {console.log(post)}
-            <Box sx={{ zIndex: 1, m: 1 }}>
+            <Box sx={{ zIndex: 1, m: 2, width: "100%" }}>
               <Typography variant="h5" component="h2" sx={{ color: (theme) => theme.palette.text.primary }}>
                 {post.title}
               </Typography>
               <Typography variant="body1" sx={{ color: (theme) => theme.palette.text.primary }}>
                 {post.description}
               </Typography>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography variant="subtitle2" sx={{ color: (theme) => theme.palette.text.primary }}>
+                  {post.date}
+                </Typography>
+                <Typography variant="subtitle2" sx={{ color: (theme) => theme.palette.text.primary }}>
+                  {post.author}
+                </Typography>
+              </Box>
             </Box>
           </Box>
         ))}
       </Box>
-      {/* <Box
-        component={Paper}
-        elevation={6}
-        sx={{
-          maxWidth: "95vw",
-          margin: "-5em auto",
-          p: 5,
-        }}
-      >
-        {posts.map((post, index) => (
-          <Box key={index}>            
-          {console.log(post)}
-            <Typography variant="h3">{post.title}</Typography>
-            <Box component="img" src={post.image} />
-            <ReactMarkdown>
-              {post.markdown}
-            </ReactMarkdown>
-          </Box>
-        ))}
-      </Box> */}
     </Box>
   );
 }
@@ -141,7 +139,7 @@ export async function getStaticProps() {
     return {
       ...frontmatter,
       markdown,
-      // slug: filename.splice(0, filename.indexOf(".")),
+      slug: filename.slice(0, filename.indexOf(".")),
     };
   });
 

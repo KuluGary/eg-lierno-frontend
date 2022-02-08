@@ -1,56 +1,68 @@
 {
-    "name" : "Nuevo personaje",
-    "flavor" : {
-        "alignment": "",
-        "appearance": "",
-        "backstory": "",
-        "campaign": [],
-        "class": "",
-        "description": "",
-        "environment": "",
-        "faction": "",
-        "personality": "",
-        "portrait": {},
-        "traits": {}
+    "name": "Nuevo personaje",
+    "flavor": {
+      "faction": "",
+      "environment": "",
+      "description": "",
+      "portrait": {},
+      "class": "",
+      "campaign": [],
+      "personality": "",
+      "traits": {
+        "gender": "",
+        "pronoun": ""
+      },
+      "appearance": "",
+      "backstory": "",
+      "alignment": ""
     },
-    "stats" : {
-        "abilityScores": {
-            "strength": 10,
-            "dexterity": 10,
-            "constitution": 10,
-            "intelligence": 10,
-            "wisdom": 10,
-            "charisma": 10
-        },
-        "actions": [],
-        "additionalAbilities": [],
-        "armorClass": 10,
-        "challengeRating": 0.5,
-        "conditionImmunities": [],
-        "damageImmunities": [],
-        "damageResistances": [],
-        "damageVulnerabilities": [],
-        "hitDie": {
-            "num": 1,
-            "size": 8
-        },
-        "hitPoints": {
-            "current": 10,
-            "max": 10
-        },
-        "lairActions": [],
-        "legendaryActions": [],
-        "legendaryActionsPerRound": 3,
-        "proficiencyBonus": 2,
-        "race": {
-            "name": "",
-            "size": ""
-        },
-        "reactions": [],
-        "senses": [],
-        "skills": {},
-        "speed": {
-            "land": 30
-        }
+    "stats": {
+      "race": {
+        "name": "",
+        "size": ""
+      },
+      "armorClass": 10,
+      "proficiencyBonus": 2,
+      "speed": {
+        "land": 30
+      },
+      "abilityScores": {
+        "strength": 10,
+        "dexterity": 10,
+        "constitution": 10,
+        "intelligence": 10,
+        "wisdom": 10,
+        "charisma": 10
+      },
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": [],
+      "additionalAbilities": [],
+      "challengeRating": 5,
+      "actions": [],
+      "reactions": [],
+      "legendaryActions": [],
+      "lairActions": [],
+      "legendaryActionsPerRound": 3,
+      "hitPoints": {
+        "current": 10,
+        "max": 10
+      },
+      "hitDie": {
+        "num": 1,
+        "size": 8
+      },
+      "equipment": {
+        "items": [],
+        "armor": [],
+        "magicItems": [],
+        "magicWeapons": [],
+        "weapons": [],
+        "vehicles": []
+      }
     }
-}
+  }
+  

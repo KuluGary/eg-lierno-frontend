@@ -1,4 +1,3 @@
-export * from "./AccessDenied/AccessDenied";
 export * from "./Copyright/Copyright";
 export * from "./Layout/Layout";
 export * from "./Link/Link";

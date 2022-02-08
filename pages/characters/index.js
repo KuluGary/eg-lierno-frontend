@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import { Container, Layout } from "components";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
@@ -6,7 +6,7 @@ import jwt from "next-auth/jwt";
 import Api from "helpers/api";
 import { Table } from "components/Table";
 import { useMounted } from "hooks/useMounted";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 
 function a11yProps(index) {
   return {
@@ -17,11 +17,23 @@ function a11yProps(index) {
 
 export default function Character({ characters = [], npcs = [] }) {
   const [value, setValue] = useState(0);
+  const hasMounted = useMounted();
+  const { query } = useRouter();
+
+  useEffect(() => {
+    const { step } = query;
+
+    if (!!step) setValue(parseInt(step));
+  }, []);
 
   const handleChange = (_, newValue) => {
     setValue(newValue);
+    Router.push({
+      pathname: "/characters",
+      query: { step: newValue },
+    });
   };
-  const hasMounted = useMounted();
+  
 
   if (!hasMounted) return null;
 
@@ -65,11 +77,10 @@ export default function Character({ characters = [], npcs = [] }) {
               name: "name",
               avatar: "flavor.portrait.avatar",
               description: "flavor.personality",
-              owner: "createdBy"
+              owner: "createdBy",
             }}
             data={characters}
             src={"/characters/{ID}"}
-            // onView={(id) => Router.push(`/characters/${id}`)}
             onEdit={(id) => Router.push(`/characters/add/${id}`)}
             onDelete={() => {}}
             headerProps={{
@@ -90,15 +101,14 @@ export default function Character({ characters = [], npcs = [] }) {
               name: "name",
               avatar: "flavor.portrait.avatar",
               description: "flavor.description",
-              owner: "createdBy"
+              owner: "createdBy",
             }}
             data={npcs}
             src={"/npcs/{ID}"}
-            // onView={(id) => Router.push(`/npcs/${id}`)}
             onEdit={(id) => Router.push(`/npcs/add/${id}`)}
             onDelete={() => {}}
             headerProps={{
-              onAdd: () => Router.push("/characters/add"),
+              onAdd: () => Router.push("/npcs/add"),
             }}
           />
         </Box>
@@ -125,11 +135,11 @@ export async function getServerSideProps(context) {
 
   const characters = await Api.fetchInternal("/characters", {
     headers,
-  }).catch((_) => null)
+  }).catch((_) => null);
 
   const npcs = await Api.fetchInternal("/npcs", {
     headers,
-  }).catch((_) => null)
+  }).catch((_) => null);
 
   return {
     props: {
