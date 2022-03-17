@@ -64,7 +64,7 @@ export function CampaignCreatures({ campaign }) {
                   owner: "createdBy"
                 }}
                 data={creatures.npcs}
-                onView={(id) => Router.push(`/npcs/${id}`)}
+                src={"/npcs/{ID}"}
                 onEdit={(id) => Router.push(`/npcs/add/${id}`)}
                 onDelete={() => {}}
                 headerProps={{

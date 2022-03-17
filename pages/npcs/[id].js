@@ -1,17 +1,30 @@
-import Head from "next/head";
-import { Typography, Box, IconButton, Divider, Grid } from "@mui/material";
-import { Edit as EditIcon, Delete as DeleteIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
-import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
-import { Layout, Metadata } from "components";
-import { StringUtil } from "helpers/string-util";
+import { Delete as DeleteIcon, Edit as EditIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
+import { Box, CircularProgress, Grid, IconButton, Typography, MenuItem } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { Layout, Metadata } from "components";
+import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
+import download from "downloadjs";
 import Api from "helpers/api";
-import jwt from "next-auth/jwt";
 import { CreatureCalculations } from "helpers/creature-calculations";
+import { ArrayUtil, StringUtil } from "helpers/string-util";
+import jwt from "next-auth/jwt";
+import Head from "next/head";
 import Router from "next/router";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function NpcProfile({ npc, spells, items, classes }) {
+  const [isDownloading, setIsDownloading] = useState(false);
   const theme = useTheme();
+
+  const downloadPdf = () => {
+    setIsDownloading(true);
+
+    Api.fetchInternal("/npc/sheet/pdf/" + npc["_id"])
+      .then((base64Url) => download(base64Url, `${npc["name"]}.png`, "image/png"))
+      .catch((err) => toast.error(err?.message))
+      .finally(() => setIsDownloading(false));
+  };
 
   return (
     <Layout>
@@ -99,6 +112,8 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                   <Box component="div" sx={{ margin: "0 .25em" }}>
                     <IconButton
                       color="secondary"
+                      onClick={downloadPdf}
+                      disabled={isDownloading}
                       sx={{
                         border: "1px solid rgba(63, 176, 172, 0.5);",
                         borderRadius: "8px",
@@ -112,7 +127,11 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                         },
                       }}
                     >
-                      <FileDownloadIcon fontSize="small" />
+                      {isDownloading ? (
+                        <CircularProgress color="secondary" size={20} />
+                      ) : (
+                        <FileDownloadIcon fontSize="small" />
+                      )}
                     </IconButton>
                   </Box>
                 </Box>
@@ -130,6 +149,7 @@ export default function NpcProfile({ npc, spells, items, classes }) {
             }}
             data={{
               classes,
+              character: npc,
               stats: npc["stats"]["abilityScores"],
               proficiencyBonus: npc["stats"]["proficiencyBonus"],
               proficiencies: [
@@ -144,10 +164,14 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                 },
                 {
                   title: "Clase de armadura",
-                  content: `${npc["stats"]["armorClass"]} (${(npc.stats.equipment?.armor ?? [])
-                    .filter((armor) => armor.equipped)
-                    .map((armor) => items.find((item) => item.id === armor.id)?.name?.toLowerCase())
-                    .join(", ")})`,
+                  content: `${npc["stats"]["armorClass"]} (${
+                    ArrayUtil.isNotEmpty(npc.stats.equipment?.armor)
+                      ? npc.stats.equipment?.armor
+                          .filter((armor) => armor.equipped)
+                          .map((armor) => items.find((item) => item.id === armor.id)?.name?.toLowerCase())
+                          .join(", ")
+                      : "sin armadura"
+                  })`,
                 },
                 { title: "Velocidad", content: CreatureCalculations.getSpeedString(npc.stats.speed) },
                 {
@@ -230,14 +254,16 @@ export async function getServerSideProps(context) {
     headers["Authorization"] = "Bearer " + token;
   }
 
-  const npc = await Api.fetchInternal("/npc/" + query.id, {
+  const npc = await Api.fetchInternal("/npcs/" + query.id, {
     headers,
   }).catch((_) => null);
-  
+
+  if (!npc) return { notFound: true };
+
   let spells = null;
   let items = [];
 
-  if (!!npc.stats.spells && npc.stats.spells.length > 0) {
+  if (!!npc?.stats?.spells && npc.stats.spells.length > 0) {
     const spellIds = [];
 
     npc.stats.spells.forEach((spellcasting) => {
@@ -253,7 +279,7 @@ export async function getServerSideProps(context) {
     }).catch((_) => null);
   }
 
-  if (!!npc.stats.equipment) {
+  if (!!npc?.stats?.equipment) {
     const objects = [];
 
     for (const key in npc.stats.equipment || {}) {
@@ -283,14 +309,14 @@ export async function getServerSideProps(context) {
   }).catch(() => null);
 
   if (!!classes) {
-    classes = classes.map(charClass => {      
+    classes = classes.map((charClass) => {
       const parsed = {
         className: charClass.name,
-        classId: charClass._id
-      }
+        classId: charClass._id,
+      };
 
       return parsed;
-    })
+    });
   }
 
   return {
@@ -298,7 +324,7 @@ export async function getServerSideProps(context) {
       npc,
       spells,
       items,
-      classes
+      classes,
     },
   };
 }

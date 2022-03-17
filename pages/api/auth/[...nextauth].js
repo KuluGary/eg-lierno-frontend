@@ -14,7 +14,7 @@ export default NextAuth({
         username: { label: "Username", type: "text", placeholder: "user@example.com" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const url = process.env.NEXT_PUBLIC_ENDPOINT + "v1/auth/signin";
 
         const headers = {
@@ -39,17 +39,6 @@ export default NextAuth({
         return null;
       },
     }),
-    // Providers.Email({
-    //   server: {
-    //     host: process.env.EMAIL_SERVER_HOST,
-    //     port: process.env.EMAIL_SERVER_PORT,
-    //     auth: {
-    //       user: process.env.EMAIL_SERVER_USER,
-    //       pass: process.env.EMAIL_SERVER_PASSWORD,
-    //     },
-    //     from: process.env.EMAIL_FROM
-    //   },
-    // }),
     Providers.Google({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,

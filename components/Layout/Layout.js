@@ -232,6 +232,7 @@ export function Layout({ children }) {
         {/* Content body */}
         <Box
           component="main"
+          id="#main-content"
           sx={{
             backgroundColor: theme.palette.background.body,
             flexGrow: 1,

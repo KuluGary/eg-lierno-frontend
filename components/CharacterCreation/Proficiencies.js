@@ -1,12 +1,105 @@
-import { Grid, Typography, Autocomplete, TextField, Chip } from "@mui/material";
-import { HTMLEditor, Container } from "components";
+import {
+  Autocomplete,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  Grid,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { Container, HTMLEditor } from "components";
 import customizable_stats from "helpers/json/customizable_stats.json";
+import { useEffect, useState } from "react";
+
+const ProficiencyModal = ({ creatureSkills, option, open, setOpen, handleSave }) => {
+  const [changedSkill, setChangedSkill] = useState(null);
+  const { stats } = customizable_stats;
+  const selectedCharacterSkill = creatureSkills[option?.key];
+
+  useEffect(() => setChangedSkill(null), [open]);
+
+  const handleChange = (e) => {
+    const { value } = e.target;
+
+    setChangedSkill({ ...selectedCharacterSkill, modifier: value });
+  };
+
+  return (
+    <Dialog sx={{ padding: 4 }} fullWidth open={open} maxWidth={"tablet"} onClose={() => setOpen(false)}>
+      <DialogTitle>Edita tu habilidad</DialogTitle>
+      <DialogContent>
+        <Grid container spacing={2}>
+          <Grid item laptop={6}>
+            <TextField
+              fullWidth
+              value={option?.name}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+          </Grid>
+          <Grid item laptop={6}>
+            <FormControl fullWidth>
+              <Select
+                color="secondary"
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={changedSkill?.modifier ?? selectedCharacterSkill?.modifier}
+                onChange={handleChange}
+              >
+                {Object.entries(stats).map(([key, { name }]) => {
+                  return <MenuItem value={key}>{name}</MenuItem>;
+                })}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item laptop={12}>
+            <Typography variant="body1">{option?.description}</Typography>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button>Cancelar</Button>
+        <Button color="secondary" disabled={!changedSkill} onClick={() => handleSave(option?.key, changedSkill)}>
+          Guardar
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 export function Proficiencies({ creature, setCreature }) {
   const { saves, skills } = customizable_stats;
+  const [selectedProficiency, setSelectedProficiency] = useState(null);
+  const [proficiencyModalOpen, setProficiencyModalOpen] = useState(false);
+
+  useEffect(() => setProficiencyModalOpen(!!selectedProficiency), [selectedProficiency]);
+
+  const handleCloseModal = () => setSelectedProficiency(null);
+
+  const handleChangeSkill = (key, newSkill) => {
+    const { modifier } = newSkill;
+
+    setCreature(`stats.skills.${key}.modifier`, modifier);
+    setProficiencyModalOpen(false);
+    setSelectedProficiency(null);
+  };
 
   return (
     <Grid container spacing={3}>
+      <ProficiencyModal
+        creatureSkills={creature?.stats?.skills}
+        option={selectedProficiency}
+        open={proficiencyModalOpen}
+        setOpen={handleCloseModal}
+        handleSave={handleChangeSkill}
+      />
       <Grid item laptop={12}>
         <Typography variant="h5" component="h1">
           Detalles de las proficiencias de personaje
@@ -47,7 +140,7 @@ export function Proficiencies({ creature, setCreature }) {
             multiple
             id="saves"
             options={Object.values(saves).map(({ name }) => name)}
-            value={Object.keys((creature.stats.savingThrows) ?? {})
+            value={Object.keys(creature.stats.savingThrows ?? {})
               .filter((key) => creature.stats.savingThrows[key].proficient)
               .map((key) => saves[key].name)}
             renderTags={(value, getTagProps) =>
@@ -96,19 +189,24 @@ export function Proficiencies({ creature, setCreature }) {
               .filter((key) => creature.stats.skills[key].proficient)
               .map((key) => skills[key].name)}
             renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  key={index}
-                  variant="outlined"
-                  label={option}
-                  {...getTagProps({ index })}
-                  onDelete={() => {
-                    const key = Object.keys(skills).find((key) => skills[key].name === option);
+              value.map((option, index) => {
+                const key = Object.keys(skills).find((key) => skills[key].name === option);
 
-                    setCreature(`stats.skills.${key}.proficient`, false);
-                  }}
-                />
-              ))
+                return (
+                  <Chip
+                    key={index}
+                    variant="outlined"
+                    label={option}
+                    {...getTagProps({ index })}
+                    onDelete={() => {
+                      setCreature(`stats.skills.${key}.proficient`, false);
+                    }}
+                    onClick={() => {
+                      setSelectedProficiency({ ...(skills[key] ?? {}), key });
+                    }}
+                  />
+                );
+              })
             }
             filterSelectedOptions
             renderInput={(params) => (

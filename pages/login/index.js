@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Head from "next/head";
-import { Grid, Box, Typography, Button, Divider, Container, Avatar, TextField, Paper } from "@mui/material";
-import { Providers, signIn, getSession, csrfToken, getProviders } from "next-auth/client";
+import { Grid, Box, Typography, Button, Divider, Avatar, TextField, Paper } from "@mui/material";
+import { signIn, getSession, getProviders } from "next-auth/client";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Copyright, Link } from "components";
 import { StringUtil } from "helpers/string-util";
@@ -11,7 +11,7 @@ export default function Login({ providers }) {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState({ username: "", password: "" });
   const errorMessages = {
-    username: "Este no es un email válido. Por favor, asegúrate que el email que introduces es correcto.",
+    username: "Este no es un nombre de usuario válido. Por favor, asegúrate que el email que introduces es correcto.",
     password:
       "Esta contraseña no es válida, por favor asegúrate de que tu contraseña tiene al menos un número, una letra mayúscula y minúscula, un carácter especial y tiene entre 6 y 20 carácteres.",
   };
@@ -140,7 +140,7 @@ export default function Login({ providers }) {
           </Box>
         </Box>
       </Grid>
-    </Grid>    
+    </Grid>
   );
 }
 

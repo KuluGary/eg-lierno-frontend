@@ -2,7 +2,7 @@
   "commoner": {
     "name": "Nuevo personaje",
     "flavor": {
-      "alignment": "",
+      "alignment": "Neutral",
       "appearance": "",
       "background": {
         "description": "",
@@ -31,6 +31,7 @@
         "traits": ""
       },
       "armorClass": 10,
+      "proficiencyBonus": 2,
       "speed": {
         "land": 30
       },
@@ -42,7 +43,6 @@
         "wisdom": 10,
         "charisma": 10
       },
-      "proficiencyBonus": 2,
       "skills": {
         "acrobatics": {
           "modifier": "dexterity",
@@ -56,8 +56,8 @@
         },
         "arcana": {
           "modifier": "intelligence",
-          "proficient": true,
-          "expertise": true
+          "proficient": false,
+          "expertise": false
         },
         "athletics": {
           "modifier": "strength",
@@ -91,7 +91,7 @@
         },
         "medicine": {
           "modifier": "wisdom",
-          "proficient": true,
+          "proficient": false,
           "expertise": false
         },
         "nature": {
@@ -116,7 +116,7 @@
         },
         "religion": {
           "modifier": "intelligence",
-          "proficient": true,
+          "proficient": false,
           "expertise": false
         },
         "sleight-of-hand": {

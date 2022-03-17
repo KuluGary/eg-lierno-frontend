@@ -1,5 +1,5 @@
 import { Table as MuiTable, TableBody, Box } from "@mui/material";
-import { useRouter } from "next/router";
+import { useQueryState } from "hooks/useQueryState";
 import { useEffect, useState } from "react";
 import { TableRow, TableFooter, TableHeader } from ".";
 
@@ -7,18 +7,14 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
   const [displayData, setDisplayData] = useState(data);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [querySearch, setQuerySearch] = useState("");
-  const { query, pathname, push } = useRouter();
-  const [page, setPage] = useState(0);
-  const { qs } = query;
+  const [page, setPage] = useQueryState("page", 0, "number");
 
   useEffect(() => {
-    if (!!qs) {
-      const newData = data.filter((element) => element.name.toLowerCase().includes(qs.toLowerCase()));
+    if (!!querySearch) {
+      const newData = data.filter((element) => element.name.toLowerCase().includes(querySearch.toLowerCase()));
       setDisplayData(newData);
-      setQuerySearch(qs);
     } else {
       setDisplayData(data);
-      setQuerySearch("");
     }
   }, []);
 
@@ -26,8 +22,6 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
 
   const onSearch = (event) => {
     const { value } = event.target;
-
-    push({ pathname, query: { ...query, qs: value } });
 
     if (value?.length >= 3) {
       const newData = data.filter((element) => element.name.toLowerCase().includes(value.toLowerCase()));
@@ -39,9 +33,7 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
     setQuerySearch(value);
   };
 
-  const handleChangePage = (_, newPage) => {
-    setPage(newPage);
-  };
+  const handleChangePage = (_, newPage) => setPage(newPage);
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -60,7 +52,7 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
             displayData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((element) => (
               <TableRow
                 key={element._id}
-                onEdit={() => onEdit(element._id)}
+                onEdit={!!onEdit ? () => onEdit(element._id) : null}
                 src={src}
                 onDelete={onDelete}
                 isEditable={isEditable}
@@ -69,7 +61,7 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
                   name: getNestedKey(schema["name"], element),
                   avatar: schema["avatar"] && getNestedKey(schema["avatar"], element),
                   description: schema["description"] && getNestedKey(schema["description"], element),
-                  owner: schema["owner"] && getNestedKey(schema["owner"], element),
+                  owner: schema["owner"] && (getNestedKey(schema["owner"], element) ?? "*"),
                 }}
               />
             ))}

@@ -51,7 +51,7 @@ const tabs = [
   { label: "Equipamiento", Icon: BackpackIcon, Component: Equipment },
 ];
 
-export default function AddNpc({ npc, spells, classes, items }) {
+export default function AddNpc({ npcId, npc, spells, classes, items }) {
   const theme = useTheme();
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
@@ -70,9 +70,9 @@ export default function AddNpc({ npc, spells, classes, items }) {
     setCreature({ ...StringUtil.setNestedKey(key, creature, value) });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = () => { 
     Api.fetchInternal(`/npc`, {
-      method: creature._id ? "PUT" : "POST",
+      method: npcId ? "PUT" : "POST",
       body: JSON.stringify(creature),
     }).then(() => router.back());
   };
@@ -149,10 +149,12 @@ export async function getServerSideProps(context) {
   }
 
   let npc = null;
+  let npcId = null;
   let spells = null;
 
-  if (!!query.id && query.id.length > 0) {
-    npc = await Api.fetchInternal("/npc/" + query.id[0], {
+  if (!!query?.id && query?.id?.length > 0) {
+    npcId = query.id[0];
+    npc = await Api.fetchInternal("/npcs/" + query.id[0], {
       headers,
     }).catch(() => null);
 
@@ -178,6 +180,7 @@ export async function getServerSideProps(context) {
   return {
     props: {
       npc,
+      npcId,
       items,
       classes,
     },

@@ -27,7 +27,7 @@ import Api from "helpers/api";
 import jwt from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { getSession } from 'next-auth/client'
+import { getSession } from "next-auth/client";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -130,7 +130,13 @@ export default function AddCharacter({ character, classes, spells, items }) {
           <MuiContainer maxWidth="xs" sx={{ width: "75%" }}>
             {tabs.map(({ Component }, index) => (
               <TabPanel key={index} value={activeStep} index={index}>
-                <Component creature={creature} setCreature={handleCreatureChange} classes={classes} spells={spells} items={items} />
+                <Component
+                  creature={creature}
+                  setCreature={handleCreatureChange}
+                  classes={classes}
+                  spells={spells}
+                  items={items}
+                />
               </TabPanel>
             ))}
             <Box sx={{ m: 3, float: "right" }}>

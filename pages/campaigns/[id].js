@@ -1,7 +1,16 @@
-import { Grid, Typography, Divider, Box, Tabs, Tab } from "@mui/material";
+import { Box, Divider, Grid, Tab, Tabs, Typography } from "@mui/material";
 import { Container, Layout, Metadata } from "components";
-import { CampaignCreatures, CampaignDetails, CampaignDiary, CampaignLogs, CampaignMap } from "components/CampaignProfile";
+import {
+  CampaignCreatures,
+  CampaignDetails,
+  CampaignDiary,
+  CampaignFactions,
+  CampaignLogs,
+  CampaignMap,
+  CampaignTabletop,
+} from "components/CampaignProfile";
 import Api from "helpers/api";
+import { useQueryState } from "hooks/useQueryState";
 import jwt from "next-auth/jwt";
 import { useState } from "react";
 
@@ -9,8 +18,10 @@ const tabs = [
   { label: "Detalles", Component: CampaignDetails },
   { label: "Diario", Component: CampaignDiary },
   { label: "Criaturas", Component: CampaignCreatures },
+  { label: "Facciones", Component: CampaignFactions },
   { label: "Mapa", Component: CampaignMap },
   { label: "Historial", Component: CampaignLogs },
+  // { label: "Tablero", Component: CampaignTabletop },
 ];
 
 function a11yProps(index) {
@@ -43,7 +54,8 @@ function TabPanel(props) {
 }
 
 export default function CampaignProfile({ campaign, playerData = {}, characterData }) {
-  const [activeStep, setActiveStep] = useState(0);
+  // const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useQueryState("step", 0, "number");
   const { players, dm } = playerData;
   const { characters } = characterData;
 
@@ -53,9 +65,7 @@ export default function CampaignProfile({ campaign, playerData = {}, characterDa
 
   return (
     <Layout>
-      <Metadata
-        title={(campaign?.name ?? "") + " | Lierno App"}
-        description={campaign?.flavor.synopsis} />
+      <Metadata title={(campaign?.name ?? "") + " | Lierno App"} description={campaign?.flavor.synopsis} />
       <Grid container spacing={2}>
         <Grid item laptop={12}>
           <Container noPadding>

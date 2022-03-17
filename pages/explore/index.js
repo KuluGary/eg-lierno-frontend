@@ -100,7 +100,7 @@ export default function ExplorePage({ items, spells }) {
                   name: "name",
                   description: "description",
                 }}
-                src={"/item/{ID}"}
+                src={"/items/{ID}"}
                 data={items[key]}
               />
             </TabPanel>

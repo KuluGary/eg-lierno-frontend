@@ -28,11 +28,11 @@ export function Details({ campaign, setCampaign }) {
   }, [campaign.players]);
 
   const fetchFriendListData = async () => {
-    Api.fetchInternal("/auth/me").then(async (res) => {
+    Api.fetchInternal("/auth/user").then(async (res) => {
       const newFriendList = [];
 
       for await (const userId of res.metadata.friendList ?? []) {
-        await Api.fetchInternal("/auth/users/" + userId).then((res) =>
+        await Api.fetchInternal("/auth/user/" + userId).then((res) =>
           newFriendList.push({ label: res.username, id: userId })
         );
       }

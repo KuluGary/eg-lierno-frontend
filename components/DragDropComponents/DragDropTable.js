@@ -10,7 +10,6 @@ export function DragDropTable({ items, id }) {
         <TableBody 
           {...droppableProvided.droppableProps} 
           ref={droppableProvided.innerRef} 
-          // sx={{ backgroundColor: "red", height: "fit-content" }}
           >
           {items?.map((item, index) => (
             <Draggable

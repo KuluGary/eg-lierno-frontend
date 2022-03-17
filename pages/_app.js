@@ -1,17 +1,16 @@
-import * as React from "react";
-import PropTypes from "prop-types";
-import Head from "next/head";
-
 import { CacheProvider } from "@emotion/react";
-import { ThemeProvider } from "@mui/material/styles";
 import { useMediaQuery } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
-import { Provider as AuthProvider } from "next-auth/client";
 import CssBaseline from "@mui/material/CssBaseline";
-
-import createEmotionCache from "../helpers/createEmotionCache";
-import { lightTheme, darkTheme } from "../helpers/theme";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Provider as AuthProvider } from "next-auth/client";
+import Head from "next/head";
+import PropTypes from "prop-types";
+import * as React from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ColorModeContext from "../helpers/color-context";
+import createEmotionCache from "../helpers/createEmotionCache";
+import { darkTheme, lightTheme } from "../helpers/theme";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -58,6 +57,13 @@ export default function MyApp(props) {
 
   return (
     <AuthProvider options={{ clientMaxAge: 0, keepAlive: 0 }} session={pageProps.session}>
+      <ToastContainer
+        closeOnClick
+        draggable
+        position="top-right"
+        autoClose={5000}
+        theme={prefersDarkMode ? "dark" : "light"}
+      />
       <CacheProvider value={emotionCache}>
         <Head>
           <title>Lierno App</title>

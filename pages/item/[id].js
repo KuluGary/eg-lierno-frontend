@@ -3,8 +3,6 @@ import { Container, HTMLContainer, Layout, Metadata } from "components";
 import Api from "helpers/api";
 
 export default function Item({ item }) {
-  const image = Object.values(item.image).find((element) => !!element);
-  
   return (
     <Layout>
       <Metadata title={`${item.name} | Lierno App`} />
@@ -35,7 +33,7 @@ export default function Item({ item }) {
 export async function getServerSideProps(context) {
   const { query } = context;
 
-  const item = await Api.fetchInternal("/item/" + query.id).catch(() => null);
+  const item = await Api.fetchInternal("/items/" + query.id).catch(() => null);
 
   return {
     props: {

@@ -10,3 +10,5 @@ export * from "./Tooltip/Tooltip";
 export * from "./HTMLEditor/HTMLEditor";
 export * from "./HTMLContainer/HTMLContainer";
 export * from "./Metadata/Metadata";
+export * from "./ScreenShare/ScreenShare";
+export * from "./TabletopCanvas/TabletopCanvas";

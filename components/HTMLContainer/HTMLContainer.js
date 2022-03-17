@@ -8,13 +8,14 @@ const maxNumberOfLinesStyle = (numberOfLines) => ({
   lineHeight: "16px",
   WebkitLineClamp: `${numberOfLines}`,
   WebkitBoxOrient: "vertical",
-})
+});
 
 export function HTMLContainer({ content, component = "div", numberOfLines }) {
   return (
     <Box
-      style={{
-        ...(!!numberOfLines && maxNumberOfLinesStyle(numberOfLines))
+      sx={{
+        ...(!!numberOfLines && maxNumberOfLinesStyle(numberOfLines)),
+        "& a": { color: (theme) => theme.palette.secondary.main },
       }}
       component={component}
       dangerouslySetInnerHTML={{

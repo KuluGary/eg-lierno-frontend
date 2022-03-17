@@ -8,7 +8,6 @@ import { AddButton, EditButton, DeleteButton } from "../Buttons";
 
 const Modal = ({ open, onClose, section, selectedIndex, creature, onSave, items }) => {
   const [content, setContent] = useState({ id: "", equipped: true, quantity: 1 });
-  //   const content = { name: "", equipped: true, quantity: 1 };
 
   useEffect(() => {
     if (!!section && selectedIndex !== null) {
@@ -61,7 +60,7 @@ const Modal = ({ open, onClose, section, selectedIndex, creature, onSave, items 
               filterSelectedOptions
               value={getSelectedItem()}
               getOptionLabel={(option) => option.name}
-              options={items.filter((item) => item.type === section)}
+              options={items?.filter((item) => item.type === section)}
               renderInput={(params) => (
                 <TextField color="secondary" {...params} label={`Nombre de ${sectionTitles[section]?.toLowerCase()}`} />
               )}
@@ -91,9 +90,9 @@ const Modal = ({ open, onClose, section, selectedIndex, creature, onSave, items 
               inputProps: { min: 0, style: { textAlign: "center" } },
             }}
             onChange={(event) =>
-              setContent(prev => ({
-                  ...prev,
-                  quantity: parseInt(event.target.value)
+              setContent((prev) => ({
+                ...prev,
+                quantity: parseInt(event.target.value),
               }))
             }
           />

@@ -73,7 +73,7 @@ export default function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    Api.fetchInternal("/auth/register", {
+    Api.fetchInternal("/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

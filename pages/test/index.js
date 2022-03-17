@@ -1,7 +1,9 @@
-import { Layout } from "components";
+import { Layout, ScreenShare } from "components";
 
 export default function index() {
     return (
-        <Layout></Layout>
-    )
+    <Layout>
+      <ScreenShare />
+    </Layout>
+  );
 }

@@ -1,8 +1,8 @@
-import { Typography, Box, IconButton, Divider, Grid } from "@mui/material";
+import { Typography, Box, IconButton, Grid, CircularProgress } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
 import { Layout, Metadata } from "components";
-import { StringUtil } from "helpers/string-util";
+import { ArrayUtil, StringUtil } from "helpers/string-util";
 import { useTheme } from "@mui/material/styles";
 import Api from "helpers/api";
 import Router from "next/router";
@@ -10,15 +10,20 @@ import jwt from "next-auth/jwt";
 import { CreatureCalculations } from "helpers/creature-calculations";
 import download from "downloadjs";
 import { useSession } from "next-auth/client";
+import { toast } from "react-toastify";
+import { useState } from "react";
 
 export default function CharacterProfile({ character, spells, items }) {
+  const [isDownloading, setIsDownloading] = useState(false);
   const [session] = useSession();
   const theme = useTheme();
 
   const downloadPdf = () => {
+    setIsDownloading(true);
     Api.fetchInternal("/characters/sheet/pdf/" + character["_id"])
       .then((base64Url) => download(base64Url, `${character["name"]}.pdf`, "application/pdf"))
-      .catch((err) => toast.error(err));
+      .catch((err) => toast.error(err))
+      .finally(() => setIsDownloading(false));
   };
 
   const createStringDefinition = (charClass) => {
@@ -130,6 +135,7 @@ export default function CharacterProfile({ character, spells, items }) {
                       <IconButton
                         color="secondary"
                         onClick={downloadPdf}
+                        disabled={isDownloading}
                         sx={{
                           border: "1px solid rgba(63, 176, 172, 0.5);",
                           borderRadius: "8px",
@@ -143,7 +149,11 @@ export default function CharacterProfile({ character, spells, items }) {
                           },
                         }}
                       >
-                        <FileDownloadIcon fontSize="small" />
+                        {isDownloading ? (
+                          <CircularProgress color="secondary" size={20} />
+                        ) : (
+                          <FileDownloadIcon fontSize="small" />
+                        )}
                       </IconButton>
                     </Box>
                   </Box>
@@ -160,6 +170,7 @@ export default function CharacterProfile({ character, spells, items }) {
               ...theme.mixins.noScrollbar,
             }}
             data={{
+              character: character,
               classes: character["stats"]["classes"],
               stats: character["stats"]["abilityScores"],
               proficiencyBonus: character["stats"]["proficiencyBonus"],
@@ -174,10 +185,14 @@ export default function CharacterProfile({ character, spells, items }) {
                 },
                 {
                   title: "Clase de armadura",
-                  content: `${character.stats.armorClass} (${character.stats.equipment.armor
-                    .filter(armor => armor.equipped)
-                    .map((armor) => items.find((item) => item.id === armor.id)?.name?.toLowerCase())
-                    .join(", ")})`,
+                  content: `${character.stats.armorClass} (${
+                    ArrayUtil.isNotEmpty(character.stats.equipment.armor)
+                      ? character.stats.equipment.armor
+                          .filter((armor) => armor.equipped)
+                          .map((armor) => items.find((item) => item.id === armor.id)?.name?.toLowerCase())
+                          .join(", ")
+                      : "sin armadura"
+                  })`,
                 },
                 { title: "Velocidad", content: CreatureCalculations.getSpeedString(character.stats.speed) },
                 {
@@ -199,8 +214,13 @@ export default function CharacterProfile({ character, spells, items }) {
                 {
                   title: "Sentidos",
                   content: `Percepción pasiva ${CreatureCalculations.getPassivePerception(
-                    character.stats
-                  )}, bono de Iniciativa ${StringUtil.getOperatorString(character.stats.initiativeBonus)}`,
+                    character.stats,
+                    character
+                  )}, bono de Iniciativa ${StringUtil.getOperatorString(
+                    CreatureCalculations.modifier(
+                      CreatureCalculations.getStatBonus("initiativeBonus", character, "stats.abilityScores.dexterity")
+                    )
+                  )}`,
                 },
               ],
               abilities: [
@@ -219,7 +239,10 @@ export default function CharacterProfile({ character, spells, items }) {
                       : null,
                 },
                 { title: "Objetos", content: items },
-                { title: "Trasfondo", content: [character.flavor.background].map(back => ({...back, description: back.trait}))  }
+                {
+                  title: "Trasfondo",
+                  content: [character.flavor.background].map((back) => ({ ...back, description: back.trait })),
+                },
               ],
             }}
           />

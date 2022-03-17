@@ -68,7 +68,7 @@ export default function Spell({ spell }) {
 export async function getServerSideProps(context) {
   const { query } = context;
 
-  const spell = await Api.fetchInternal("/spell/" + query.id).catch(() => null);
+  const spell = await Api.fetchInternal("/spells/" + query.id).catch(() => null);
 
   return {
     props: {

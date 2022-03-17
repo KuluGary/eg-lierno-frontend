@@ -450,13 +450,13 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                 id="spellcaster-select"
                 label="Tipo de hechicero"
                 value={spellcasting.caster}
-                onChange={(e) =>
+                onChange={(e) => {
                   setSpellcasting({
                     ...spellcasting,
                     caster: e.target.value,
                     modifier: spellcasters[e.target.value].ability,
-                  })
-                }
+                  });
+                }}
               >
                 {!isCharacter &&
                   classes.map(({ _id, name }) => (
@@ -464,32 +464,13 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                       <Typography variant="body1">{name}</Typography>
                     </MenuItem>
                   ))}
-                {isCharacter && (
-                  <>
-                    <Divider textAlign="center">
-                      <ListSubheader sx={{ fontWeight: "bold", backgroundColor: "transparent" }}>Tus clases</ListSubheader>
-                    </Divider>
-                    {classes
-                      ?.filter(
-                        (a) => creature?.stats.classes.findIndex((charClass) => charClass.classId === a._id) >= 0
-                      )
-                      .map(({ _id, name }) => (
-                        <MenuItem key={_id} value={_id}>
-                          <Typography variant="body1">{name}</Typography>
-                        </MenuItem>
-                      ))}
-                    <Divider textAlign="center">
-                      <ListSubheader sx={{ fontWeight: "bold", backgroundColor: "transparent" }}>Otras</ListSubheader>
-                    </Divider>
-                    {classes
-                      ?.filter((a) => creature?.stats.classes.findIndex((charClass) => charClass.classId === a._id) < 0)
-                      .map(({ _id, name }) => (
-                        <MenuItem key={_id} value={_id}>
-                          <Typography variant="body1">{name}</Typography>
-                        </MenuItem>
-                      ))}
-                  </>
-                )}
+                {isCharacter &&
+                  classes
+                    .map(({ _id, name }) => (
+                      <MenuItem key={_id} value={_id}>
+                        <Typography variant="body1">{name}</Typography>
+                      </MenuItem>
+                    ))}
                 <MenuItem key={"00000"} value={"00000"}>
                   <Typography variant="body1">{"Innato"}</Typography>
                 </MenuItem>

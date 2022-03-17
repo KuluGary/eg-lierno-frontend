@@ -1,4 +1,4 @@
-import { StringUtil } from "./string-util";
+import { ArrayUtil, StringUtil } from "./string-util";
 import customizable_stats from "helpers/json/customizable_stats";
 
 const skillsJson = customizable_stats.skills;
@@ -10,15 +10,6 @@ export const statLabels = {
   intelligence: "Inteligencia",
   wisdom: "Sabiduría",
   charisma: "Carisma",
-};
-
-const spellCastingLookup = {
-  FUE: "strength",
-  DES: "dexterity",
-  CONST: "constitution",
-  INT: "intelligence",
-  SAB: "wisdom",
-  CAR: "charisma",
 };
 
 const casterType = {
@@ -1189,7 +1180,7 @@ const innateSpellCastingLabels = {
 
 export const CreatureCalculations = {
   modifier: (stat) => Math.floor((stat - 10) / 2),
-  getPassivePerception: (stats) => {
+  getPassivePerception: (stats, character = {}) => {
     const { abilityScores, proficiencyBonus, skills } = stats;
     const proficiencyModifier =
       skills["perception"].expertise === true
@@ -1198,7 +1189,15 @@ export const CreatureCalculations = {
         ? proficiencyBonus
         : 0;
 
-    return 10 + CreatureCalculations.modifier(abilityScores.wisdom) + proficiencyModifier;
+    const extraBonus =
+      CreatureCalculations.getStatBonus("passivePerception", character, "stats.abilityScores.wisdom") ?? 0;
+
+    return (
+      10 +
+      CreatureCalculations.modifier(abilityScores.wisdom) +
+      CreatureCalculations.modifier(extraBonus) +
+      proficiencyModifier
+    );
   },
   getSavingThrowString: (abilityScores, savingThrows, proficiency) => {
     const modifiers = Object.keys(savingThrows ?? {})
@@ -1219,21 +1218,20 @@ export const CreatureCalculations = {
   },
   getAbilitiesString: (abilityScores, skills, proficiency) => {
     if (!!abilityScores && !!skills) {
-
       const modifiers = Object.entries(skills)
-      .filter(([_, skill]) => skill.proficient || skill.expertise)
-      .map(([name, skill]) => {
-        let modifier = CreatureCalculations.modifier(parseInt(abilityScores[skill.modifier]));
-        
-        if (skill.expertise) {
-          modifier += parseInt(proficiency) * 2;
-        } else if (skill.proficient) {
-          modifier += parseInt(proficiency);
-        }
-        
-        return `${skillsJson[name]?.name} ${StringUtil.getOperatorString(modifier)} (${statLabels[skill.modifier]})`;
-      });
-      
+        .filter(([_, skill]) => skill.proficient || skill.expertise)
+        .map(([name, skill]) => {
+          let modifier = CreatureCalculations.modifier(parseInt(abilityScores[skill.modifier]));
+
+          if (skill.expertise) {
+            modifier += parseInt(proficiency) * 2;
+          } else if (skill.proficient) {
+            modifier += parseInt(proficiency);
+          }
+
+          return `${skillsJson[name]?.name} ${StringUtil.getOperatorString(modifier)} (${statLabels[skill.modifier]})`;
+        });
+
       return modifiers.join(", ");
     }
 
@@ -1304,8 +1302,8 @@ export const CreatureCalculations = {
 
         if (key === "extraDamage") {
           const median = ((dmg.dieSize + 1) * dmg.numDie) / dmg.numDie;
-          
-          return `y ${median} (${dmg.numDie}d${dmg.dieSize}) ${dmg.type.toLowerCase()} de daño adicional`
+
+          return `y ${median} (${dmg.numDie}d${dmg.dieSize}) ${dmg.type.toLowerCase()} de daño adicional`;
         }
 
         return `${dmg.numDie}d${dmg.dieSize} ${damageBonus >= 0 ? "+" : ""}${damageBonus} ${dmg.type.toLowerCase()}`;
@@ -1316,10 +1314,8 @@ export const CreatureCalculations = {
     if (classes.length > 10) {
       return fullcaster[spellcasting.level]?.spellSlots[spellLevel];
     } else {
-
       let classLevel = 0;
-      
-    
+
       classes?.forEach((charClass) => {
         if (casterType.fullcaster.includes(charClass.className)) {
           classLevel += charClass.classLevel;
@@ -1329,7 +1325,7 @@ export const CreatureCalculations = {
           classLevel += Math.floor(charClass.classLevel / 3);
         }
       });
-      
+
       return fullcaster[classLevel]?.spellSlots[spellLevel];
     }
   },
@@ -1377,7 +1373,11 @@ export const CreatureCalculations = {
         spellString.description += `<li>${
           parseInt(key) === 0
             ? "<b>Trucos (a voluntad)</b>"
-            : `<b>Nivel ${key} (${CreatureCalculations.getSpellSlots(parseInt(key) - 1, classes, spellcasting)} huecos)</b>`
+            : `<b>Nivel ${key} (${CreatureCalculations.getSpellSlots(
+                parseInt(key) - 1,
+                classes,
+                spellcasting
+              )} huecos)</b>`
         }: ${spellStr}.</li>`;
       }
     });
@@ -1389,8 +1389,32 @@ export const CreatureCalculations = {
   },
   getSpeedString: (speed) => {
     const speedDictionary = { land: "en tierra", air: "en el aire", swim: "en el agua" };
-    const speeds = Object.keys(speed).filter(key => speed[key] > 0).map(key => `${speed[key]}ft. (${speedDictionary[key]})`);
+    const speeds = Object.keys(speed)
+      .filter((key) => speed[key] > 0)
+      .map((key) => `${speed[key]}ft. (${speedDictionary[key]})`);
 
     return speeds.join(", ");
-  }
+  },
+  getStatBonus: (key, creature, fallback) => {
+    const arrayBonusSelected = creature.stats?.statBonus?.filter((bonus) => bonus.modifier === key);
+
+    if (ArrayUtil.isNotEmpty(arrayBonusSelected)) {
+      const bonusSelected = arrayBonusSelected.reduce((results, current) => {
+        return {
+          ...current,
+          bonus: (results.bonus ?? 0) + current.bonus,
+        };
+      }, {});
+
+      let baseBonus = StringUtil.getNestedKey(bonusSelected.modifier, creature);
+
+      if (!baseBonus && !!fallback) {
+        baseBonus = StringUtil.getNestedKey(fallback, creature);
+      }
+
+      return baseBonus + (bonusSelected.bonus ?? 0);
+    }
+
+    if (!!fallback) return StringUtil.getNestedKey(fallback, creature);
+  },
 };

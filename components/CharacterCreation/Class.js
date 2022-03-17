@@ -169,10 +169,10 @@ export function Class({ creature, setCreature, classes }) {
             const newClasses = [
               ...creature.stats.classes,
               {
-                className: classes[0].name,
+                className: classes[0]?.name,
                 classLevel: 1,
-                hitDie: classes[0].data.hitDie,
-                classId: classes[0]._id,
+                hitDie: classes[0]?.data.hitDie,
+                classId: classes[0]?._id,
               },
             ];
 

@@ -23,7 +23,7 @@ const defaultFormData = {
     range: 5,
     type: "Cortante",
     numDie: 1,
-    dieSize: 6
+    dieSize: 6,
   },
   distance: {
     range: {
@@ -32,19 +32,19 @@ const defaultFormData = {
     },
     type: "Perforante",
     numDie: 1,
-    dieSize: 4
+    dieSize: 4,
   },
   versatile: {
     type: "Cortante",
     numDie: 1,
-    dieSize: 8
+    dieSize: 8,
   },
   extraDamage: {
     type: "Cortante",
     numDie: 1,
-    dieSize: 6
-  }
-}
+    dieSize: 6,
+  },
+};
 
 export function Attack({ open, onClose, section, selectedIndex, creature, onSave }) {
   const [attack, setAttack] = useState({
@@ -81,24 +81,40 @@ export function Attack({ open, onClose, section, selectedIndex, creature, onSave
         setAllowedSections(newAllowedSections);
       }
     }
+
+    return () => {
+      setAttack({
+        name: "",
+        proficient: true,
+        data: {
+          modifier: "strength",
+          damage: {},
+        },
+      });
+
+      setAllowedSections({
+        melee: false,
+        distance: false,
+        finesse: false,
+        versatile: false,
+        extraDamage: false,
+      });
+    };
   }, [section, selectedIndex]);
 
   useEffect(() => {
     for (const section in allowedSections) {
-
       if (allowedSections[section] === false && section in attack.data.damage) {
-        const newData = {...attack}
+        const newData = { ...attack };
         delete newData.data.damage[section];
-        
+
         setAttack(newData);
       } else if (allowedSections[section] === true && section in attack.data.damage !== true) {
-        const newData = {...attack}
+        const newData = { ...attack };
         newData.data.damage[section] = defaultFormData[section];
 
-        setAttack(newData);        
+        setAttack(newData);
       }
-
-
     }
   }, [allowedSections]);
 
@@ -192,7 +208,6 @@ export function Attack({ open, onClose, section, selectedIndex, creature, onSave
                         color="secondary"
                         label="Tipo de daño"
                         value={attack?.data.damage?.melee?.type ?? "Cortante"}
-                        // InputLabelProps={{ shrink: true }}
                         onChange={(e) =>
                           setAttack({
                             ...attack,

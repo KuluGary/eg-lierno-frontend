@@ -117,6 +117,7 @@ export default function MonsterProfile({ monster, spells }) {
               ...theme.mixins.noScrollbar,
             }}
             data={{
+              character: monster,
               stats: monster["stats"]["abilityScores"],
               proficiencyBonus: monster["stats"]["proficiencyBonus"],
               proficiencies: [

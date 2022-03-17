@@ -9,13 +9,35 @@ import {
   Select,
   MenuItem,
   Box,
+  ListSubheader,
+  IconButton,
 } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
+import { Add as AddIcon, Close } from "@mui/icons-material";
 import { Container, HTMLEditor } from "components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDice } from "@fortawesome/free-solid-svg-icons";
 import { CreatureCalculations } from "helpers/creature-calculations";
 import { useRouter } from "next/router";
+import { skills, saves } from "../../helpers/json/customizable_stats.json";
+
+const scoreBonusOptions = [
+  {
+    label: "Estadísticas",
+    children: Object.entries(saves).map(([key, { name }]) => ({ label: name, key: "stats.abilityScores." + key })),
+  },
+  {
+    label: "Habilidades",
+    children: Object.entries(skills).map(([key, { name }]) => ({ label: name, key: "stats.skills." + key })),
+  },
+  {
+    label: "Otros",
+    children: [
+      { label: "Clase de armadura", key: "stats.armorClass" },
+      { label: "Bono de iniciativa", key: "initiativeBonus" },
+      { label: "Percepción pasiva", key: "passivePerception" },
+    ],
+  },
+];
 
 const statLabels = {
   strength: "FUE",
@@ -109,50 +131,52 @@ export function Stats({ creature, setCreature }) {
           </Grid>
         </Container>
       </Grid>
-      {!isCharacter && <Grid item laptop={isCharacter ? 4 : 3}>
-        <Container>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="button">CLASE</Typography>
-            <Typography variant="overline">DE DESAFÍO</Typography>
-            <Container>
-              <InputBase
-                type="number"
-                value={creature.stats?.challengeRating}
-                inputProps={{ min: 0, max: 50, step: 0.25, style: { textAlign: "center" } }}
-                onChange={(e) => {
-                  let newValue = parseFloat(e.target.value);
-                  let oldValue = creature.stats.challengeRating;
+      {!isCharacter && (
+        <Grid item laptop={isCharacter ? 4 : 3}>
+          <Container>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Typography variant="button">CLASE</Typography>
+              <Typography variant="overline">DE DESAFÍO</Typography>
+              <Container>
+                <InputBase
+                  type="number"
+                  value={creature.stats?.challengeRating}
+                  inputProps={{ min: 0, max: 50, step: 0.25, style: { textAlign: "center" } }}
+                  onChange={(e) => {
+                    let newValue = parseFloat(e.target.value);
+                    let oldValue = creature.stats.challengeRating;
 
-                  if (newValue > 1) {
-                    if (newValue > oldValue) {
-                      newValue = Math.ceil(newValue);
-                    } else {
-                      newValue = Math.floor(newValue);
-                    }
-                  } else {
-                    if (newValue === 0.75) {
+                    if (newValue > 1) {
                       if (newValue > oldValue) {
-                        newValue = 1;
+                        newValue = Math.ceil(newValue);
                       } else {
-                        newValue = 0.5;
+                        newValue = Math.floor(newValue);
+                      }
+                    } else {
+                      if (newValue === 0.75) {
+                        if (newValue > oldValue) {
+                          newValue = 1;
+                        } else {
+                          newValue = 0.5;
+                        }
                       }
                     }
-                  }
 
-                  setCreature("stats.challengeRating", newValue);
-                }}
-              />
-            </Container>
-          </Box>
-        </Container>
-      </Grid>}
+                    setCreature("stats.challengeRating", newValue);
+                  }}
+                />
+              </Container>
+            </Box>
+          </Container>
+        </Grid>
+      )}
       <Grid item laptop={isCharacter ? 4 : 3}>
         <Container>
           <Box
@@ -210,7 +234,7 @@ export function Stats({ creature, setCreature }) {
             })}
             <Grid item laptop={12}>
               <Divider sx={{ mb: "1em" }} />
-              {creature?.stats.abilityScoreBonus?.map(({ modifier, bonus, description }, index) => (
+              {creature?.stats.statBonus?.map(({ modifier, bonus, descriptions }, index) => (
                 <Grid key={index} item laptop={12} container spacing={3}>
                   <Grid item laptop={8}>
                     <FormControl fullWidth>
@@ -220,21 +244,28 @@ export function Stats({ creature, setCreature }) {
                         id="hitDie-select"
                         value={modifier}
                         onChange={(e) => {
-                          const newBonuses = [...creature?.stats.abilityScoreBonus];
+                          const newBonuses = [...creature?.stats.statBonus];
                           newBonuses[index].modifier = e.target.value;
 
-                          setCreature("stats.abilityScoreBonus", newBonuses);
+                          setCreature("stats.statBonus", newBonuses);
                         }}
                       >
-                        {Object.keys(statLabels).map((key, index) => (
-                          <MenuItem key={index} value={key}>
-                            {statLabels[key]}
-                          </MenuItem>
-                        ))}
+                        {scoreBonusOptions.map(({ label, children }, index) => [
+                          <Divider textAlign="center">
+                            <ListSubheader sx={{ fontWeight: "bold", backgroundColor: "transparent" }}>
+                              {label}
+                            </ListSubheader>
+                          </Divider>,
+                          ...children.map(({ label, key }, index) => (
+                            <MenuItem value={key} key={key}>
+                              {label}
+                            </MenuItem>
+                          )),
+                        ])}
                       </Select>
                     </FormControl>
                   </Grid>
-                  <Grid item laptop={4}>
+                  <Grid item laptop={3}>
                     <TextField
                       fullWidth
                       color="secondary"
@@ -243,24 +274,36 @@ export function Stats({ creature, setCreature }) {
                       InputProps={{ inputProps: { min: 1, max: 20 }, style: { textAlign: "center" } }}
                       value={bonus}
                       onChange={(e) => {
-                        const newBonuses = [...creature?.stats.abilityScoreBonus];
-                        newBonuses[index].bonus = e.target.value;
+                        const newBonuses = [...creature?.stats.statBonus];
+                        newBonuses[index].bonus = parseInt(e.target.value);
 
-                        setCreature("stats.abilityScoreBonus", newBonuses);
+                        setCreature("stats.statBonus", newBonuses);
                       }}
                     />
+                  </Grid>
+                  <Grid item laptop={1} sx={{ display: "flex", justifyContent: "center" }}>
+                    <IconButton
+                      onClick={() => {
+                        const newBonuses = [...creature?.stats.statBonus];
+                        newBonuses.splice(index, 1);
+
+                        setCreature("stats.statBonus", newBonuses);
+                      }}
+                    >
+                      <Close />
+                    </IconButton>
                   </Grid>
                   <Grid item laptop={12}>
                     <HTMLEditor
                       fullWidth
                       color="secondary"
                       placeholder="Causa del modificador"
-                      value={description ?? ""}
-                      onChange={(e) => {
-                        const newBonuses = [...creature?.stats.abilityScoreBonus];
-                        newBonuses[index].description = e.target.value;
+                      value={descriptions ?? ""}
+                      onChange={(content) => {
+                        const newBonuses = [...creature?.stats.statBonus];
+                        newBonuses[index].descriptions = content;
 
-                        setCreature("stats.abilityScoreBonus", newBonuses);
+                        setCreature("stats.statBonus", newBonuses);
                       }}
                     />
                   </Grid>
@@ -272,15 +315,15 @@ export function Stats({ creature, setCreature }) {
               <Button
                 onClick={() => {
                   const newBonuses = [
-                    ...(creature?.stats?.abilityScoreBonus ?? []),
+                    ...(creature?.stats?.statBonus ?? []),
                     {
-                      modifier: "strength",
+                      modifier: "stats.abilityScores.strength",
                       bonus: 1,
                       descriptions: "",
                     },
                   ];
 
-                  setCreature("stats.abilityScoreBonus", newBonuses);
+                  setCreature("stats.statBonus", newBonuses);
                 }}
               >
                 <AddIcon sx={{ marginRight: "1em" }} />

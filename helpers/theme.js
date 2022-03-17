@@ -49,7 +49,8 @@ const lightTheme = {
     background: {
       body: "#FFFFFF",
       paper: "#FFFFFF",
-      container: "#E2E5E8"
+      container: "#E2E5E8",
+      contrastText: "#212121"
     },
     divider: "#8B9FA133",
   },
@@ -132,7 +133,8 @@ const darkTheme = {
     background: {
       body: "#15202b",
       paper: "#253341",
-      container: "#192734"
+      container: "#192734",
+      contrastText: "#FAFAFA"
     },
     divider: "#BDC8F033",
   },
@@ -158,7 +160,7 @@ const darkTheme = {
       "&::-webkit-scrollbar": {
         display: "none",
       },
-      "-ms-overflow-style": "none" /* IE and Edge */,
+      msOverflowStyle: "none" /* IE and Edge */,
       "scrollbar-width": "none"
     }
   }

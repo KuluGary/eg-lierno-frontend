@@ -25,7 +25,7 @@ export default class Api {
     }).then(async (response) => {
       const json = await response.json();
 
-      if (response.status === 403) {
+      if (response.status >= 400 && response.status < 500) {
         throw new Error(json.message);
       }
 

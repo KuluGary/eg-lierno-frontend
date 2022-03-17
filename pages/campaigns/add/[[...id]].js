@@ -1,12 +1,12 @@
-import { Tabs, Box, Tab, Typography, useTheme, Container as MuiContainer, Button } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, Button, Container as MuiContainer, Tab, Tabs, Typography } from "@mui/material";
 import { Container, Layout } from "components";
-import { StringUtil } from "helpers/string-util";
+import { Details, Discord, Map } from "components/CampaignCreation";
 import Api from "helpers/api";
+import { StringUtil } from "helpers/string-util";
 import jwt from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Details, Discord, Map } from "components/CampaignCreation";
+import { useEffect, useState } from "react";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -38,18 +38,17 @@ function a11yProps(index) {
 const tabs = [
   { label: "Detalles", Component: Details },
   { label: "Mapa", Component: Map },
-   { label: "Discord", Component: Discord },
+  { label: "Discord", Component: Discord },
 ];
 
 export default function AddCampaign({ campaignData }) {
-  const theme = useTheme();
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
   const [campaign, setCampaign] = useState({ ...(campaignData ?? {}) });
 
   useEffect(() => {
-      Api.fetchInternal("/auth/me").then(res => handleCampaignChange("dm", res._id))
-  }, [])
+    Api.fetchInternal("/auth/user").then((res) => handleCampaignChange("dm", res._id));
+  }, []);
 
   const handleStepChange = (_, newValue) => {
     setActiveStep(newValue);
@@ -63,7 +62,7 @@ export default function AddCampaign({ campaignData }) {
     if (campaign._id) {
       Api.fetchInternal(`/campaigns/${campaign._id}`, {
         method: "PUT",
-        body: JSON.stringify(campaign)
+        body: JSON.stringify(campaign),
       }).then(() => router.back());
     } else {
       Api.fetchInternal("/campaigns", {
@@ -91,20 +90,16 @@ export default function AddCampaign({ campaignData }) {
               indicatorColor="secondary"
             >
               {tabs.map(({ label }, index) => (
-                <Tab
-                  key={index}
-                  label={label}
-                  {...a11yProps(index)}
-                />
+                <Tab key={index} label={label} {...a11yProps(index)} />
               ))}
             </Tabs>
           </Box>
           <MuiContainer maxWidth="xs" sx={{ width: "75%" }}>
-             {tabs.map(({ Component }, index) => (
+            {tabs.map(({ Component }, index) => (
               <TabPanel key={index} value={activeStep} index={index}>
                 <Component campaign={campaign} setCampaign={handleCampaignChange} />
               </TabPanel>
-            ))} 
+            ))}
             <Box sx={{ m: 3, float: "right" }}>
               <Button sx={{ marginInline: 1 }}>Cancelar</Button>
               <Button sx={{ marginInline: 1 }} color="secondary" variant="outlined" onClick={handleSubmit}>

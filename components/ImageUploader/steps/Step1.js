@@ -31,7 +31,7 @@ function Step1({ setUpImg }) {
           }}
         >
           <Box component="input" {...getInputProps()} />
-          <Box component="p">Arrastra tus imagenes o haz click aquí</Box>
+          <Box component="p" sx={{ cursor: "pointer" }}>Arrastra tus imagenes o haz click aquí</Box>
         </Container>
       </Box>
     </section>

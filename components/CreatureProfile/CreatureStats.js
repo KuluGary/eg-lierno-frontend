@@ -22,9 +22,12 @@ export function CreatureStats({ Header, containerStyle, data }) {
           p: 3,
         }}
       >
-        {Object.keys(data.stats)?.map((key) => (
-          <StatComponent stat={data.stats[key]} label={key} key={key} />
-        ))}
+        {Object.keys(data.stats)?.map((key) => {
+          const bonus =
+            CreatureCalculations.getStatBonus("stats.abilityScores." + key, data.character) ?? data.stats[key];
+
+          return <StatComponent stat={bonus} label={key} key={key} />;
+        })}
       </Box>
       <Divider />
       <Box component="div" sx={{ paddingInline: 3 }}>

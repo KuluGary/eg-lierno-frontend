@@ -15,8 +15,10 @@ export function Ability({ open, onClose, section, selectedIndex, creature, onSav
         setContent(selectedElement);
       }
     }
+
+    return () => setContent({ name: "", description: "" });
   }, [section, selectedIndex]);
-  
+
   return (
     <FullScreenModal
       open={open}

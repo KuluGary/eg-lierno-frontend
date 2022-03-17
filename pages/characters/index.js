@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import Head from "next/head";
-import { Container, Layout } from "components";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
-import jwt from "next-auth/jwt";
-import Api from "helpers/api";
+import { Container, Layout } from "components";
 import { Table } from "components/Table";
+import Api from "helpers/api";
 import { useMounted } from "hooks/useMounted";
-import Router, { useRouter } from "next/router";
+import { useQueryState } from "hooks/useQueryState";
+import jwt from "next-auth/jwt";
+import Head from "next/head";
+import Router from "next/router";
 
 function a11yProps(index) {
   return {
@@ -16,24 +16,10 @@ function a11yProps(index) {
 }
 
 export default function Character({ characters = [], npcs = [] }) {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useQueryState("step", 0, "number");
   const hasMounted = useMounted();
-  const { query } = useRouter();
 
-  useEffect(() => {
-    const { step } = query;
-
-    if (!!step) setValue(parseInt(step));
-  }, []);
-
-  const handleChange = (_, newValue) => {
-    setValue(newValue);
-    Router.push({
-      pathname: "/characters",
-      query: { step: newValue },
-    });
-  };
-  
+  const handleChange = (_, newValue) => setValue(newValue);
 
   if (!hasMounted) return null;
 
