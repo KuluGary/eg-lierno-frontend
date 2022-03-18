@@ -107,7 +107,11 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await jwt
+    .getToken({ req, secret, raw: true })
+    .catch((e) => console.error(e));
+
+  console.log("Token ->", token);
 
   const headers = {
     Accept: "application/json",
@@ -121,12 +125,19 @@ export async function getServerSideProps(context) {
 
   const characters = await Api.fetchInternal("/characters", {
     headers,
-  }).catch((_) => null);
+  }).catch((err) => {
+    console.error("Characters ->", err);
+    return null;
+  });
 
   const npcs = await Api.fetchInternal("/npcs", {
     headers,
-  }).catch((_) => null);
+  }).catch((err) => {
+    console.log("Npcs ->", err);
+    return null;
+  });
 
+  console.timeEnd("load");
   return {
     props: {
       characters,
