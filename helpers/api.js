@@ -1,4 +1,6 @@
 export default class Api {
+  currentToken;
+
   static async fetchInternal(url, options, version = "v1") {
     url = process.env.NEXT_PUBLIC_ENDPOINT + version + url;
 
@@ -9,12 +11,17 @@ export default class Api {
     };
 
     if (typeof window !== undefined) {
-      const token = await fetch(`${process.env.NEXT_PUBLIC_CLIENT}/api/token`)
-        .then((res) => res.json())
-        .catch(() => {});
+      if (!this.currentToken) {
+        const token = await fetch(`${process.env.NEXT_PUBLIC_CLIENT}/api/token`)
+          .then((res) => res.json())
+          .catch(() => {});
 
-      if (!!token) {
-        headers["Authorization"] = "Bearer " + token;
+        if (!!token) {
+          headers["Authorization"] = "Bearer " + token;
+          this.currentToken = token;
+        }
+      } else {
+        headers["Authorization"] = "Bearer " + this.currentToken;
       }
     }
 

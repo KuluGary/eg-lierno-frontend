@@ -3,6 +3,7 @@ import { useMediaQuery } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Provider as AuthProvider } from "next-auth/client";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import PropTypes from "prop-types";
 import * as React from "react";
@@ -11,6 +12,11 @@ import "react-toastify/dist/ReactToastify.css";
 import ColorModeContext from "../helpers/color-context";
 import createEmotionCache from "../helpers/createEmotionCache";
 import { darkTheme, lightTheme } from "../helpers/theme";
+import "../styles/globals.css";
+
+const ProgressBar = dynamic(() => import("components/ProgressBar"), {
+  ssr: false,
+});
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -36,7 +42,10 @@ export default function MyApp(props) {
         setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
 
         if (typeof window !== undefined) {
-          localStorage.setItem("prefers-color-scheme", mode === "light" ? "dark" : "light");
+          localStorage.setItem(
+            "prefers-color-scheme",
+            mode === "light" ? "dark" : "light"
+          );
         }
       },
     }),
@@ -56,7 +65,10 @@ export default function MyApp(props) {
   );
 
   return (
-    <AuthProvider options={{ clientMaxAge: 0, keepAlive: 0 }} session={pageProps.session}>
+    <AuthProvider
+      options={{ clientMaxAge: 0, keepAlive: 0 }}
+      session={pageProps.session}
+    >
       <ToastContainer
         closeOnClick
         draggable
@@ -72,6 +84,7 @@ export default function MyApp(props) {
         <CssBaseline />
         <ColorModeContext.Provider value={colorMode}>
           <ThemeProvider theme={theme}>
+            <ProgressBar />
             <Component {...pageProps} />
           </ThemeProvider>
         </ColorModeContext.Provider>

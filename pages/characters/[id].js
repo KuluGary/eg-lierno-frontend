@@ -1,17 +1,17 @@
-import { Typography, Box, IconButton, Grid, CircularProgress } from "@mui/material";
-import { Edit as EditIcon, Delete as DeleteIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
-import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
-import { Layout, Metadata } from "components";
-import { ArrayUtil, StringUtil } from "helpers/string-util";
+import { Delete as DeleteIcon, Edit as EditIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
+import { Box, CircularProgress, Grid, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import Api from "helpers/api";
-import Router from "next/router";
-import jwt from "next-auth/jwt";
-import { CreatureCalculations } from "helpers/creature-calculations";
+import { Layout, Metadata } from "components";
+import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
 import download from "downloadjs";
+import Api from "helpers/api";
+import { CreatureCalculations } from "helpers/creature-calculations";
+import { ArrayUtil, StringUtil } from "helpers/string-util";
 import { useSession } from "next-auth/client";
-import { toast } from "react-toastify";
+import jwt from "next-auth/jwt";
+import Router from "next/router";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function CharacterProfile({ character, spells, items }) {
   const [isDownloading, setIsDownloading] = useState(false);
@@ -69,7 +69,10 @@ export default function CharacterProfile({ character, spells, items }) {
             }}
             data={{
               sections: [
-                { title: "Personalidad", content: character.flavor.personality },
+                {
+                  title: "Personalidad",
+                  content: character.flavor.personality,
+                },
                 { title: "Apariencia", content: character.flavor.appearance },
                 { title: "Historia", content: character.flavor.backstory },
               ],
@@ -78,7 +81,12 @@ export default function CharacterProfile({ character, spells, items }) {
             Header={() => (
               <Box
                 component="main"
-                sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: "1em" }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  p: "1em",
+                }}
               >
                 <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
                   <Box>
@@ -194,7 +202,10 @@ export default function CharacterProfile({ character, spells, items }) {
                       : "sin armadura"
                   })`,
                 },
-                { title: "Velocidad", content: CreatureCalculations.getSpeedString(character.stats.speed) },
+                {
+                  title: "Velocidad",
+                  content: CreatureCalculations.getSpeedString(character.stats.speed),
+                },
                 {
                   title: "Tiradas de salvación con competencia",
                   content: CreatureCalculations.getSavingThrowString(
@@ -225,7 +236,10 @@ export default function CharacterProfile({ character, spells, items }) {
               ],
               abilities: [
                 { title: "Ataques", content: character.stats.attacks },
-                { title: "Acciones", content: [...character.stats.actions, ...character.stats.bonusActions] },
+                {
+                  title: "Acciones",
+                  content: [...character.stats.actions, ...character.stats.bonusActions],
+                },
                 { title: "Reacciones", content: character.stats.reactions },
                 {
                   title: "Habilidades",
@@ -235,13 +249,19 @@ export default function CharacterProfile({ character, spells, items }) {
                   title: "Hechizos",
                   content:
                     character.stats.spells?.length > 0
-                      ? { characterSpells: character.stats.spells, spellData: spells }
+                      ? {
+                          characterSpells: character.stats.spells,
+                          spellData: spells,
+                        }
                       : null,
                 },
                 { title: "Objetos", content: items },
                 {
                   title: "Trasfondo",
-                  content: [character.flavor.background].map((back) => ({ ...back, description: back.trait })),
+                  content: [character.flavor.background].map((back) => ({
+                    ...back,
+                    description: back.trait,
+                  })),
                 },
               ],
             }}
@@ -256,7 +276,7 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await jwt.getToken({ req, secret, raw: true }).catch((_) => null);
 
   const headers = {
     Accept: "application/json",

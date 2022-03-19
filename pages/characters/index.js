@@ -1,10 +1,8 @@
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { Container, Layout } from "components";
-import { Table } from "components/Table";
-import Api from "helpers/api";
+import { PaginatedTable, Table } from "components/Table";
 import { useMounted } from "hooks/useMounted";
 import { useQueryState } from "hooks/useQueryState";
-import jwt from "next-auth/jwt";
 import Head from "next/head";
 import Router from "next/router";
 
@@ -15,7 +13,7 @@ function a11yProps(index) {
   };
 }
 
-export default function Character({ characters = [], npcs = [] }) {
+export default function Character() {
   const [value, setValue] = useQueryState("step", 0, "number");
   const hasMounted = useMounted();
 
@@ -57,22 +55,24 @@ export default function Character({ characters = [], npcs = [] }) {
           id={`simple-tabpanel-${0}`}
           aria-labelledby={`simple-tab-${0}`}
         >
-          <Table
-            schema={{
-              _id: "_id",
-              name: "name",
-              avatar: "flavor.portrait.avatar",
-              description: "flavor.personality",
-              owner: "createdBy",
-            }}
-            data={characters}
-            src={"/characters/{ID}"}
-            onEdit={(id) => Router.push(`/characters/add/${id}`)}
-            onDelete={() => {}}
-            headerProps={{
-              onAdd: () => Router.push("/characters/add"),
-            }}
-          />
+          {value === 0 && (
+            <PaginatedTable
+              schema={{
+                _id: "_id",
+                name: "name",
+                avatar: "flavor.portrait.avatar",
+                description: "flavor.personality",
+                owner: "createdBy",
+              }}
+              fetchFrom={"/characters"}
+              src={"/characters/{ID}"}
+              onEdit={(id) => Router.push(`/characters/add/${id}`)}
+              onDelete={() => {}}
+              headerProps={{
+                onAdd: () => Router.push("/characters/add"),
+              }}
+            />
+          )}
         </Box>
         <Box
           component="div"
@@ -81,67 +81,26 @@ export default function Character({ characters = [], npcs = [] }) {
           id={`simple-tabpanel-${1}`}
           aria-labelledby={`simple-tab-${1}`}
         >
-          <Table
-            schema={{
-              _id: "_id",
-              name: "name",
-              avatar: "flavor.portrait.avatar",
-              description: "flavor.description",
-              owner: "createdBy",
-            }}
-            data={npcs}
-            src={"/npcs/{ID}"}
-            onEdit={(id) => Router.push(`/npcs/add/${id}`)}
-            onDelete={() => {}}
-            headerProps={{
-              onAdd: () => Router.push("/npcs/add"),
-            }}
-          />
+          {value === 1 && (
+            <PaginatedTable
+              schema={{
+                _id: "_id",
+                name: "name",
+                avatar: "flavor.portrait.avatar",
+                description: "flavor.personality",
+                owner: "createdBy",
+              }}
+              fetchFrom={"/npcs"}
+              src={"/npcs/{ID}"}
+              onEdit={(id) => Router.push(`/npcs/add/${id}`)}
+              onDelete={() => {}}
+              headerProps={{
+                onAdd: () => Router.push("/npcs/add"),
+              }}
+            />
+          )}
         </Box>
       </Container>
     </Layout>
   );
-}
-
-export async function getServerSideProps(context) {
-  const { req } = context;
-  const secret = process.env.SECRET;
-
-  const token = await jwt
-    .getToken({ req, secret, raw: true })
-    .catch((e) => console.error(e));
-
-  console.log("Token ->", token);
-
-  const headers = {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-    withCredentials: true,
-  };
-
-  if (token) {
-    headers["Authorization"] = "Bearer " + token;
-  }
-
-  const characters = await Api.fetchInternal("/characters", {
-    headers,
-  }).catch((err) => {
-    console.error("Characters ->", err);
-    return null;
-  });
-
-  const npcs = await Api.fetchInternal("/npcs", {
-    headers,
-  }).catch((err) => {
-    console.log("Npcs ->", err);
-    return null;
-  });
-
-  console.timeEnd("load");
-  return {
-    props: {
-      characters,
-      npcs,
-    },
-  };
 }

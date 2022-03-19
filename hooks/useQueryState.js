@@ -1,6 +1,14 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+/**
+ *
+ * @param {String} key the key to store in the url params
+ * @param {any} defaultTo the value to default to in case there's no value
+ * @param {String} type the type of the value stored
+ * @param {boolean} includePrevQuery overrite prev query
+ * @returns {Array[any, function]}
+ */
 export function useQueryState(key, defaultTo, type, includePrevQuery = true) {
   const { query, pathname, push } = useRouter();
   const [state, rawSetState] = useState(() => {
