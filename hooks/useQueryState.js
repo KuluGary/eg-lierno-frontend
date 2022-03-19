@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
  * @param {boolean} includePrevQuery overrite prev query
  * @returns {Array[any, function]}
  */
-export function useQueryState(key, defaultTo, type, includePrevQuery = true) {
+export function useQueryState(key, defaultTo, type, includePrevQuery = true, shallow = true) {
   const { query, pathname, push } = useRouter();
   const [state, rawSetState] = useState(() => {
     return query[key] || defaultTo;
@@ -22,10 +22,14 @@ export function useQueryState(key, defaultTo, type, includePrevQuery = true) {
   }, [query]);
 
   function setState(value) {
-    push({
-      pathname,
-      query: { ...(includePrevQuery ? query : {}), [key]: value },
-    });
+    push(
+      {
+        pathname,
+        query: { ...(includePrevQuery ? query : {}), [key]: value },
+      },
+      undefined,
+      { shallow }
+    );
   }
 
   function parseQueryValue(value) {
