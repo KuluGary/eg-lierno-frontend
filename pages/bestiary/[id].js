@@ -6,7 +6,7 @@ import { Layout, Metadata } from "components";
 import { StringUtil } from "helpers/string-util";
 import { useTheme } from "@mui/material/styles";
 import Api from "helpers/api";
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import { CreatureCalculations } from "helpers/creature-calculations";
 import Router from "next/router";
 
@@ -205,7 +205,7 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   const headers = {
     Accept: "application/json",

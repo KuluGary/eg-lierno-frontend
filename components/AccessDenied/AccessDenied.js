@@ -1,6 +1,6 @@
 import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { signIn } from "next-auth/client";
+import { signIn } from "next-auth/react";
 import { Link } from "..";
 
 export default function AccessDenied() {

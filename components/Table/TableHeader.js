@@ -1,10 +1,15 @@
-import { Container } from "..";
-import { useState } from "react";
-import { useTheme } from "@mui/system";
+import {
+  Add as AddIcon,
+  FilterList as FilterListIcon,
+  Search as SearchIcon,
+  UploadFile as UploadFileIcon,
+} from "@mui/icons-material";
 import { Box, Collapse, IconButton, InputAdornment, TextField } from "@mui/material";
-import { Search as SearchIcon, FilterList as FilterListIcon, Add as AddIcon } from "@mui/icons-material";
+import { useTheme } from "@mui/system";
+import { useState } from "react";
+import { Container } from "..";
 
-const TableHeader = ({ onSearch, querySearch, Filters, onAdd }) => {
+const TableHeader = ({ onSearch, querySearch, Filters, onAdd, onUpload }) => {
   const theme = useTheme();
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -49,6 +54,26 @@ const TableHeader = ({ onSearch, querySearch, Filters, onAdd }) => {
               }}
             >
               <FilterListIcon fontSize="small" />
+            </IconButton>
+          )}
+          {!!onUpload && (
+            <IconButton
+              color="secondary"
+              onClick={onUpload}
+              sx={{
+                border: `1px solid ${theme.palette.secondary.main}80`,
+                borderRadius: "8px",
+                padding: ".25em",
+                transition: theme.transitions.create(["border"], {
+                  easing: theme.transitions.easing.sharp,
+                  duration: theme.transitions.duration.leavingScreen,
+                }),
+                "&:hover": {
+                  border: `1px solid ${theme.palette.secondary.main}`,
+                },
+              }}
+            >
+              <UploadFileIcon fontSize="small" />
             </IconButton>
           )}
           {!!onAdd && (

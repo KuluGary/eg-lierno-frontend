@@ -7,7 +7,7 @@ import download from "downloadjs";
 import Api from "helpers/api";
 import { CreatureCalculations } from "helpers/creature-calculations";
 import { ArrayUtil, StringUtil } from "helpers/string-util";
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import Head from "next/head";
 import Router from "next/router";
 import { useState } from "react";
@@ -154,6 +154,7 @@ export default function NpcProfile({ npc, spells, items, classes }) {
               proficiencyBonus: npc["stats"]["proficiencyBonus"],
               proficiencies: [
                 {
+                  key: "hitPoints",
                   title: "Puntos de vida",
                   content: `${npc["stats"]["hitPoints"]["current"] ?? npc["stats"]["hitPoints"]["max"]} / ${
                     npc["stats"]["hitPoints"]["max"]
@@ -163,6 +164,7 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                   )})`,
                 },
                 {
+                  key: "armorClass",
                   title: "Clase de armadura",
                   content: `${npc["stats"]["armorClass"]} (${
                     ArrayUtil.isNotEmpty(npc.stats.equipment?.armor)
@@ -173,24 +175,29 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                       : "sin armadura"
                   })`,
                 },
-                { title: "Velocidad", content: CreatureCalculations.getSpeedString(npc.stats.speed) },
+                { key: "speed", title: "Velocidad", content: CreatureCalculations.getSpeedString(npc.stats.speed) },
                 {
+                  key: "savingThrows",
                   title: "Tiradas de salvación con competencia",
                   content: CreatureCalculations.getSavingThrowString(
                     npc.stats.abilityScores,
                     npc.stats.savingThrows,
-                    npc.stats.proficiencyBonus
+                    npc.stats.proficiencyBonus,
+                    npc
                   ),
                 },
                 {
+                  key: "skills",
                   title: "Habilidades con competencia",
                   content: CreatureCalculations.getAbilitiesString(
                     npc["stats"]["abilityScores"],
                     npc["stats"]["skills"],
-                    npc["stats"]["proficiencyBonus"]
+                    npc["stats"]["proficiencyBonus"],
+                    npc
                   ),
                 },
                 {
+                  key: "senses",
                   title: "Sentidos",
                   content: npc["stats"]["senses"].join(", "),
                 },
@@ -199,18 +206,22 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                   content: npc["stats"]["damageVulnerabilities"].join(", "),
                 },
                 {
+                  key: "damageResistances",
                   title: "Resistencias al daño",
                   content: npc["stats"]["damageResistances"].join(", "),
                 },
                 {
+                  key: "damageImmunities",
                   title: "Inmunidades al daño",
                   content: npc["stats"]["damageImmunities"].join(", "),
                 },
                 {
+                  key: "conditionImmunities",
                   title: "Inmunidades a la condición",
                   content: npc["stats"]["conditionImmunities"].join(", "),
                 },
                 {
+                  key: "challengeRating",
                   title: "Valor de desafío",
                   content: `${npc["stats"]["challengeRating"]} (${CreatureCalculations.getExperienceByCr(
                     npc["stats"]["challengeRating"]
@@ -242,7 +253,7 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   const headers = {
     Accept: "application/json",

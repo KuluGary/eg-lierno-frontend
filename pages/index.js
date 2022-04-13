@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import Head from "next/head";
 import { Box, Button, Typography } from "@mui/material";
-import { signIn } from "next-auth/client";
+import { signIn } from "next-auth/react";
 import { Link, NavBar } from "../components";
 
 export default function Home() {

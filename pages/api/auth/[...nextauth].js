@@ -1,14 +1,16 @@
 import NextAuth from "next-auth";
-import Providers from "next-auth/providers";
+import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import jwt from "jsonwebtoken";
+import { TypeORMLegacyAdapter } from "@next-auth/typeorm-legacy-adapter";
 
 export default NextAuth({
-  database: process.env.DATABASE_URL,
+  adapter: TypeORMLegacyAdapter(process.env.DATABASE_URL),
   pages: {
     signIn: "/login",
   },
   providers: [
-    Providers.Credentials({
+    Credentials({
       name: "Credentials",
       credentials: {
         username: { label: "Username", type: "text", placeholder: "user@example.com" },
@@ -39,34 +41,26 @@ export default NextAuth({
         return null;
       },
     }),
-    Providers.Google({
+    Google({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
     }),
   ],
   secret: process.env.SECRET,
   session: {
-    jwt: true,
+    strategy: "jwt",
   },
   theme: "light",
   debug: false,
   callbacks: {
-    async jwt(token, user, account) {
-      if (account?.access_token) {
-        token.access_token = account.access_token;
-      }
-
+    async jwt({ token, user }) {
       if (user) {
-        const userToReturn = { ...user, userId: user.id };
-        delete userToReturn.id;
-
-        return { ...userToReturn };
+        token.userId = user.id;
       }
-
-      return token; // Every subsequent request should just return the previous token
+      return token;
     },
-    async session(_, token) {
-      return token; // Pass the jwt to the session
+    async session({ token }) {
+      return token;
     },
   },
   jwt: {

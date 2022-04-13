@@ -1,11 +1,9 @@
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 
 const secret = process.env.SECRET;
 
-
-
 const token = async (req, res) => {
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   if (token) {
     // Signed in

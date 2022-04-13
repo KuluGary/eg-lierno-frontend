@@ -12,7 +12,7 @@ import {
 import { StringUtil } from "helpers/string-util";
 import creature_template from "helpers/json/creature_template.json";
 import Api from "helpers/api";
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
 
@@ -70,7 +70,7 @@ export default function AddNpc({ npcId, npc, spells, classes, items }) {
     setCreature({ ...StringUtil.setNestedKey(key, creature, value) });
   };
 
-  const handleSubmit = () => { 
+  const handleSubmit = () => {
     Api.fetchInternal(`/npc`, {
       method: npcId ? "PUT" : "POST",
       body: JSON.stringify(creature),
@@ -107,7 +107,13 @@ export default function AddNpc({ npcId, npc, spells, classes, items }) {
           <MuiContainer maxWidth="xs" sx={{ width: "75%" }}>
             {tabs.map(({ Component }, index) => (
               <TabPanel key={index} value={activeStep} index={index}>
-                <Component creature={creature} setCreature={handleCreatureChange} spells={spells} items={items} classes={classes} />
+                <Component
+                  creature={creature}
+                  setCreature={handleCreatureChange}
+                  spells={spells}
+                  items={items}
+                  classes={classes}
+                />
               </TabPanel>
             ))}
             <Box sx={{ m: 3, float: "right" }}>
@@ -127,7 +133,7 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   if (!token) {
     return {

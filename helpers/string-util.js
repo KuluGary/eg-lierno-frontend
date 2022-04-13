@@ -31,8 +31,7 @@ const CLASS_GENDER_DICTIONARY = {
 
 export const StringUtil = {
   regex: {
-    email:
-      /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
+    email: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
     password: /^[a-zA-Z0-9]{8,32}$/,
     username: /^[a-zA-Z0-9]{3,32}$/,
     first_name: /^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$/,
@@ -62,47 +61,41 @@ export const StringUtil = {
     return claseToReturn;
   },
   getCharacterSubtitle: (character) => {
-    const subtitle = [];
+    if (!character) return null;
 
-    let classes = "";
+    const classes = character["stats"]["classes"]
+      .map((charClass) => {
+        let string = `${charClass.className} (${charClass.classLevel})`;
 
-    if (character.stats.classes?.length > 0) {
-      classes = character.stats.classes
-        .map((charClasses) => {
-          const classString =
-            StringUtil.generizaClase(charClasses["className"], character.flavor.traits.pronoun) +
-            " nivel " +
-            charClasses["classLevel"];
-          let subclassString = "";
+        if (!!charClass.subclassName) {
+          string += ` ${charClass.subclassName}`;
+        }
 
-          if (charClasses["subclassName"]) {
-            subclassString = `( ${charClasses["subclassName"]} )`;
-          }
+        return string;
+      })
+      .join(" / ");
 
-          return classString + " " + subclassString;
-        })
-        .join(" / ");
-    } else {
-      classes = `${StringUtil.generizaClase("Novato", character.flavor.pronoun)} nivel 0`;
-    }
+    const race = character.stats.race?.name;
 
-    if (character.stats.race?.name) subtitle.push(character.stats.race?.name);
-    subtitle.push(classes);
+    return [race, classes].join(", ");
+  },
+  getNpcSubtitle: (npc) => {
+    if (!npc) return null;
 
-    return subtitle.join(", ");
+    return [npc?.stats?.race?.name, npc?.flavor?.class].join(", ");
   },
   getSpellcastingName: (caster, classes) => {
-    if (caster === "00000") return "Lanzamiento de conjuros innato.";
+    if (caster === "00000") return "Lanzamiento de conjuros innato";
 
     if (!!classes) {
       const className = classes.find((charClass) => charClass.classId === caster)?.className?.toLowerCase();
 
       if (!!className) {
-        return `Lanzamiento de conjuros de ${className}.`;
+        return `Lanzamiento de conjuros de ${className}`;
       }
     }
 
-    return "Lanzamiento de conjuros.";
+    return "Lanzamiento de conjuros";
   },
   getOperatorString: (modifier) => `${modifier > 0 ? "+" : ""}${modifier}`,
   replaceMarkDownWithHtml: (md) => {
@@ -133,18 +126,21 @@ export const StringUtil = {
     return element;
   },
   isValidURL: (str) => {
-    const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    const pattern = new RegExp(
+      "^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$",
+      "i"
+    ); // fragment locator
 
-    return !!pattern.test(str)
+    return !!pattern.test(str);
   },
   stringToHsl: (string) => {
     let hash = 0;
-    
+
     if (!string || string.length === 0) {
       return hash;
     }

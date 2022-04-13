@@ -18,7 +18,7 @@ function Step1({ setUpImg }) {
       reader.readAsArrayBuffer(file);
     });
   }, []);
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: "image/jpeg, image/png" });
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: "image/jpeg, image/png", maxFiles: 1 });
 
   return (
     <section className="container">
@@ -31,7 +31,9 @@ function Step1({ setUpImg }) {
           }}
         >
           <Box component="input" {...getInputProps()} />
-          <Box component="p" sx={{ cursor: "pointer" }}>Arrastra tus imagenes o haz click aquí</Box>
+          <Box component="p" sx={{ cursor: "pointer" }}>
+            Arrastra tus imagenes o haz click aquí
+          </Box>
         </Container>
       </Box>
     </section>

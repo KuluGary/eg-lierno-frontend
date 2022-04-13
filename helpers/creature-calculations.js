@@ -14,7 +14,7 @@ export const statLabels = {
 
 const casterType = {
   fullcaster: ["Druida", "Bardo", "Clérigo", "Mago", "Hechicero", "Brujo"],
-  halfcaster: ["Paladín", "Montaraz"],
+  halfcaster: ["Paladín", "Montaraz", "Artífice"],
 };
 
 const fullcaster = {
@@ -1199,11 +1199,16 @@ export const CreatureCalculations = {
       proficiencyModifier
     );
   },
-  getSavingThrowString: (abilityScores, savingThrows, proficiency) => {
+  getSavingThrowString: (abilityScores, savingThrows, proficiency, character) => {
     const modifiers = Object.keys(savingThrows ?? {})
       .filter((key) => savingThrows[key].proficient || savingThrows[key].expertise)
       .map((key) => {
-        let modifier = CreatureCalculations.modifier(abilityScores[key]);
+        const abilityScore = CreatureCalculations.getStatBonus(
+          `stats.abilityScores.${key}`,
+          character,
+          `stats.abilityScores.${key}`
+        );
+        let modifier = CreatureCalculations.modifier(abilityScore);
 
         if (savingThrows[key].expertise) {
           modifier += proficiency * 2;
@@ -1216,12 +1221,18 @@ export const CreatureCalculations = {
 
     return modifiers.join(", ");
   },
-  getAbilitiesString: (abilityScores, skills, proficiency) => {
+  getAbilitiesString: (abilityScores, skills, proficiency, character) => {
     if (!!abilityScores && !!skills) {
       const modifiers = Object.entries(skills)
         .filter(([_, skill]) => skill.proficient || skill.expertise)
         .map(([name, skill]) => {
-          let modifier = CreatureCalculations.modifier(parseInt(abilityScores[skill.modifier]));
+          const abilityScore = CreatureCalculations.getStatBonus(
+            `stats.abilityScores.${skill.modifier}`,
+            character,
+            `stats.abilityScores.${skill.modifier}`
+          );
+
+          let modifier = CreatureCalculations.modifier(abilityScore);
 
           if (skill.expertise) {
             modifier += parseInt(proficiency) * 2;
@@ -1237,7 +1248,7 @@ export const CreatureCalculations = {
 
     return null;
   },
-  getAttackStrings: (attack, abilityScores, proficiency) => {
+  getAttackStrings: (attack, proficiency, character) => {
     const attackTypeDictionary = {
       melee: "melé",
       distance: "distancia",
@@ -1265,11 +1276,13 @@ export const CreatureCalculations = {
     type = `Ataque de arma ${type.join(" o ")}.`;
     range = range.join(" o ");
 
-    toHitBonus = CreatureCalculations.modifier(abilityScores[bonusStat]) + (attack.proficient ? proficiency : 0);
+    const abilityScore = CreatureCalculations.getStatBonus(`stats.abilityScores.${bonusStat}`, character);
 
-    damageBonus = CreatureCalculations.modifier(abilityScores[bonusStat]);
+    toHitBonus = CreatureCalculations.modifier(abilityScore) + (attack.proficient ? proficiency : 0);
 
-    return `<em>${type}</em> 1d20 ${StringUtil.getOperatorString(
+    damageBonus = CreatureCalculations.modifier(abilityScore);
+
+    return `<p><em>${type}</em> 1d20 ${StringUtil.getOperatorString(
       toHitBonus
     )} al golpe, alcance ${range} Daño ${Object.entries(attack.data.damage)
       .filter(([_, value]) => {
@@ -1308,7 +1321,7 @@ export const CreatureCalculations = {
 
         return `${dmg.numDie}d${dmg.dieSize} ${damageBonus >= 0 ? "+" : ""}${damageBonus} ${dmg.type.toLowerCase()}`;
       })
-      .join(", ")}.`;
+      .join(", ")}.</p>`;
   },
   getSpellSlots: (spellLevel, classes, spellcasting) => {
     if (classes.length > 10) {
@@ -1320,7 +1333,11 @@ export const CreatureCalculations = {
         if (casterType.fullcaster.includes(charClass.className)) {
           classLevel += charClass.classLevel;
         } else if (casterType.halfcaster.includes(charClass.className)) {
-          classLevel += Math.floor(charClass.classLevel / 2);
+          if (charClass.className === "Artífice") {
+            classLevel += Math.ceil(charClass.classLevel / 2);
+          } else {
+            classLevel += Math.floor(charClass.classLevel / 2);
+          }
         } else {
           classLevel += Math.floor(charClass.classLevel / 3);
         }
@@ -1357,11 +1374,11 @@ export const CreatureCalculations = {
     }
 
     const spellString = {
-      description: `La habilidad de conjuración es ${
+      description: `<p>La habilidad de conjuración es ${
         statLabels[modifier]
       } (salvación de conjuro CD ${spellDC}, ${StringUtil.getOperatorString(
         spellBonus
-      )} al golpe con ataques de hechizo). Tiene los siguientes hechizos preparados:<ul>`,
+      )} al golpe con ataques de hechizo). Tiene los siguientes hechizos preparados:</p><ul>`,
     };
 
     Object.keys(spellByLevel).forEach((key) => {
@@ -1396,7 +1413,7 @@ export const CreatureCalculations = {
     return speeds.join(", ");
   },
   getStatBonus: (key, creature, fallback) => {
-    const arrayBonusSelected = creature.stats?.statBonus?.filter((bonus) => bonus.modifier === key);
+    const arrayBonusSelected = creature?.stats?.statBonus?.filter((bonus) => bonus.modifier === key);
 
     if (ArrayUtil.isNotEmpty(arrayBonusSelected)) {
       const bonusSelected = arrayBonusSelected.reduce((results, current) => {

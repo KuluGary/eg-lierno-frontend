@@ -2,7 +2,7 @@ import { Box, Divider, Tab, Tabs, Typography } from "@mui/material";
 import { Container, Layout, Metadata } from "components";
 import { Table } from "components/Table";
 import Api from "helpers/api";
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import references from "helpers/json/references.json";
 import { useState } from "react";
 
@@ -182,7 +182,7 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   const headers = {
     Accept: "application/json",

@@ -21,16 +21,15 @@ import {
   AccountCircle as AccountCircleIcon,
   MenuBook as MenuBookIcon,
   Explore as ExploreIcon,
-  Brightness7 as Brightness7Icon,
 } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { useTheme } from "@mui/material/styles";
-import { signIn, signOut, useSession } from "next-auth/client";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { Link } from "components/Link/Link";
 import { Avatar } from "../";
 import ColorModeContext from "helpers/color-context";
 
-const list = [
+const categories = [
   {
     to: "/characters",
     tag: "Personajes",
@@ -49,7 +48,7 @@ const list = [
 ];
 
 export function Layout({ children }) {
-  const [session] = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
@@ -67,7 +66,7 @@ export function Layout({ children }) {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    signOut();
+    signOut({ callbackUrl: "/" });
   };
 
   return (
@@ -148,7 +147,7 @@ export function Layout({ children }) {
             </IconButton>
             {!!session ? (
               <IconButton onClick={handleMenu} color="inherit">
-                <Avatar src={session?.image} />
+                <Avatar src={session?.picture} />
               </IconButton>
             ) : (
               <Link
@@ -165,7 +164,7 @@ export function Layout({ children }) {
         </Toolbar>
       </MuiAppBar>
 
-      <Box sx={{ display: "flex", alignItems: "stretch", height: "calc(100vh - 60px)", outline: "1px solid red" }}>
+      <Box sx={{ display: "flex", alignItems: "stretch", height: "calc(100vh - 60px)" }}>
         {/* Side navigation bar */}
         <MuiDrawer
           variant="permanent"
@@ -207,7 +206,7 @@ export function Layout({ children }) {
           }}
         >
           <List sx={{ overflowX: "hidden" }}>
-            {list.map(({ to, tag, Icon }) => (
+            {categories.map(({ to, tag, Icon }) => (
               <Link key={to} href={to}>
                 <ListItem
                   button
@@ -267,7 +266,7 @@ export function Layout({ children }) {
         open={menuOpen}
         onClose={handleClose}
       >
-        <MenuItem>Mi cuenta</MenuItem>
+        <MenuItem disabled>Mi cuenta</MenuItem>
         <MenuItem onClick={handleLogout}>
           <Link href={`/api/auth/signout`}>Salir</Link>
         </MenuItem>

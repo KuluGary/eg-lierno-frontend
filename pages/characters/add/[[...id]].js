@@ -24,10 +24,10 @@ import {
 import { StringUtil } from "helpers/string-util";
 import character_template from "helpers/json/character_template.json";
 import Api from "helpers/api";
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { getSession } from "next-auth/client";
+import { getSession } from "next-auth/react";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -156,7 +156,7 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
   const { userId } = await getSession({ req });
 
   if (!token) {

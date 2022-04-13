@@ -1,21 +1,26 @@
-import { Delete as DeleteIcon, Edit as EditIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
+import {
+  Code as CodeIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  FileDownload as FileDownloadIcon,
+} from "@mui/icons-material";
 import { Box, CircularProgress, Grid, IconButton, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Layout, Metadata } from "components";
+import { Layout, Metadata, Tooltip } from "components";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
 import download from "downloadjs";
 import Api from "helpers/api";
 import { CreatureCalculations } from "helpers/creature-calculations";
 import { ArrayUtil, StringUtil } from "helpers/string-util";
-import { useSession } from "next-auth/client";
-import jwt from "next-auth/jwt";
+import { useSession } from "next-auth/react";
+import { getToken } from "next-auth/jwt";
 import Router from "next/router";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 export default function CharacterProfile({ character, spells, items }) {
   const [isDownloading, setIsDownloading] = useState(false);
-  const [session] = useSession();
+  const { data: session } = useSession();
   const theme = useTheme();
 
   const downloadPdf = () => {
@@ -24,6 +29,25 @@ export default function CharacterProfile({ character, spells, items }) {
       .then((base64Url) => download(base64Url, `${character["name"]}.pdf`, "application/pdf"))
       .catch((err) => toast.error(err))
       .finally(() => setIsDownloading(false));
+  };
+
+  const downloadJson = () => {
+    setIsDownloading(true);
+    const charToDownload = { ...character };
+
+    delete charToDownload._id;
+    delete charToDownload.createdAt;
+    delete charToDownload.createdBy;
+    delete charToDownload.updatedAt;
+
+    const stringToDownload = JSON.stringify(charToDownload);
+    const bytes = new TextEncoder().encode(stringToDownload);
+    const blob = new Blob([bytes], {
+      type: "application/json;charset=utf-8",
+    });
+
+    download(blob, `${charToDownload["name"]}.json`, "application/json");
+    setIsDownloading(false);
   };
 
   const createStringDefinition = (charClass) => {
@@ -86,6 +110,9 @@ export default function CharacterProfile({ character, spells, items }) {
                   justifyContent: "space-between",
                   alignItems: "center",
                   p: "1em",
+                  position: " -webkit-sticky",
+                  position: "sticky",
+                  top: "-1px"
                 }}
               >
                 <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
@@ -102,67 +129,100 @@ export default function CharacterProfile({ character, spells, items }) {
                 {!!session && session?.userId === character.createdBy && (
                   <Box sx={{ display: "flex", height: "100%" }}>
                     <Box component="div" sx={{ margin: "0 .25em" }}>
-                      <IconButton
-                        color="secondary"
-                        sx={{
-                          border: "1px solid rgba(63, 176, 172, 0.5);",
-                          borderRadius: "8px",
-                          padding: ".25em",
-                          transition: theme.transitions.create(["border"], {
-                            easing: theme.transitions.easing.sharp,
-                            duration: theme.transitions.duration.leavingScreen,
-                          }),
-                          "&:hover": {
-                            border: "1px solid rgba(63, 176, 172, 1);",
-                          },
-                        }}
-                      >
-                        <EditIcon onClick={() => Router.push(`/characters/add/${character._id}`)} fontSize="small" />
-                      </IconButton>
+                      <Tooltip title="Editar">
+                        <IconButton
+                          color="secondary"
+                          sx={{
+                            border: "1px solid rgba(63, 176, 172, 0.5);",
+                            borderRadius: "8px",
+                            padding: ".25em",
+                            transition: theme.transitions.create(["border"], {
+                              easing: theme.transitions.easing.sharp,
+                              duration: theme.transitions.duration.leavingScreen,
+                            }),
+                            "&:hover": {
+                              border: "1px solid rgba(63, 176, 172, 1);",
+                            },
+                          }}
+                        >
+                          <EditIcon onClick={() => Router.push(`/characters/add/${character._id}`)} fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
                     </Box>
                     <Box component="div" sx={{ margin: "0 .25em" }}>
-                      <IconButton
-                        color="secondary"
-                        sx={{
-                          border: "1px solid rgba(63, 176, 172, 0.5);",
-                          borderRadius: "8px",
-                          padding: ".25em",
-                          transition: theme.transitions.create(["border"], {
-                            easing: theme.transitions.easing.sharp,
-                            duration: theme.transitions.duration.leavingScreen,
-                          }),
-                          "&:hover": {
-                            border: "1px solid rgba(63, 176, 172, 1);",
-                          },
-                        }}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
+                      <Tooltip title="Eliminar">
+                        <IconButton
+                          color="secondary"
+                          sx={{
+                            border: "1px solid rgba(63, 176, 172, 0.5);",
+                            borderRadius: "8px",
+                            padding: ".25em",
+                            transition: theme.transitions.create(["border"], {
+                              easing: theme.transitions.easing.sharp,
+                              duration: theme.transitions.duration.leavingScreen,
+                            }),
+                            "&:hover": {
+                              border: "1px solid rgba(63, 176, 172, 1);",
+                            },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
                     </Box>
                     <Box component="div" sx={{ margin: "0 .25em" }}>
-                      <IconButton
-                        color="secondary"
-                        onClick={downloadPdf}
-                        disabled={isDownloading}
-                        sx={{
-                          border: "1px solid rgba(63, 176, 172, 0.5);",
-                          borderRadius: "8px",
-                          padding: ".25em",
-                          transition: theme.transitions.create(["border"], {
-                            easing: theme.transitions.easing.sharp,
-                            duration: theme.transitions.duration.leavingScreen,
-                          }),
-                          "&:hover": {
-                            border: "1px solid rgba(63, 176, 172, 1);",
-                          },
-                        }}
-                      >
-                        {isDownloading ? (
-                          <CircularProgress color="secondary" size={20} />
-                        ) : (
-                          <FileDownloadIcon fontSize="small" />
-                        )}
-                      </IconButton>
+                      <Tooltip title="Descargar en PDF">
+                        <IconButton
+                          color="secondary"
+                          onClick={downloadPdf}
+                          disabled={isDownloading}
+                          sx={{
+                            border: "1px solid rgba(63, 176, 172, 0.5);",
+                            borderRadius: "8px",
+                            padding: ".25em",
+                            transition: theme.transitions.create(["border"], {
+                              easing: theme.transitions.easing.sharp,
+                              duration: theme.transitions.duration.leavingScreen,
+                            }),
+                            "&:hover": {
+                              border: "1px solid rgba(63, 176, 172, 1);",
+                            },
+                          }}
+                        >
+                          {isDownloading ? (
+                            <CircularProgress color="secondary" size={20} />
+                          ) : (
+                            <FileDownloadIcon fontSize="small" />
+                          )}
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                    <Box component="div" sx={{ margin: "0 .25em" }}>
+                      <Tooltip title="Descargar en JSON">
+                        <IconButton
+                          color="secondary"
+                          onClick={downloadJson}
+                          disabled={isDownloading}
+                          sx={{
+                            border: "1px solid rgba(63, 176, 172, 0.5);",
+                            borderRadius: "8px",
+                            padding: ".25em",
+                            transition: theme.transitions.create(["border"], {
+                              easing: theme.transitions.easing.sharp,
+                              duration: theme.transitions.duration.leavingScreen,
+                            }),
+                            "&:hover": {
+                              border: "1px solid rgba(63, 176, 172, 1);",
+                            },
+                          }}
+                        >
+                          {isDownloading ? (
+                            <CircularProgress color="secondary" size={20} />
+                          ) : (
+                            <CodeIcon fontSize="small" />
+                          )}
+                        </IconButton>
+                      </Tooltip>
                     </Box>
                   </Box>
                 )}
@@ -184,6 +244,7 @@ export default function CharacterProfile({ character, spells, items }) {
               proficiencyBonus: character["stats"]["proficiencyBonus"],
               proficiencies: [
                 {
+                  key: "hitPoints",
                   title: "Puntos de vida",
                   content: `${character.stats.hitPoints.current ?? character.stats.hitPoints.max} / ${
                     character.stats.hitPoints.max
@@ -192,6 +253,7 @@ export default function CharacterProfile({ character, spells, items }) {
                     .join(", ")} + ${CreatureCalculations.modifier(character.stats.abilityScores.constitution)})`,
                 },
                 {
+                  key: "armorClass",
                   title: "Clase de armadura",
                   content: `${character.stats.armorClass} (${
                     ArrayUtil.isNotEmpty(character.stats.equipment.armor)
@@ -203,26 +265,32 @@ export default function CharacterProfile({ character, spells, items }) {
                   })`,
                 },
                 {
+                  key: "speed",
                   title: "Velocidad",
                   content: CreatureCalculations.getSpeedString(character.stats.speed),
                 },
                 {
+                  key: "savingThrows",
                   title: "Tiradas de salvación con competencia",
                   content: CreatureCalculations.getSavingThrowString(
                     character.stats.abilityScores,
                     character.stats.savingThrows,
-                    character.stats.proficiencyBonus
+                    character.stats.proficiencyBonus,
+                    character
                   ),
                 },
                 {
+                  key: "skills",
                   title: "Habilidades con competencia",
                   content: CreatureCalculations.getAbilitiesString(
                     character.stats.abilityScores,
                     character.stats.skills,
-                    character.stats.proficiencyBonus
+                    character.stats.proficiencyBonus,
+                    character
                   ),
                 },
                 {
+                  key: "senses",
                   title: "Sentidos",
                   content: `Percepción pasiva ${CreatureCalculations.getPassivePerception(
                     character.stats,
@@ -276,7 +344,7 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((_) => null);
+  const token = await getToken({ req, secret, raw: true }).catch((_) => null);
 
   const headers = {
     Accept: "application/json",

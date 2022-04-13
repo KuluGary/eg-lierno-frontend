@@ -20,7 +20,7 @@ import { Avatar, Container, TabletopCanvas } from "components";
 import { Table } from "components/Table";
 import Api from "helpers/api";
 import { useSocket } from "hooks/useSocket";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 function AddElementModal({ open, setOpen, creatures, addNewCreature }) {
@@ -71,7 +71,7 @@ function CampaignTabletop({ campaign, dm, players, characters }) {
   const [openAddElementModal, setOpenAddElementModal] = useState(false);
   const [creatures, setCreatures] = useState({});
   const [currentTurn, setCurrentTurn] = useState(0);
-  const [session] = useSession();
+  const { data: session } = useSession();
   const socket = useSocket();
 
   useEffect(() => fetchNewCreatures(), []);

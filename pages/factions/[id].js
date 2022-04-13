@@ -3,7 +3,7 @@ import { Avatar, Container, Layout, Metadata } from "components";
 import { Table } from "components/Table";
 import Api from "helpers/api";
 import { StringUtil } from "helpers/string-util";
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import { useQueryState } from "hooks/useQueryState";
 
 function a11yProps(index) {
@@ -81,7 +81,7 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   const headers = {
     Accept: "application/json",

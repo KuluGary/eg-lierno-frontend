@@ -2,7 +2,7 @@ import { CacheProvider } from "@emotion/react";
 import { useMediaQuery } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Provider as AuthProvider } from "next-auth/client";
+import { SessionProvider as AuthProvider } from "next-auth/react";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import PropTypes from "prop-types";
@@ -42,10 +42,7 @@ export default function MyApp(props) {
         setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
 
         if (typeof window !== undefined) {
-          localStorage.setItem(
-            "prefers-color-scheme",
-            mode === "light" ? "dark" : "light"
-          );
+          localStorage.setItem("prefers-color-scheme", mode === "light" ? "dark" : "light");
         }
       },
     }),
@@ -65,10 +62,7 @@ export default function MyApp(props) {
   );
 
   return (
-    <AuthProvider
-      options={{ clientMaxAge: 0, keepAlive: 0 }}
-      session={pageProps.session}
-    >
+    <AuthProvider options={{ clientMaxAge: 0, keepAlive: 0 }} session={pageProps.session}>
       <ToastContainer
         closeOnClick
         draggable

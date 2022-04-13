@@ -11,7 +11,7 @@ import {
 } from "components/CampaignProfile";
 import Api from "helpers/api";
 import { useQueryState } from "hooks/useQueryState";
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import { useState } from "react";
 
 const tabs = [
@@ -105,7 +105,7 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   const headers = {
     Accept: "application/json",

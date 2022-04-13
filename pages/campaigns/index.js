@@ -3,9 +3,8 @@ import { Layout, Container } from "components";
 import { Table } from "components/Table";
 import Api from "helpers/api";
 import Head from "next/head";
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import Router from "next/router";
-import { useSession } from "next-auth/client";
 
 export default function Campaigns({ campaigns }) {
   return (
@@ -28,8 +27,7 @@ export default function Campaigns({ campaigns }) {
             _id: "_id",
             name: "name",
             avatar: null,
-            description: "flavor.synopsis",
-            owner: "dm"
+            owner: "dm",
           }}
           data={campaigns}
           src={"/campaigns/{ID}"}
@@ -44,7 +42,7 @@ export async function getServerSideProps(context) {
   const { req } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   const headers = {
     Accept: "application/json",
@@ -58,7 +56,7 @@ export async function getServerSideProps(context) {
 
   const campaigns = await Api.fetchInternal("/campaigns", {
     headers,
-  }).catch((_) => null)
+  }).catch((_) => null);
 
   return {
     props: {

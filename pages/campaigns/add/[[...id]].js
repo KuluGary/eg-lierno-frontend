@@ -3,7 +3,7 @@ import { Container, Layout } from "components";
 import { Details, Discord, Map } from "components/CampaignCreation";
 import Api from "helpers/api";
 import { StringUtil } from "helpers/string-util";
-import jwt from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -117,7 +117,7 @@ export async function getServerSideProps(context) {
   const { req, query } = context;
   const secret = process.env.SECRET;
 
-  const token = await jwt.getToken({ req, secret, raw: true }).catch((e) => console.error(e));
+  const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
   if (!token) {
     return {

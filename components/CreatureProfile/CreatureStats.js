@@ -1,9 +1,36 @@
+import { Box, Divider, Tab, Table, Tabs, Typography } from "@mui/material";
+import {
+  Brain,
+  CrackedShield,
+  DeathSkull,
+  Ear,
+  HeartBeat,
+  MightyForce,
+  MuscleUp,
+  Resistance,
+  Shield,
+  Sprint,
+} from "components/icons";
+import { ExpandedTableRow } from "components/Table";
+import { CreatureCalculations } from "helpers/creature-calculations";
+import { StringUtil } from "helpers/string-util";
 import { useState } from "react";
 import { Container, HTMLContainer } from "..";
-import { Box, Divider, Typography, Tabs, Tab } from "@mui/material";
 import StatComponent from "./StatComponent";
-import { StringUtil } from "helpers/string-util";
-import { CreatureCalculations } from "helpers/creature-calculations";
+
+const listIcons = {
+  // hitPoints: HeartBeat,
+  // armorClass: Shield,
+  // speed: Sprint,
+  // savingThrows: MightyForce,
+  // skills: Brain,
+  // senses: Ear,
+  // challengeRating: DeathSkull,
+  // damageVulnerabilities: CrackedShield,
+  // damageResistances: Resistance,
+  // damageImmunities: Resistance,
+  // conditionImmunities: MuscleUp,
+};
 
 export function CreatureStats({ Header, containerStyle, data }) {
   const [tab, setTab] = useState(0);
@@ -34,14 +61,24 @@ export function CreatureStats({ Header, containerStyle, data }) {
         <Box component="ul" sx={{ p: 0, listStyleType: "none" }}>
           {data.proficiencies
             ?.filter(({ title, content }) => !!title && !!content)
-            .map(({ title, content }, index) => (
-              <Box key={index} component="li" sx={{ marginBlock: 0.5 }}>
-                <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
-                  {title + "."}
-                </Typography>
-                <Typography variant="body1">{content}</Typography>
-              </Box>
-            ))}
+            .map(({ key, title, content }, index) => {
+              const Icon = listIcons[key];
+
+              return (
+                <Box key={index} component="li" sx={{ display: "flex", alignItems: "center" }}>
+                  {!!Icon && <Icon size={20} color="#fff" sx={{ marginRight: 15 }} />}
+                  <Box sx={{ flexGrow: 1, width: "100%" }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ mr: 1, float: "left", fontWeight: "bold", width: "fit-content", whiteSpace: "nowrap" }}
+                    >
+                      {`${title}. `}
+                    </Typography>
+                    <Typography variant="body1">{content}</Typography>
+                  </Box>
+                </Box>
+              );
+            })}
         </Box>
       </Box>
       <Divider />
@@ -59,7 +96,7 @@ export function CreatureStats({ Header, containerStyle, data }) {
           ))}
       </Tabs>
       <Divider />
-      <Box component="div" sx={{ paddingInline: 3 }}>
+      <Box component="div">
         {data.abilities
           ?.filter(({ content }) => content?.length > 0 || Object.keys(content ?? {})?.length > 0)
           .map(({ title, content }, index) => {
@@ -72,19 +109,24 @@ export function CreatureStats({ Header, containerStyle, data }) {
                   id={`tabpanel-${index}`}
                   aria-labelledby={`tab-${index}`}
                 >
-                  <Box component="ul" sx={{ listStyle: "none", p: 0 }}>
+                  <Table size="small">
                     {tab === index &&
-                      content.map((attack, i) => (
-                        <Box component="li" sx={{ marginBlock: 2 }} key={i}>
-                          <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
-                            {attack.name + "."}
-                          </Typography>
-                          <HTMLContainer
-                            content={CreatureCalculations.getAttackStrings(attack, data.stats, data.proficiencyBonus)}
-                          />
-                        </Box>
+                      content.map((attack, index) => (
+                        <ExpandedTableRow
+                          index={index}
+                          title={attack.name}
+                          content={
+                            <HTMLContainer
+                              content={CreatureCalculations.getAttackStrings(
+                                attack,
+                                data.proficiencyBonus,
+                                data.character
+                              )}
+                            />
+                          }
+                        />
                       ))}
-                  </Box>
+                  </Table>
                 </Box>
               );
             }
@@ -100,52 +142,44 @@ export function CreatureStats({ Header, containerStyle, data }) {
                   id={`tabpanel-${index}`}
                   aria-labelledby={`tab-${index}`}
                 >
-                  <Box component="ul" sx={{ listStyle: "none", p: 0 }}>
+                  <Table size="small">
                     {tab === index &&
                       characterSpells.map((spells, index) => (
-                        <Box component="li" sx={{ marginBlock: 2 }} key={index}>
-                          <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
-                            {StringUtil.getSpellcastingName(spells.caster, data.classes)}
-                          </Typography>
-                          <HTMLContainer
-                            content={CreatureCalculations.getSpellStrings(
-                              spells,
-                              spellData,
-                              data.stats,
-                              data.name,
-                              data.classes,
-                              data.proficiencyBonus
-                            )}
-                          />
-                        </Box>
+                        <ExpandedTableRow
+                          index={index}
+                          title={StringUtil.getSpellcastingName(spells.caster, data.classes)}
+                          content={
+                            <HTMLContainer
+                              content={CreatureCalculations.getSpellStrings(
+                                spells,
+                                spellData,
+                                data.stats,
+                                data.name,
+                                data.classes,
+                                data.proficiencyBonus
+                              )}
+                            />
+                          }
+                        />
                       ))}
-                  </Box>
+                  </Table>
                 </Box>
               );
             }
 
             return (
-              <Box
-                key={index}
-                component="div"
-                role="tabpanel"
-                id={`tabpanel-${index}`}
-                aria-labelledby={`tab-${index}`}
-              >
-                <Box component="ul" sx={{ listStyle: "none", p: 0 }}>
-                  {tab === index &&
-                    content
-                      ?.filter(({ name, description }) => !!name || !!description)
-                      .map(({ name, description }, index) => (
-                        <Box key={index} component="li" sx={{ marginBlock: 2 }}>
-                          <Typography variant="body1" sx={{ fontWeight: "bold", float: "left", mr: 1 }}>
-                            {name + "."}
-                          </Typography>
-                          <HTMLContainer content={StringUtil.replaceMarkDownWithHtml(description)} />
-                        </Box>
-                      ))}
-                </Box>
-              </Box>
+              <Table size="small">
+                {tab === index &&
+                  content
+                    ?.filter(({ name, description }) => !!name || !!description)
+                    .map(({ name, description }, index) => (
+                      <ExpandedTableRow
+                        index={index}
+                        title={name}
+                        content={<HTMLContainer content={StringUtil.replaceMarkDownWithHtml(description)} />}
+                      />
+                    ))}
+              </Table>
             );
           })}
       </Box>

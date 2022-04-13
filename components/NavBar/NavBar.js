@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { AppBar, IconButton, Toolbar, Typography, Button, Menu, MenuItem, Container } from "@mui/material";
 import { Link } from "../Link/Link";
 import { Menu as MenuIcon } from "@mui/icons-material";
-import { signIn, signOut, useSession } from "next-auth/client";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { Avatar } from "../";
 import { useTheme } from "@mui/material/styles";
 import { useRouter } from "next/router";
@@ -10,7 +10,7 @@ import { StringUtil } from "helpers/string-util";
 
 export function NavBar({ open, handleDrawer, mode = "normal", containerRef = null, ...props }) {
   const router = useRouter();
-  const [session] = useSession();
+  const { data: session } = useSession();
   const [anchorEl, setAnchorEl] = useState(null);
   const isMainScreen = router.pathname === "/";
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -133,7 +133,7 @@ export function NavBar({ open, handleDrawer, mode = "normal", containerRef = nul
         {!!session ? (
           <>
             <IconButton onClick={handleMenu} color="inherit">
-              <Avatar src={session?.image} fallBackText={StringUtil.getInitials(session?.name || "")} />
+              <Avatar src={session?.picture} fallBackText={StringUtil.getInitials(session?.name || "")} />
             </IconButton>
           </>
         ) : (
@@ -160,7 +160,7 @@ export function NavBar({ open, handleDrawer, mode = "normal", containerRef = nul
         open={menuOpen}
         onClose={handleClose}
       >
-        <MenuItem>Mi cuenta</MenuItem>
+        <MenuItem disabled>Mi cuenta</MenuItem>
         <MenuItem onClick={handleLogout}>
           <Link href={`/api/auth/signout`}>Salir</Link>
         </MenuItem>

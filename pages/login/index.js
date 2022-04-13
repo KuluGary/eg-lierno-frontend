@@ -1,15 +1,16 @@
-import { useState } from "react";
-import Head from "next/head";
-import { Grid, Box, Typography, Button, Divider, Avatar, TextField, Paper } from "@mui/material";
-import { signIn, getSession, getProviders } from "next-auth/client";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { Avatar, Box, Button, Divider, Grid, Paper, TextField, Typography, CircularProgress } from "@mui/material";
 import { Copyright, Link } from "components";
 import { StringUtil } from "helpers/string-util";
+import { getProviders, getSession, signIn } from "next-auth/react";
+import Head from "next/head";
+import { useState } from "react";
 
 export default function Login({ providers }) {
   const regex = StringUtil.regex;
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState({ username: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const errorMessages = {
     username: "Este no es un nombre de usuario válido. Por favor, asegúrate que el email que introduces es correcto.",
     password:
@@ -36,6 +37,7 @@ export default function Login({ providers }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    setLoading(true);
     signIn("credentials", credentials);
   };
 
@@ -104,6 +106,7 @@ export default function Login({ providers }) {
               name="username"
               autoComplete="email"
               autoFocus
+              color="secondary"
               error={!!errors.username}
               onChange={handleChange}
               helperText={errors["username"]}
@@ -116,26 +119,30 @@ export default function Login({ providers }) {
               label="Contraseña"
               type="password"
               id="password"
+              color="secondary"
               autoComplete="current-password"
               error={!!errors.password}
               onChange={handleChange}
               helperText={errors["password"]}
             />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={hasErrors()}>
-              Entrar
+            <Button
+              type="submit"
+              fullWidth
+              variant="outlined"
+              color="secondary"
+              sx={{ marginBlock: 3, p: 1 }}
+              disabled={hasErrors() || loading}
+            >
+              {loading ? <CircularProgress size={25} color="secondary" /> : "Entrar"}
             </Button>
-            <Grid container>
-              <Grid item mobile={0}>
-                <Link href="#" variant="body2">
-                  Recuperar contraseña
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="/register" color="primary" variant="body2">
-                  {"¿No tienes una cuenta?"}
-                </Link>
-              </Grid>
-            </Grid>
+            <Box sx={{ display: "flex", justifyContent: "space-around" }}>
+              <Link href="#" variant="body2">
+                Recuperar contraseña
+              </Link>
+              <Link href="/register" color="primary" variant="body2">
+                {"¿No tienes una cuenta?"}
+              </Link>
+            </Box>
             <Copyright sx={{ mt: 5 }} />
           </Box>
         </Box>

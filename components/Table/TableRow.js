@@ -2,10 +2,10 @@ import { TableRow as MuiTableRow, TableCell, Typography, IconButton } from "@mui
 import { Box, useTheme } from "@mui/system";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { Tooltip, Avatar, Link, HTMLContainer } from "..";
-import { useSession } from "next-auth/client";
+import { useSession } from "next-auth/react";
 
-function TableRow({ data, onEdit = () => {}, onDelete, src }) {
-  const [session] = useSession();
+function TableRow({ data, onEdit = () => {}, onDelete = () => {}, src }) {
+  const { data: session } = useSession();
   const theme = useTheme();
   const editable = data.owner === session?.userId || data.owner === "*";
   const { _id, description, avatar, name, subtitle } = data;
@@ -89,9 +89,11 @@ function TableRow({ data, onEdit = () => {}, onDelete, src }) {
             )}
           </Box>
         </Box>
-        <Box component="div" sx={{ mt: "1em" }}>
-          <HTMLContainer content={description} numberOfLines={2} />
-        </Box>
+        {description && (
+          <Box component="div" sx={{ mt: "1em" }}>
+            <HTMLContainer content={description} numberOfLines={2} />
+          </Box>
+        )}
       </TableCell>
     </MuiTableRow>
   );
