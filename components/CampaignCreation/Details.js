@@ -61,6 +61,16 @@ export function Details({ campaign, setCampaign }) {
     }
   };
 
+  const getUserById = (characterId) => {
+    if (characterId === campaign.dm) return "Dungeon Master";
+
+    const user = friendList.find((user) => user.id === characterId);
+
+    if (user) return user?.label;
+
+    return "Otros";
+  };
+
   return (
     <Grid container spacing={3}>
       <Grid item laptop={12}>
@@ -149,6 +159,7 @@ export function Details({ campaign, setCampaign }) {
           value={campaign.characters}
           options={characterList}
           getOptionLabel={(option) => option.name}
+          groupBy={(option) => getUserById(option.createdBy)}
           renderTags={(value, getTagProps) =>
             value.map((option, index) => (
               <Chip
