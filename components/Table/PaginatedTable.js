@@ -5,12 +5,15 @@ import { TableRow, TableFooter, TableHeader } from ".";
 import { StringUtil } from "helpers/string-util";
 import Api from "helpers/api";
 import { FunctionUtil } from "helpers/function-util";
+import { usePersistedStorage } from "hooks/usePersistedStorage";
+import Card from "components/Card/Card";
 
 function PaginatedTable({ src, schema, onEdit, onDelete, isEditable, headerProps, fetchFrom, loading }) {
   const [displayData, setDisplayData] = useState(null);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = usePersistedStorage("rowsPerTable", 5);
   const [querySearch, setQuerySearch] = useState("");
   const [page, setPage] = useQueryState("page", 0, "number");
+  const [tableView, setTableView] = usePersistedStorage("tableView", true);
   const [total, setTotal] = useState(0);
 
   useEffect(() => !loading && fetchData(), [page, rowsPerPage, fetchFrom, loading]);
@@ -57,13 +60,20 @@ function PaginatedTable({ src, schema, onEdit, onDelete, isEditable, headerProps
   return (
     <>
       <Box sx={{ m: 2 }}>
-        <TableHeader querySearch={querySearch} onSearch={onSearch} {...headerProps} />
+        <TableHeader
+          tableView={tableView}
+          setTableView={setTableView}
+          querySearch={querySearch}
+          onSearch={onSearch}
+          {...headerProps}
+        />
       </Box>
       <MuiTable>
-        <TableBody>
+        <TableBody sx={tableView ? {} : { display: "flex", gap: "1em", flexWrap: "wrap", justifyContent: "center" }}>
           {displayData?.length > 0 &&
             displayData.map((element) => {
               const tableHeaders = { ...schema };
+              const Component = tableView ? TableRow : Card;
 
               Object.entries(schema).forEach(
                 ([key, value]) =>
@@ -72,20 +82,13 @@ function PaginatedTable({ src, schema, onEdit, onDelete, isEditable, headerProps
               );
 
               return (
-                <TableRow
+                <Component
                   key={element._id}
                   onEdit={!!onEdit ? () => onEdit(element._id) : null}
                   src={src}
                   onDelete={!!onDelete ? () => onDelete(element._id) : null}
                   isEditable={isEditable}
-                  data={{
-                    ...tableHeaders,
-                    // _id: StringUtil.getNestedKey(schema["_id"], element),
-                    // name: StringUtil.getNestedKey(schema["name"], element),
-                    // avatar: schema["avatar"] && StringUtil.getNestedKey(schema["avatar"], element),
-                    // description: schema["description"] && StringUtil.getNestedKey(schema["description"], element),
-                    // owner: schema["owner"] && (StringUtil.getNestedKey(schema["owner"], element) ?? "*"),
-                  }}
+                  data={{ ...tableHeaders }}
                 />
               );
             })}

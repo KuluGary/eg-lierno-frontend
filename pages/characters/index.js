@@ -1,5 +1,7 @@
+import { getCharacterSubtitle, getNpcSubtitle } from "@lierno/dnd-helpers";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { Container, FileUploaderModal, Layout } from "components";
+import { DeleteModal } from "components/DeleteModal/DeleteModal";
 import { PaginatedTable } from "components/Table";
 import Api from "helpers/api";
 import { useMounted } from "hooks/useMounted";
@@ -7,8 +9,6 @@ import { useQueryState } from "hooks/useQueryState";
 import Head from "next/head";
 import Router from "next/router";
 import { useState } from "react";
-import { DeleteModal } from "components/DeleteModal/DeleteModal";
-import { StringUtil } from "helpers/string-util";
 
 function a11yProps(index) {
   return {
@@ -131,7 +131,7 @@ export default function Character() {
               schema={{
                 _id: "_id",
                 name: "name",
-                subtitle: (e) => StringUtil.getCharacterSubtitle(e) ?? "",
+                subtitle: (e) => getCharacterSubtitle(e),
                 avatar: "flavor.portrait.avatar",
                 owner: "createdBy",
               }}
@@ -158,7 +158,7 @@ export default function Character() {
             <PaginatedTable
               schema={{
                 _id: "_id",
-                subtitle: (e) => StringUtil.getNpcSubtitle(e) ?? "",
+                subtitle: (e) => getNpcSubtitle(e) ?? "",
                 name: "name",
                 avatar: "flavor.portrait.avatar",
                 owner: "createdBy",

@@ -1,6 +1,7 @@
 import {
   Add as AddIcon,
   FilterList as FilterListIcon,
+  GridView as GridViewIcon,
   Search as SearchIcon,
   UploadFile as UploadFileIcon,
 } from "@mui/icons-material";
@@ -9,7 +10,7 @@ import { useTheme } from "@mui/system";
 import { useState } from "react";
 import { Container } from "..";
 
-const TableHeader = ({ onSearch, querySearch, Filters, onAdd, onUpload }) => {
+const TableHeader = ({ onSearch, querySearch, Filters, onAdd, onUpload, setTableView }) => {
   const theme = useTheme();
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -56,6 +57,24 @@ const TableHeader = ({ onSearch, querySearch, Filters, onAdd, onUpload }) => {
               <FilterListIcon fontSize="small" />
             </IconButton>
           )}
+          <IconButton
+            color="secondary"
+            onClick={() => setTableView((tv) => !tv)}
+            sx={{
+              border: `1px solid ${theme.palette.secondary.main}80`,
+              borderRadius: "8px",
+              padding: ".25em",
+              transition: theme.transitions.create(["border"], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+              }),
+              "&:hover": {
+                border: `1px solid ${theme.palette.secondary.main}`,
+              },
+            }}
+          >
+            <GridViewIcon fontSize="small" />
+          </IconButton>
           {!!onUpload && (
             <IconButton
               color="secondary"

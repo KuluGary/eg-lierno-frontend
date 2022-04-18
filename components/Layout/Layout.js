@@ -266,7 +266,9 @@ export function Layout({ children }) {
         open={menuOpen}
         onClose={handleClose}
       >
-        <MenuItem disabled>Mi cuenta</MenuItem>
+        <MenuItem disabled>
+          <Link href={"/account/settings"}>Mi cuenta</Link>
+        </MenuItem>
         <MenuItem onClick={handleLogout}>
           <Link href={`/api/auth/signout`}>Salir</Link>
         </MenuItem>
