@@ -68,7 +68,7 @@ export function CampaignCreatures({ campaign }) {
                 onEdit={(id) => Router.push(`/npcs/add/${id}`)}
                 onDelete={() => {}}
                 headerProps={{
-                  onAdd: () => Router.push("/characters/add"),
+                  onAdd: () => Router.push("/npcs/add"),
                 }}
               />
             )}
@@ -90,11 +90,12 @@ export function CampaignCreatures({ campaign }) {
                   owner: "createdBy"
                 }}
                 data={creatures.monsters}
+                src={"/bestiary/{ID}"}
                 onView={(id) => Router.push(`/bestiary/${id}`)}
                 onEdit={(id) => Router.push(`/bestiary/add/${id}`)}
                 onDelete={() => {}}
                 headerProps={{
-                  onAdd: () => Router.push("/characters/add"),
+                  onAdd: () => Router.push("/bestiary/add"),
                 }}
               />
             )}
