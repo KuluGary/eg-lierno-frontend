@@ -22,6 +22,7 @@ import {
   getGenderedClass,
   getModifier,
   getPassivePerception,
+  getProficiencyBonus,
   getSavingThrowString,
   getSpeedString,
   getStatBonus,
@@ -276,6 +277,11 @@ export default function CharacterProfile({ character, spells, items }) {
                   })`,
                 },
                 {
+                  key: "proficiencyBonus",
+                  title: "Bonificador de competencia",
+                  content: getProficiencyBonus(character)
+                },
+                {
                   key: "speed",
                   title: "Velocidad",
                   content: getSpeedString(character.stats.speed),
@@ -296,7 +302,7 @@ export default function CharacterProfile({ character, spells, items }) {
                   content: `Percepción pasiva ${getPassivePerception(
                     character
                   )}, bono de Iniciativa ${getOperatorString(
-                    getModifier(getStatBonus("initiativeBonus", character, "stats.abilityScores.dexterity"))
+                    getModifier(getStatBonus("initiativeBonus", character, "stats.abilityScores.dexterity")?.total)
                   )}`,
                 },
               ],
