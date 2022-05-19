@@ -1,27 +1,16 @@
 import React from "react";
-import clsx from "clsx";
+import { List, ListItem, ListItemIcon, ListItemText, Paper, Link, Drawer } from "@mui/material";
 import {
-  List,
-  Divider,
-  IconButton,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Paper,
-  Link,
-  Toolbar,
-  Drawer,
-} from "@mui/material";
-import {
-  ChevronLeft as ChevronLeftIcon,
   AccountCircle as AccountCircleIcon,
   MenuBook as MenuBookIcon,
   Explore as ExploreIcon,
 } from "@mui/icons-material";
 import { useRouter } from "next/router";
 import { useTheme } from "@emotion/react";
+import { useWidth } from "../../hooks/useWidth";
+import { useSession } from "next-auth/react";
 
-const items = [
+const categories = [
   {
     to: "/characters",
     tag: "Personajes",
@@ -52,17 +41,34 @@ const BottomNavigation = () => {
         width: "100vw",
         borderRadius: 0,
         height: 80,
-        display: {
-          mobile: "block",
-          laptop: "none",
-        },
+        display: "block",
       }}
     >
-      <List>
-        {items.map(({ to, tag, Icon }) => (
-          <Link key={to} href={to}>
-            <ListItem button selected={router.pathname.includes(to)}>
-              <ListItemIcon>
+      <List sx={{ display: "flex", width: "100vw", justifyContent: "space-evenly", paddingTop: 0 }}>
+        {categories.map(({ to, tag, Icon }) => (
+          <Link
+            key={to}
+            href={to}
+            sx={{
+              textDecoration: "none",
+              color: (t) => t.palette.background.contrastText,
+              width: "100%",
+
+              flexBasis: "100%",
+              flexGrow: 1,
+            }}
+          >
+            <ListItem
+              button
+              selected={router.pathname.includes(to)}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <ListItemIcon sx={{ justifyContent: "center" }}>
                 <Icon />
               </ListItemIcon>
               <ListItemText
@@ -79,64 +85,69 @@ const BottomNavigation = () => {
   );
 };
 
-const SideNavigation = (props) => {
+const SideNavigation = ({ open }) => {
   const theme = useTheme();
   const router = useRouter();
+  const drawerWidth = 240;
 
   return (
     <Drawer
-    variant="permanent"
-      open={props.open}
+      variant="permanent"
+      open={open}
+      PaperProps={{
+        elevation: 0,
+        sx: {
+          background: "none",
+          backgroundColor: theme.palette.background.body,
+        },
+      }}
       sx={{
+        background: "none",
+        backgroundColor: theme.palette.background.body,
         "& .MuiDrawer-paper": {
-          display: {
-            mobile: "none",
-            laptop: "block"
-          },          
+          background: "none",
+          backgroundColor: theme.palette.background.body,
+          height: "100%",
           position: "relative",
           whiteSpace: "nowrap",
-          width: 240,
+          border: "none",
+          width: drawerWidth,
           transition: theme.transitions.create("width", {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
           }),
           boxSizing: "border-box",
-          ...(!props.open && {
+          ...(!open && {
             overflowX: "hidden",
             transition: theme.transitions.create("width", {
               easing: theme.transitions.easing.sharp,
               duration: theme.transitions.duration.leavingScreen,
             }),
             width: theme.spacing(7),
-            
-            // [theme.breakpoints.up("sm")]: {
-            //   width: theme.spacing(9),
-            // },
+            [theme.breakpoints.up("sm")]: {
+              width: theme.spacing(9),
+            },
           }),
         },
       }}
     >
-      <Toolbar
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-end",
-          px: [1],
-        }}
-      >
-        <IconButton onClick={props.handleDrawer}>
-          <ChevronLeftIcon />
-        </IconButton>
-      </Toolbar>
-      <Divider />
-      <List>
-        {items.map(({ to, tag, Icon }) => (
-          <Link key={to} onClick={props.handleDrawer} to={to}>
-            <ListItem button selected={router.pathname.includes(to)}>
+      <List sx={{ overflowX: "hidden" }}>
+        {categories.map(({ to, tag, Icon }) => (
+          <Link key={to} href={to} sx={{ textDecoration: "none", color: theme.palette.background.contrastText }}>
+            <ListItem
+              button
+              selected={router.pathname.includes(to)}
+              sx={{ borderTopRightRadius: "12px", borderBottomRightRadius: "12px" }}
+            >
               <ListItemIcon>
                 <Icon />
               </ListItemIcon>
-              <ListItemText primary={tag} />
+              <ListItemText
+                primary={tag}
+                primaryTypographyProps={{
+                  variant: "overline",
+                }}
+              />
             </ListItem>
           </Link>
         ))}
@@ -146,10 +157,14 @@ const SideNavigation = (props) => {
 };
 
 export function SecondaryNav(props) {
-  return (
-    <>
-      <BottomNavigation />
-      <SideNavigation {...props} />
-    </>
-  );
+  const width = useWidth();
+  const { status } = useSession();
+
+  console.log(status);
+
+  if (status !== "authenticated") return <React.Fragment />;
+
+  if (width.down("tablet")) return <BottomNavigation {...props} />;
+
+  return <SideNavigation {...props} />;
 }
