@@ -1,3 +1,5 @@
+import { getOperatorString } from "@lierno/core-helpers";
+import { getAbilitiesString, getAttackStrings, getExperienceByCr, getModifier, getSavingThrowString, getSpeedString } from "@lierno/dnd-helpers";
 import { Delete as DeleteIcon, Edit as EditIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
 import { Box, CircularProgress, Grid, IconButton, Typography, MenuItem } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -5,7 +7,6 @@ import { Layout, Metadata } from "components";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
 import download from "downloadjs";
 import Api from "helpers/api";
-import { CreatureCalculations } from "helpers/creature-calculations";
 import { ArrayUtil, StringUtil } from "helpers/string-util";
 import { getToken } from "next-auth/jwt";
 import Head from "next/head";
@@ -158,9 +159,8 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                   title: "Puntos de vida",
                   content: `${npc["stats"]["hitPoints"]["current"] ?? npc["stats"]["hitPoints"]["max"]} / ${
                     npc["stats"]["hitPoints"]["max"]
-                  } (${npc["stats"]["hitDie"]["num"]}d${npc["stats"]["hitDie"]["size"]} ${StringUtil.getOperatorString(
-                    CreatureCalculations.modifier(npc["stats"]["abilityScores"]["constitution"]) *
-                      npc["stats"]["hitDie"]["num"]
+                  } (${npc["stats"]["hitDie"]["num"]}d${npc["stats"]["hitDie"]["size"]} ${getOperatorString(
+                    getModifier(npc["stats"]["abilityScores"]["constitution"]) * npc["stats"]["hitDie"]["num"]
                   )})`,
                 },
                 {
@@ -175,24 +175,18 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                       : "sin armadura"
                   })`,
                 },
-                { key: "speed", title: "Velocidad", content: CreatureCalculations.getSpeedString(npc.stats.speed) },
+                { key: "speed", title: "Velocidad", content: getSpeedString(npc.stats.speed) },
                 {
                   key: "savingThrows",
                   title: "Tiradas de salvación con competencia",
-                  content: CreatureCalculations.getSavingThrowString(
-                    npc.stats.abilityScores,
-                    npc.stats.savingThrows,
-                    npc.stats.proficiencyBonus,
+                  content: getSavingThrowString(
                     npc
                   ),
                 },
                 {
                   key: "skills",
                   title: "Habilidades con competencia",
-                  content: CreatureCalculations.getAbilitiesString(
-                    npc["stats"]["abilityScores"],
-                    npc["stats"]["skills"],
-                    npc["stats"]["proficiencyBonus"],
+                  content: getAbilitiesString(
                     npc
                   ),
                 },
@@ -223,13 +217,13 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                 {
                   key: "challengeRating",
                   title: "Valor de desafío",
-                  content: `${npc["stats"]["challengeRating"]} (${CreatureCalculations.getExperienceByCr(
+                  content: `${npc["stats"]["challengeRating"]} (${getExperienceByCr(
                     npc["stats"]["challengeRating"]
                   )} puntos de experiencia)`,
                 },
               ],
               abilities: [
-                { title: "Ataques", content: npc["stats"]["attacks"] },
+                { title: "Ataques", content: getAttackStrings(npc) },
                 { title: "Acciones", content: npc["stats"]["actions"] },
                 { title: "Reacciones", content: npc["stats"]["reactions"] },
                 { title: "Habilidades", content: npc["stats"]["additionalAbilities"] },

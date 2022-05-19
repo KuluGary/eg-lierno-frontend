@@ -2,11 +2,11 @@ import { useQueryState } from "hooks/useQueryState";
 import { useCallback, useEffect, useState } from "react";
 import { Table as MuiTable, TableBody, Box, CircularProgress } from "@mui/material";
 import { TableRow, TableFooter, TableHeader } from ".";
-import { StringUtil } from "helpers/string-util";
 import Api from "helpers/api";
 import { FunctionUtil } from "helpers/function-util";
 import { usePersistedStorage } from "hooks/usePersistedStorage";
 import Card from "components/Card/Card";
+import { getNestedKey } from "@lierno/core-helpers";
 
 function PaginatedTable({ src, schema, onEdit, onDelete, isEditable, headerProps, fetchFrom, loading }) {
   const [displayData, setDisplayData] = useState(null);
@@ -78,7 +78,7 @@ function PaginatedTable({ src, schema, onEdit, onDelete, isEditable, headerProps
               Object.entries(schema).forEach(
                 ([key, value]) =>
                   (tableHeaders[key] =
-                    typeof value === "function" ? value(element) : StringUtil.getNestedKey(value, element))
+                    typeof value === "function" ? value(element) : getNestedKey(value, element))
               );
 
               return (

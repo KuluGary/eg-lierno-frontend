@@ -1,5 +1,7 @@
 import { ArrayUtil, StringUtil } from "./string-util";
 import customizable_stats from "helpers/json/customizable_stats";
+import { getModifier, getSpellSlots, getStatBonus } from "@lierno/dnd-helpers";
+import { getOperatorString } from "@lierno/core-helpers";
 
 const skillsJson = customizable_stats.skills;
 
@@ -1189,26 +1191,16 @@ export const CreatureCalculations = {
         ? proficiencyBonus
         : 0;
 
-    const extraBonus =
-      CreatureCalculations.getStatBonus("passivePerception", character, "stats.abilityScores.wisdom") ?? 0;
+    const extraBonus = getStatBonus("passivePerception", character, "stats.abilityScores.wisdom") ?? 0;
 
-    return (
-      10 +
-      CreatureCalculations.modifier(abilityScores.wisdom) +
-      CreatureCalculations.modifier(extraBonus) +
-      proficiencyModifier
-    );
+    return 10 + getModifier(abilityScores.wisdom) + getModifier(extraBonus) + proficiencyModifier;
   },
   getSavingThrowString: (abilityScores, savingThrows, proficiency, character) => {
     const modifiers = Object.keys(savingThrows ?? {})
       .filter((key) => savingThrows[key].proficient || savingThrows[key].expertise)
       .map((key) => {
-        const abilityScore = CreatureCalculations.getStatBonus(
-          `stats.abilityScores.${key}`,
-          character,
-          `stats.abilityScores.${key}`
-        );
-        let modifier = CreatureCalculations.modifier(abilityScore);
+        const abilityScore = getStatBonus(`stats.abilityScores.${key}`, character, `stats.abilityScores.${key}`);
+        let modifier = getModifier(abilityScore);
 
         if (savingThrows[key].expertise) {
           modifier += proficiency * 2;
@@ -1216,7 +1208,7 @@ export const CreatureCalculations = {
           modifier += proficiency;
         }
 
-        return `${statLabels[key]} ${StringUtil.getOperatorString(modifier)} `;
+        return `${statLabels[key]} ${getOperatorString(modifier)} `;
       });
 
     return modifiers.join(", ");
@@ -1226,13 +1218,13 @@ export const CreatureCalculations = {
       const modifiers = Object.entries(skills)
         .filter(([_, skill]) => skill.proficient || skill.expertise)
         .map(([name, skill]) => {
-          const abilityScore = CreatureCalculations.getStatBonus(
+          const abilityScore = getStatBonus(
             `stats.abilityScores.${skill.modifier}`,
             character,
             `stats.abilityScores.${skill.modifier}`
           );
 
-          let modifier = CreatureCalculations.modifier(abilityScore);
+          let modifier = getModifier(abilityScore);
 
           if (skill.expertise) {
             modifier += parseInt(proficiency) * 2;
@@ -1240,7 +1232,7 @@ export const CreatureCalculations = {
             modifier += parseInt(proficiency);
           }
 
-          return `${skillsJson[name]?.name} ${StringUtil.getOperatorString(modifier)} (${statLabels[skill.modifier]})`;
+          return `${skillsJson[name]?.name} ${getOperatorString(modifier)} (${statLabels[skill.modifier]})`;
         });
 
       return modifiers.join(", ");
@@ -1276,11 +1268,11 @@ export const CreatureCalculations = {
     type = `Ataque de arma ${type.join(" o ")}.`;
     range = range.join(" o ");
 
-    const abilityScore = CreatureCalculations.getStatBonus(`stats.abilityScores.${bonusStat}`, character);
+    const abilityScore = getStatBonus(`stats.abilityScores.${bonusStat}`, character);
 
-    toHitBonus = CreatureCalculations.modifier(abilityScore) + (attack.proficient ? proficiency : 0);
+    toHitBonus = getModifier(abilityScore) + (attack.proficient ? proficiency : 0);
 
-    damageBonus = CreatureCalculations.modifier(abilityScore);
+    damageBonus = getModifier(abilityScore);
 
     return `<p><em>${type}</em> 1d20 ${StringUtil.getOperatorString(
       toHitBonus
@@ -1367,7 +1359,7 @@ export const CreatureCalculations = {
     });
 
     if (!!modifier) {
-      const abilityScoreModifier = CreatureCalculations.modifier(abilityScores[modifier]);
+      const abilityScoreModifier = getModifier(abilityScores[modifier]);
 
       spellDC = 8 + parseInt(proficiency) + parseInt(abilityScoreModifier);
       spellBonus = parseInt(proficiency) + parseInt(abilityScoreModifier);
@@ -1390,11 +1382,7 @@ export const CreatureCalculations = {
         spellString.description += `<li>${
           parseInt(key) === 0
             ? "<b>Trucos (a voluntad)</b>"
-            : `<b>Nivel ${key} (${CreatureCalculations.getSpellSlots(
-                parseInt(key) - 1,
-                classes,
-                spellcasting
-              )} huecos)</b>`
+            : `<b>Nivel ${key} (${getSpellSlots(parseInt(key) - 1, classes, spellcasting)} huecos)</b>`
         }: ${spellStr}.</li>`;
       }
     });

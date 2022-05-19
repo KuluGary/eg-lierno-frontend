@@ -2,9 +2,9 @@ import { Box, Divider, Grid, Tab, Tabs } from "@mui/material";
 import { Avatar, Container, Layout, Metadata } from "components";
 import { Table } from "components/Table";
 import Api from "helpers/api";
-import { StringUtil } from "helpers/string-util";
 import { getToken } from "next-auth/jwt";
 import { useQueryState } from "hooks/useQueryState";
+import { getInitials } from "@lierno/core-helpers";
 
 function a11yProps(index) {
   return {
@@ -25,7 +25,7 @@ export default function FactionProfile({ faction, npcs }) {
         <Grid item laptop={12}>
           <Container noPadding>
             <Box component="div" sx={{ display: "flex", alignItems: "center", p: 3 }}>
-              <Avatar src={faction?.image} fallBackText={StringUtil.getInitials(faction?.name ?? "")} size={45} />
+              <Avatar src={faction?.image} fallBackText={getInitials(faction?.name ?? "")} size={45} />
               <Box component="div" sx={{ marginInline: 3 }}>
                 {faction?.name}
               </Box>

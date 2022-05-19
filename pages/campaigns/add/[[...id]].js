@@ -1,3 +1,4 @@
+import { setNestedKey } from "@lierno/core-helpers";
 import { Box, Button, Container as MuiContainer, Tab, Tabs, Typography } from "@mui/material";
 import { Container, Layout } from "components";
 import { Details, Discord, Map } from "components/CampaignCreation";
@@ -55,7 +56,7 @@ export default function AddCampaign({ campaignData }) {
   };
 
   const handleCampaignChange = (key, value) => {
-    setCampaign({ ...StringUtil.setNestedKey(key, campaign, value) });
+    setCampaign({ ...setNestedKey(key, campaign, value) });
   };
 
   const handleSubmit = () => {

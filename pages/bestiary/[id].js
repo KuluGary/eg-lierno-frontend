@@ -1,14 +1,13 @@
-import Head from "next/head";
-import { Typography, Box, IconButton, Divider, Grid } from "@mui/material";
+import { Typography, Box, IconButton, Grid } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
 import { Layout, Metadata } from "components";
-import { StringUtil } from "helpers/string-util";
 import { useTheme } from "@mui/material/styles";
 import Api from "helpers/api";
 import { getToken } from "next-auth/jwt";
-import { CreatureCalculations } from "helpers/creature-calculations";
 import Router from "next/router";
+import { getOperatorString } from "@lierno/core-helpers";
+import { getAbilitiesString, getExperienceByCr, getModifier, getSavingThrowString, getSpeedString } from "@lierno/dnd-helpers";
 
 export default function MonsterProfile({ monster, spells }) {
   const theme = useTheme();
@@ -125,8 +124,8 @@ export default function MonsterProfile({ monster, spells }) {
                   title: "Puntos de vida",
                   content: `${monster["stats"]["hitPoints"]["max"]} (${monster["stats"]["hitDie"]["num"]}d${
                     monster["stats"]["hitDie"]["size"]
-                  } ${StringUtil.getOperatorString(
-                    CreatureCalculations.modifier(monster["stats"]["abilityScores"]["constitution"]) *
+                  } ${getOperatorString(
+                    getModifier(monster["stats"]["abilityScores"]["constitution"]) *
                       monster["stats"]["hitDie"]["num"]
                   )})`,
                 },
@@ -134,10 +133,10 @@ export default function MonsterProfile({ monster, spells }) {
                   title: "Clase de armadura",
                   content: `${monster["stats"]["armorClass"]} (${monster["stats"]["armorType"] ?? ""})`,
                 },
-                { title: "Velocidad", content: CreatureCalculations.getSpeedString(monster.stats.speed) },
+                { title: "Velocidad", content: getSpeedString(monster.stats.speed) },
                 {
                   title: "Tiradas de salvación con competencia",
-                  content: CreatureCalculations.getSavingThrowString(
+                  content: getSavingThrowString(
                     monster.stats.abilityScores,
                     monster.stats.savingThrows,
                     monster.stats.proficiencyBonus
@@ -145,7 +144,7 @@ export default function MonsterProfile({ monster, spells }) {
                 },
                 {
                   title: "Habilidades con competencia",
-                  content: CreatureCalculations.getAbilitiesString(
+                  content: getAbilitiesString(
                     monster["stats"]["abilityScores"],
                     monster["stats"]["skills"],
                     monster["stats"]["proficiencyBonus"]
@@ -173,7 +172,7 @@ export default function MonsterProfile({ monster, spells }) {
                 },
                 {
                   title: "Valor de desafío",
-                  content: `${monster["stats"]["challengeRating"]} (${CreatureCalculations.getExperienceByCr(
+                  content: `${monster["stats"]["challengeRating"]} (${getExperienceByCr(
                     monster["stats"]["challengeRating"]
                   )} puntos de experiencia)`,
                 },

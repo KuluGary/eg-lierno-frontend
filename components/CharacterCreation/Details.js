@@ -12,25 +12,25 @@ import {
 } from "@mui/material";
 import { Help as HelpOutlineIcon, AddPhotoAlternate as AddPhotoAlternateIcon } from "@mui/icons-material";
 import { useState } from "react";
-import { StringUtil } from "helpers/string-util";
 import { HTMLEditor } from "components";
 import { useRouter } from "next/router";
 import ImageUploader from "components/ImageUploader/ImageUploader";
+import { getGendered } from "@lierno/core-helpers"
 
 export function Details({ creature, setCreature }) {
   const router = useRouter();
   const theme = useTheme();
   const alignments = [
     {
-      label: StringUtil.generiza("Legal bueno", "Legal buena", "Legal buene", creature?.flavor?.traits?.pronoun),
+      label: getGendered("Legal bueno", "Legal buena", "Legal buene", creature?.flavor?.traits?.pronoun),
       description: "Se puede contar con que estas criaturas hagan lo correcto tal y como espera la sociedad.",
     },
     {
-      label: StringUtil.generiza("Neutral bueno", "Neutral buena", "Neutral buene", creature?.flavor?.traits?.pronoun),
+      label: getGendered("Neutral bueno", "Neutral buena", "Neutral buene", creature?.flavor?.traits?.pronoun),
       description: "Son gente que da lo mejor de sí misma para ayudar a los demás de acuerdo a sus necesidades.",
     },
     {
-      label: StringUtil.generiza("Caótico bueno", "Caótica buena", "Caótique buene", creature?.flavor?.traits?.pronoun),
+      label: getGendered("Caótico bueno", "Caótica buena", "Caótique buene", creature?.flavor?.traits?.pronoun),
       description:
         "Estas criaturas actúan como les dicta su conciencia, con pocos miramientos a lo que esperan los demás.",
     },
@@ -44,7 +44,7 @@ export function Details({ creature, setCreature }) {
         "Este alineamiento es el de los que prefieren evitar las cuestiones morales y no se ponen de ningún lado, sino que hacen lo que les parece mejor en cada momento. ",
     },
     {
-      label: StringUtil.generiza(
+      label: getGendered(
         "Caótico neutral",
         "Caótica neutral",
         "Caótique neutral",
@@ -53,17 +53,17 @@ export function Details({ creature, setCreature }) {
       description: "Estas criaturas siguen sus caprichos, poniendo su libertad personal por encima de todo lo demás.",
     },
     {
-      label: StringUtil.generiza("Legal malo", "Legal mala", "Legal male", creature?.flavor?.traits?.pronoun),
+      label: getGendered("Legal malo", "Legal mala", "Legal male", creature?.flavor?.traits?.pronoun),
       description:
         "Son criaturas que cogen lo que quieren metódicamente, dentro de un código de tradición, lealtad y orden.",
     },
     {
-      label: StringUtil.generiza("Neutral malo", "Neutral mala", "Neutal male", creature?.flavor?.traits?.pronoun),
+      label: getGendered("Neutral malo", "Neutral mala", "Neutal male", creature?.flavor?.traits?.pronoun),
       description:
         "Este alineamiento es el de los que hacen lo que sea para salirse con la suya, sin compasión ni escrúpulos.",
     },
     {
-      label: StringUtil.generiza("Caótico malo", "Caótica mala", "Caótique male", creature?.flavor?.traits?.pronoun),
+      label: getGendered("Caótico malo", "Caótica mala", "Caótique male", creature?.flavor?.traits?.pronoun),
       description:
         "Estas criaturas actúan con una violencia arbitraria, estimulada por su avaricia, su odio o su sed de sangre.",
     },
@@ -71,12 +71,12 @@ export function Details({ creature, setCreature }) {
   const pronouns = ["El", "La", "Le"];
   const isCharacter = router.pathname.includes("characters");
   const sizes = [
-    StringUtil.generiza("Diminuto", "Diminuta", "Diminute", creature?.flavor?.traits.pronoun),
-    StringUtil.generiza("Pequeño", "Pequeña", "Pequeñe", creature?.flavor?.traits.pronoun),
-    StringUtil.generiza("Mediano", "Mediana", "Mediane", creature?.flavor?.traits.pronoun),
+    getGendered("Diminuto", "Diminuta", "Diminute", creature?.flavor?.traits.pronoun),
+    getGendered("Pequeño", "Pequeña", "Pequeñe", creature?.flavor?.traits.pronoun),
+    getGendered("Mediano", "Mediana", "Mediane", creature?.flavor?.traits.pronoun),
     "Grande",
     "Enorme",
-    StringUtil.generiza("Gigantesco", "Gigantesca", "Gigantesque", creature?.flavor?.traits.pronoun),
+    getGendered("Gigantesco", "Gigantesca", "Gigantesque", creature?.flavor?.traits.pronoun),
   ];
   const [openUploader, setOpenUploader] = useState();
 

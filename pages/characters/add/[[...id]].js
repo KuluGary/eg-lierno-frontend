@@ -21,13 +21,13 @@ import {
   Barbute as BarbuteIcon,
   Backpack as BackpackIcon,
 } from "components/icons";
-import { StringUtil } from "helpers/string-util";
 import character_template from "helpers/json/character_template.json";
 import Api from "helpers/api";
 import { getToken } from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { getSession } from "next-auth/react";
+import { setNestedKey } from "@lierno/core-helpers";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -83,7 +83,7 @@ export default function AddCharacter({ character, classes, spells, items }) {
   };
 
   const handleCreatureChange = (key, value) => {
-    setCreature({ ...StringUtil.setNestedKey(key, creature, value) });
+    setCreature({ ...setNestedKey(key, creature, value) });
   };
 
   const handleSubmit = () => {

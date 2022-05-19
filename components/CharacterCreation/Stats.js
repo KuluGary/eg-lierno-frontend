@@ -16,9 +16,9 @@ import { Add as AddIcon, Close } from "@mui/icons-material";
 import { Container, HTMLEditor } from "components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDice } from "@fortawesome/free-solid-svg-icons";
-import { CreatureCalculations } from "helpers/creature-calculations";
 import { useRouter } from "next/router";
 import { skills, saves } from "../../helpers/json/customizable_stats.json";
+import { getModifier } from "@lierno/dnd-helpers";
 
 const scoreBonusOptions = [
   {
@@ -465,7 +465,7 @@ export function Stats({ creature, setCreature }) {
               <Container>
                 <Button
                   onClick={() => {
-                    const conModifier = CreatureCalculations.modifier(creature?.stats.abilityScores.constitution);
+                    const conModifier = getModifier(creature?.stats.abilityScores.constitution);
                     const modifiers = [];
 
                     if (isCharacter) {

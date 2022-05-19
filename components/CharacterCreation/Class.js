@@ -1,8 +1,8 @@
 import { Button, FormControl, Grid, IconButton, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { StringUtil } from "helpers/string-util";
 import { HTMLEditor } from "components";
 import { useRouter } from "next/router";
+import { getGenderedClass } from "@lierno/dnd-helpers";
 
 export function Class({ creature, setCreature, classes }) {
   const router = useRouter();
@@ -71,7 +71,7 @@ export function Class({ creature, setCreature, classes }) {
                   >
                     {(classes ?? []).map(({ name }, index) => (
                       <MenuItem key={index} value={name}>
-                        {StringUtil.generizaClase(name, creature.flavor.traits.pronoun?.toLowerCase())}
+                        {getGenderedClass(name, creature.flavor.traits.pronoun?.toLowerCase())}
                       </MenuItem>
                     ))}
                   </Select>

@@ -12,11 +12,10 @@ import {
   Sprint,
 } from "components/icons";
 import { ExpandedTableRow } from "components/Table";
-import { CreatureCalculations } from "helpers/creature-calculations";
-import { StringUtil } from "helpers/string-util";
 import { useState } from "react";
 import { Container, HTMLContainer } from "..";
 import StatComponent from "./StatComponent";
+import { getSpellcastingName, getSpellStrings, getStatBonus } from "@lierno/dnd-helpers";
 
 const listIcons = {
   // hitPoints: HeartBeat,
@@ -50,10 +49,12 @@ export function CreatureStats({ Header, containerStyle, data }) {
         }}
       >
         {Object.keys(data.stats)?.map((key) => {
-          const bonus =
-            CreatureCalculations.getStatBonus("stats.abilityScores." + key, data.character) ?? data.stats[key];
+          const bonusKey = `stats.abilityScores.${key}`;
+          const { total, base, bonusList } = getStatBonus(bonusKey, data.character, bonusKey);
 
-          return <StatComponent stat={bonus} label={key} key={key} />;
+          return (
+            <StatComponent stat={total} label={key} key={key} bonusKey={bonusKey} base={base} bonusList={bonusList} />
+          );
         })}
       </Box>
       <Divider />
@@ -100,37 +101,6 @@ export function CreatureStats({ Header, containerStyle, data }) {
         {data.abilities
           ?.filter(({ content }) => content?.length > 0 || Object.keys(content ?? {})?.length > 0)
           .map(({ title, content }, index) => {
-            if (title === "Ataques") {
-              return (
-                <Box
-                  key={index}
-                  component="div"
-                  role="tabpanel"
-                  id={`tabpanel-${index}`}
-                  aria-labelledby={`tab-${index}`}
-                >
-                  <Table size="small">
-                    {tab === index &&
-                      content.map((attack, index) => (
-                        <ExpandedTableRow
-                          index={index}
-                          title={attack.name}
-                          content={
-                            <HTMLContainer
-                              content={CreatureCalculations.getAttackStrings(
-                                attack,
-                                data.proficiencyBonus,
-                                data.character
-                              )}
-                            />
-                          }
-                        />
-                      ))}
-                  </Table>
-                </Box>
-              );
-            }
-
             if (title === "Hechizos") {
               const { characterSpells, spellData } = content;
 
@@ -147,19 +117,8 @@ export function CreatureStats({ Header, containerStyle, data }) {
                       characterSpells.map((spells, index) => (
                         <ExpandedTableRow
                           index={index}
-                          title={StringUtil.getSpellcastingName(spells.caster, data.classes)}
-                          content={
-                            <HTMLContainer
-                              content={CreatureCalculations.getSpellStrings(
-                                spells,
-                                spellData,
-                                data.stats,
-                                data.name,
-                                data.classes,
-                                data.proficiencyBonus
-                              )}
-                            />
-                          }
+                          title={getSpellcastingName(spells.caster, data.classes)}
+                          content={<HTMLContainer content={getSpellStrings(spells, spellData, data.character)} />}
                         />
                       ))}
                   </Table>
@@ -173,11 +132,7 @@ export function CreatureStats({ Header, containerStyle, data }) {
                   content
                     ?.filter(({ name, description }) => !!name || !!description)
                     .map(({ name, description }, index) => (
-                      <ExpandedTableRow
-                        index={index}
-                        title={name}
-                        content={<HTMLContainer content={StringUtil.replaceMarkDownWithHtml(description)} />}
-                      />
+                      <ExpandedTableRow index={index} title={name} content={<HTMLContainer content={description} />} />
                     ))}
               </Table>
             );

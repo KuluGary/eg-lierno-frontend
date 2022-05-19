@@ -1,9 +1,9 @@
+import { stringToHsl } from "@lierno/core-helpers";
 import { Avatar as MuiAvatar } from "@mui/material";
-import { StringUtil } from "helpers/string-util";
 
 function Avatar({ src, fallBackText, size = 32 }) {
   return (
-    <MuiAvatar src={src} sx={{ bgcolor: StringUtil.stringToHsl(fallBackText), width: size, height: size }}>
+    <MuiAvatar src={src} sx={{ bgcolor: stringToHsl(fallBackText), width: size, height: size }}>
       {fallBackText}
     </MuiAvatar>
   );

@@ -1,15 +1,15 @@
+import { getGendered } from "@lierno/core-helpers";
 import { FormControl, Grid, MenuItem, Select, TextField, Typography, useTheme } from "@mui/material";
 import { HTMLEditor } from "components";
-import { StringUtil } from "helpers/string-util";
 
 export function Race({ creature, setCreature }) {
   const sizes = [
-    StringUtil.generiza("Diminuto", "Diminuta", "Diminute", creature.flavor.traits.pronoun),
-    StringUtil.generiza("Pequeño", "Pequeña", "Pequeñe", creature.flavor.traits.pronoun),
-    StringUtil.generiza("Mediano", "Mediana", "Mediane", creature.flavor.traits.pronoun),
+    getGendered("Diminuto", "Diminuta", "Diminute", creature.flavor.traits.pronoun),
+    getGendered("Pequeño", "Pequeña", "Pequeñe", creature.flavor.traits.pronoun),
+    getGendered("Mediano", "Mediana", "Mediane", creature.flavor.traits.pronoun),
     "Grande",
     "Enorme",
-    StringUtil.generiza("Gigantesco", "Gigantesca", "Gigantesque", creature.flavor.traits.pronoun),
+    getGendered("Gigantesco", "Gigantesca", "Gigantesque", creature.flavor.traits.pronoun),
   ];
 
   return (

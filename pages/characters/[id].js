@@ -10,18 +10,29 @@ import { Layout, Metadata, Tooltip } from "components";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
 import download from "downloadjs";
 import Api from "helpers/api";
-import { CreatureCalculations } from "helpers/creature-calculations";
-import { ArrayUtil, StringUtil } from "helpers/string-util";
 import { useSession } from "next-auth/react";
 import { getToken } from "next-auth/jwt";
 import Router from "next/router";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useWidth } from "hooks/useWidth";
+import {
+  getAbilitiesString,
+  getAttackStrings,
+  getGenderedClass,
+  getModifier,
+  getPassivePerception,
+  getSavingThrowString,
+  getSpeedString,
+  getStatBonus,
+} from "@lierno/dnd-helpers";
+import { getOperatorString, isArrayNotEmpty } from "@lierno/core-helpers";
 
 export default function CharacterProfile({ character, spells, items }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const { data: session } = useSession();
   const theme = useTheme();
+  const width = useWidth();
 
   const downloadPdf = () => {
     setIsDownloading(true);
@@ -57,7 +68,7 @@ export default function CharacterProfile({ character, spells, items }) {
       classes = charClass
         .map((charClasses) => {
           const classString =
-            StringUtil.generizaClase(charClasses["className"], character.flavor.traits.pronoun) +
+            getGenderedClass(charClasses["className"], character.flavor.traits.pronoun) +
             " nivel " +
             charClasses["classLevel"];
           let subclassString = "";
@@ -70,7 +81,7 @@ export default function CharacterProfile({ character, spells, items }) {
         })
         .join(" / ");
     } else {
-      classes = `${StringUtil.generizaClase("Novato", character.flavor.pronoun)} nivel 0`;
+      classes = `${getGenderedClass("Novato", character.flavor.pronoun)} nivel 0`;
     }
 
     return classes;
@@ -83,12 +94,12 @@ export default function CharacterProfile({ character, spells, items }) {
         image={character?.flavor.portrait?.avatar}
         description={character?.flavor.personality}
       />
-      <Grid container spacing={1} sx={{ height: "99%" }}>
-        <Grid item laptop={6} tablet={12}>
+      <Grid container spacing={1} sx={{ height: "100%" }}>
+        <Grid item laptop={6} mobile={12}>
           <CreatureFlavor
             containerStyle={{
-              height: "90vh",
-              overflowY: "scroll",
+              height: width.down("tablet") ? "100%" : "90vh",
+              overflowY: width.down("tablet") ? "no-scroll" : "scroll",
               ...theme.mixins.noScrollbar,
             }}
             data={{
@@ -107,16 +118,15 @@ export default function CharacterProfile({ character, spells, items }) {
                 component="main"
                 sx={{
                   display: "flex",
+                  flexDirection: width.down("tablet") ? "column" : "row",
+                  gap: "1em",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  p: "1em",
-                  position: " -webkit-sticky",
-                  position: "sticky",
-                  top: "-1px"
+                  p: ".5em",
                 }}
               >
                 <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-                  <Box>
+                  <Box sx={{ textAlign: width.down("tablet") ? "center" : "left" }}>
                     <Typography variant="h5" component="h1">
                       {character?.name}
                     </Typography>
@@ -230,11 +240,12 @@ export default function CharacterProfile({ character, spells, items }) {
             )}
           />
         </Grid>
-        <Grid item laptop={6} tablet={12}>
+        <Grid item laptop={6} mobile={12} sx={{ paddingBottom: width.down("tablet") ? "1em" : 0 }}>
           <CreatureStats
             containerStyle={{
-              height: "90vh",
-              overflowY: "scroll",
+              height: width.down("tablet") ? "100%" : "90vh",
+              overflowY: width.down("tablet") ? "no-scroll" : "scroll",
+              paddingBottom: width.down("tablet") ? "1em" : 0,
               ...theme.mixins.noScrollbar,
             }}
             data={{
@@ -250,13 +261,13 @@ export default function CharacterProfile({ character, spells, items }) {
                     character.stats.hitPoints.max
                   } (${character.stats.classes
                     .map((charClass) => `${charClass.classLevel}d${charClass.hitDie}`)
-                    .join(", ")} + ${CreatureCalculations.modifier(character.stats.abilityScores.constitution)})`,
+                    .join(", ")} + ${getModifier(character.stats.abilityScores.constitution)})`,
                 },
                 {
                   key: "armorClass",
                   title: "Clase de armadura",
-                  content: `${character.stats.armorClass} (${
-                    ArrayUtil.isNotEmpty(character.stats.equipment.armor)
+                  content: `${getStatBonus("stats.armorClass", character, "stats.armorClass")?.total} (${
+                    isArrayNotEmpty(character.stats.equipment.armor)
                       ? character.stats.equipment.armor
                           .filter((armor) => armor.equipped)
                           .map((armor) => items.find((item) => item.id === armor.id)?.name?.toLowerCase())
@@ -267,43 +278,30 @@ export default function CharacterProfile({ character, spells, items }) {
                 {
                   key: "speed",
                   title: "Velocidad",
-                  content: CreatureCalculations.getSpeedString(character.stats.speed),
+                  content: getSpeedString(character.stats.speed),
                 },
                 {
                   key: "savingThrows",
                   title: "Tiradas de salvación con competencia",
-                  content: CreatureCalculations.getSavingThrowString(
-                    character.stats.abilityScores,
-                    character.stats.savingThrows,
-                    character.stats.proficiencyBonus,
-                    character
-                  ),
+                  content: getSavingThrowString(character),
                 },
                 {
                   key: "skills",
                   title: "Habilidades con competencia",
-                  content: CreatureCalculations.getAbilitiesString(
-                    character.stats.abilityScores,
-                    character.stats.skills,
-                    character.stats.proficiencyBonus,
-                    character
-                  ),
+                  content: getAbilitiesString(character),
                 },
                 {
                   key: "senses",
                   title: "Sentidos",
-                  content: `Percepción pasiva ${CreatureCalculations.getPassivePerception(
-                    character.stats,
+                  content: `Percepción pasiva ${getPassivePerception(
                     character
-                  )}, bono de Iniciativa ${StringUtil.getOperatorString(
-                    CreatureCalculations.modifier(
-                      CreatureCalculations.getStatBonus("initiativeBonus", character, "stats.abilityScores.dexterity")
-                    )
+                  )}, bono de Iniciativa ${getOperatorString(
+                    getModifier(getStatBonus("initiativeBonus", character, "stats.abilityScores.dexterity"))
                   )}`,
                 },
               ],
               abilities: [
-                { title: "Ataques", content: character.stats.attacks },
+                { title: "Ataques", content: getAttackStrings(character) },
                 {
                   title: "Acciones",
                   content: [...character.stats.actions, ...character.stats.bonusActions],
