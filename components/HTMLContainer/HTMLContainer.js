@@ -16,6 +16,7 @@ export function HTMLContainer({ content, component = "div", numberOfLines }) {
       sx={{
         ...(!!numberOfLines && maxNumberOfLinesStyle(numberOfLines)),
         "& a": { color: (theme) => theme.palette.secondary.main },
+        "& li": { marginBlock: "1em" }
       }}
       component={component}
       dangerouslySetInnerHTML={{

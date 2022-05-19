@@ -4,14 +4,30 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 export function useWidth() {
   const theme = useTheme();
   const keys = [...theme.breakpoints.keys].reverse();
-
-  return (
+  const breakpoints = theme.breakpoints.values;
+  const width = typeof window !== "undefined" ? window.innerWidth : 0;
+  const currentBreakpoint =
     keys.reduce((output, key) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const matches = useMediaQuery(theme.breakpoints.up(key));
       return !output && matches ? key : output;
-    }, null) || "xs"
-  );
+    }, null) || "xs";
+
+  const down = (key) => width <= breakpoints[key];
+
+  const up = (key) => width >= breakpoints[key];
+
+  const only = (key) => width === breakpoints[key];
+
+  const between = (start, end) => width >= breakpoints[start] && width <= breakpoints[end];
+
+  return {
+    breakpoint: currentBreakpoint,
+    down,
+    up,
+    only,
+    between,
+  };
 }
 
 export const breakpoints = {
@@ -27,15 +43,12 @@ export const breakpoints = {
     return this.width < this.breakpoints[key];
   },
   up: function (key) {
-
     return this.width > this.breakpoints[key];
   },
   only: function (key) {
-
     return this.width === this.breakpoints[key];
   },
   between: function (start, end) {
-
     return this.width > this.breakpoints[start] && this.width < this.breakpoints[end];
   },
 };

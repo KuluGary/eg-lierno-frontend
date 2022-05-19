@@ -36,6 +36,9 @@ export function HTMLEditor({ value, onChange, placeholder = "", inputStyles, ...
         ".ql-editor p": {
           marginBlock: "1em"
         },
+        ".ql-editor ul li": {
+          marginBlock: "1em"
+        },
         ".ql-editor.ql-blank::before": {
           color: theme.palette.text.disabled,
           fontStyle: "initial"

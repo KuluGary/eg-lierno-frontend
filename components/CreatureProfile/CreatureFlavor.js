@@ -6,7 +6,13 @@ export function CreatureFlavor({ Header, data, containerStyle }) {
   return (
     <Container header={!!Header && <Header />} sx={{ ...(!!containerStyle && containerStyle) }}>
       <Box component="div" sx={{ p: 1 }}>
-        {data.image && <Image src={data.image} sx={{ maxWidth: "100%", maxHeight: "35vh", float: "left", margin: ".5em 1em 0 0" }} modal />}
+        {data.image && (
+          <Image
+            src={data.image}
+            sx={{ maxWidth: "50%", maxHeight: "35vh", float: "left", margin: ".5em 1em 0 0" }}
+            modal
+          />
+        )}
         {data.sections?.map(({ title, content }, index) => {
           if (!content) return <></>;
 

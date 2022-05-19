@@ -13,3 +13,4 @@ export * from "./Metadata/Metadata";
 export * from "./ScreenShare/ScreenShare";
 export * from "./TabletopCanvas/TabletopCanvas";
 export * from "./FileUploaderModal";
+export * from "./AnimatedComponent";

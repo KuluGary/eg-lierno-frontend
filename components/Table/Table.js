@@ -1,5 +1,5 @@
+import { getNestedKey } from "@lierno/core-helpers";
 import { Table as MuiTable, TableBody, Box } from "@mui/material";
-import { StringUtil } from "helpers/string-util";
 import { useQueryState } from "hooks/useQueryState";
 import { useEffect, useState } from "react";
 import { TableRow, TableFooter, TableHeader } from ".";
@@ -19,13 +19,6 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
     }
   }, []);
 
-  const getNestedKey = (string, element) => {
-    const value = StringUtil.getNestedKey(string, element);
-
-    if (!!value) return value;
-
-    return string;
-  };
 
   const onSearch = (event) => {
     const { value } = event.target;

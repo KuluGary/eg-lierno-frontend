@@ -9,9 +9,9 @@ export function Container({ hover = false, header, children, noPadding, sx = {} 
       variant={"outlined"}
       sx={{
         ...(!!hover && { "&:hover": { boxShadow: theme.shadows[2] } }),
-        ...sx,
         overflowY: "scroll",
-        ...theme.mixins.noScrollbar
+        ...sx,
+        ...theme.mixins.noScrollbar,
       }}
     >
       {!!header && (
