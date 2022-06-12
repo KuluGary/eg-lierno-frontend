@@ -1,13 +1,16 @@
-import { Box, Divider, Typography, useTheme } from "@mui/material";
+import { Box, Divider, Typography, useTheme, Table, TableHead, TableRow, TableBody, TableCell } from "@mui/material";
 import { Shield as ShieldIcon } from "components/icons";
 import { getOperatorString, isArrayNotEmpty } from "@lierno/core-helpers";
 import { getModifier } from "@lierno/dnd-helpers";
-import { Tooltip } from "components/Tooltip/Tooltip";
+import { FullScreenModal } from "components/Modal";
 import { useEffect, useState } from "react";
 import { HTMLContainer } from "components/HTMLContainer/HTMLContainer";
 import { convert as convertHtmlToString } from "html-to-text";
+import customizable_stats from "helpers/json/customizable_stats.json";
 
 export default function StatComponent({ stat, label, bonusList, base }) {
+  const { stats, checks } = customizable_stats;
+  const [openModal, setOpenModal] = useState(false);
   const [tooltip, setTooltip] = useState("");
   const theme = useTheme();
   const statLabels = {
@@ -32,9 +35,57 @@ export default function StatComponent({ stat, label, bonusList, base }) {
   }, [bonusList]);
 
   return (
-    <Tooltip title={tooltip}>
+    <>
+      <FullScreenModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box style={{ display: "flex", alignItems: "flex-end", gap: "1ch", marginBlock: "1rem" }}>
+          <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ margin: 0, lineHeight: 0 }}>
+            {`${stats[label]?.name} ${stat}`}
+          </Typography>
+          <Typography variant="subtitle2" component="h3" sx={{ margin: 0, lineHeight: 0 }}>
+            {` (${getOperatorString(getModifier(stat))})`}
+          </Typography>
+        </Box>
+        <Box>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontSize: "1rem", borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>Total</TableCell>
+                <TableCell sx={{ fontSize: "1rem", borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>{stat}</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell sx={{ fontSize: "1rem", borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
+                  Modificador base
+                </TableCell>
+                <TableCell sx={{ fontSize: "1rem", borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>{base}</TableCell>
+              </TableRow>
+              {bonusList.map(({ descriptions, bonus }) => (
+                <TableRow>
+                  <TableCell sx={{ fontSize: "1rem", borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
+                    {convertHtmlToString(descriptions)}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: "1rem", borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
+                    {getOperatorString(bonus)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Box style={{ marginBlock: "1rem" }}>{stats[label]?.description}</Box>
+          <Box style={{ marginBlock: "1rem" }}>
+            <HTMLContainer content={checks[label]?.description} />
+          </Box>
+        </Box>
+      </FullScreenModal>
       <Box
         component="div"
+        onClick={() => setOpenModal(true)}
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -94,6 +145,6 @@ export default function StatComponent({ stat, label, bonusList, base }) {
           {stat}
         </Typography>
       </Box>
-    </Tooltip>
+    </>
   );
 }
