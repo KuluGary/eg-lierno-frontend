@@ -16,7 +16,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
     "@lierno/core-helpers": "^1.1.3",
-    "@lierno/dnd-helpers": "^1.1.4",
+    "@lierno/dnd-helpers": "^1.1.5",
     "@mui/icons-material": "^5.1.0",
     "@mui/lab": "^5.0.0-alpha.60",
     "@mui/material": "^5.1.0",

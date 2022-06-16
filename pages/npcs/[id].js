@@ -1,5 +1,12 @@
 import { getOperatorString } from "@lierno/core-helpers";
-import { getAbilitiesString, getAttackStrings, getExperienceByCr, getModifier, getSavingThrowString, getSpeedString } from "@lierno/dnd-helpers";
+import {
+  getAbilitiesString,
+  getAttackStrings,
+  getExperienceByCr,
+  getModifier,
+  getSavingThrowString,
+  getSpeedString,
+} from "@lierno/dnd-helpers";
 import { Delete as DeleteIcon, Edit as EditIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
 import { Box, CircularProgress, Grid, IconButton, Typography, MenuItem } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
@@ -7,7 +14,7 @@ import { Layout, Metadata } from "components";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
 import download from "downloadjs";
 import Api from "helpers/api";
-import { ArrayUtil, StringUtil } from "helpers/string-util";
+import { ArrayUtil } from "helpers/string-util";
 import { getToken } from "next-auth/jwt";
 import Head from "next/head";
 import Router from "next/router";
@@ -179,16 +186,12 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                 {
                   key: "savingThrows",
                   title: "Tiradas de salvación con competencia",
-                  content: getSavingThrowString(
-                    npc
-                  ),
+                  content: getSavingThrowString(npc),
                 },
                 {
                   key: "skills",
                   title: "Habilidades con competencia",
-                  content: getAbilitiesString(
-                    npc
-                  ),
+                  content: getAbilitiesString(npc),
                 },
                 {
                   key: "senses",
@@ -223,7 +226,7 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                 },
               ],
               abilities: [
-                { title: "Ataques", content: getAttackStrings(npc) },
+                { title: "Ataques", content: npc.stats.attacks ? getAttackStrings(npc) : [] },
                 { title: "Acciones", content: npc["stats"]["actions"] },
                 { title: "Reacciones", content: npc["stats"]["reactions"] },
                 { title: "Habilidades", content: npc["stats"]["additionalAbilities"] },
