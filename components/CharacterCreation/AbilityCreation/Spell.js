@@ -1,32 +1,31 @@
 import {
+  Autocomplete,
+  Box,
+  Button,
   Checkbox,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  FormControl,
   FormControlLabel,
   Grid,
-  TextField,
-  Autocomplete,
-  Chip,
-  FormControl,
   InputLabel,
-  Select,
   MenuItem,
+  Select,
+  TextField,
   Typography,
-  ListSubheader,
-  Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  DialogContentText,
-  Box,
 } from "@mui/material";
-import { FullScreenModal } from "components/Modal";
-import { ModalFooter, ModalHeader } from ".";
-import { statLabels, spellcasters } from "helpers/creature-calculations";
-import { useEffect, useState } from "react";
-import Api from "helpers/api";
-import { useRouter } from "next/router";
 import { HTMLEditor } from "components";
+import { FullScreenModal } from "components/Modal";
+import { spellcasters, statLabels } from "helpers/creature-calculations";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import Api from "services/api";
+import { ModalFooter, ModalHeader } from ".";
 
 const schoolOptions = [
   "Abjuración",
@@ -51,9 +50,12 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
   const [dialogOpen, toggleDialogOpen] = useState(false);
   const [spellToAdd, setSpellToAdd] = useState({
     name: "",
+    public: true,
     stats: {},
   });
   const [sectionToAdd, setSectionToAdd] = useState(null);
+  const spellcaster =
+    classes.find((charClass) => charClass._id === spellcasting.caster)?.spellcasting ?? spellcasters["00000"];
   const router = useRouter();
   const isCharacter = router.pathname.includes("characters");
 
@@ -82,7 +84,6 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
   }, [section, selectedIndex, spellAutocomplete]);
 
   const getSpellLevelText = (level) => {
-    const spellcaster = spellcasters[spellcasting.caster];
     const { cantripsKnown } = spellcaster.level[spellcasting.level];
 
     if (level === 0) return `Trucos (conoce ${cantripsKnown})`;
@@ -92,8 +93,6 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
 
   const hasSpellSlotsOfLevel = (level) => {
     if (spellcasting.caster) {
-      let spellcaster = spellcasters[spellcasting.caster];
-
       if (level === 0) {
         return spellcaster.level[spellcasting.level]?.cantripsKnown > 0;
       } else if (spellcasting.level) {
@@ -111,10 +110,8 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
 
   const getHighestSpellSlotLevel = () => {
     if (spellcasting.caster) {
-      let spellcaster = spellcasters[spellcasting.caster];
-
       if (spellcasting.level) {
-        let spellSlots = spellcaster.level[spellcasting.level].spellSlots;
+        let spellSlots = spellcaster?.level[spellcasting.level]?.spellSlots;
 
         return spellSlots.length;
       } else {
@@ -123,6 +120,18 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
     } else {
       return 0;
     }
+  };
+
+  const getWarlockSpells = () => {
+    const warlockSpells = [];
+
+    for (const spellLevel in spellcasting.spells) {
+      if (spellLevel === "0") continue;
+
+      warlockSpells.push(...spellcasting.spells[spellLevel]);
+    }
+
+    return warlockSpells;
   };
 
   const handleClose = () => {
@@ -309,6 +318,22 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                     control={
                       <Checkbox
                         color="secondary"
+                        checked={spellToAdd.public}
+                        onClick={() => {
+                          setSpellToAdd((spellToAdd) => {
+                            return { ...spellToAdd, public: !spellToAdd.public };
+                          });
+                        }}
+                        inputProps={{ "aria-label": "Público" }}
+                      />
+                    }
+                    label="Público"
+                  />
+                  <Divider sx={{ marginBlock: ".5rem" }} />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        color="secondary"
                         checked={spellToAdd.stats?.components?.type?.includes("V") ?? false}
                         onClick={() => {
                           let spellComponents = [...(spellToAdd.stats?.components?.type ?? [])];
@@ -451,10 +476,13 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                 label="Tipo de hechicero"
                 value={spellcasting.caster}
                 onChange={(e) => {
+                  const selectedClass = classes.find((charClass) => charClass._id === e.target.value);
+                  const newSpellcasting = selectedClass.spellcasting;
+
                   setSpellcasting({
                     ...spellcasting,
                     caster: e.target.value,
-                    modifier: spellcasters[e.target.value].ability,
+                    modifier: newSpellcasting.ability,
                   });
                 }}
               >
@@ -465,12 +493,11 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
                     </MenuItem>
                   ))}
                 {isCharacter &&
-                  classes
-                    .map(({ _id, name }) => (
-                      <MenuItem key={_id} value={_id}>
-                        <Typography variant="body1">{name}</Typography>
-                      </MenuItem>
-                    ))}
+                  classes.map(({ _id, name }) => (
+                    <MenuItem key={_id} value={_id}>
+                      <Typography variant="body1">{name}</Typography>
+                    </MenuItem>
+                  ))}
                 <MenuItem key={"00000"} value={"00000"}>
                   <Typography variant="body1">{"Innato"}</Typography>
                 </MenuItem>
@@ -509,305 +536,220 @@ export function Spell({ open, onClose, section, selectedIndex, creature, classes
               }}
             />
           </Grid>
-          {spellLevelArray.length > 0 &&
-            spellcasting.caster !== "00000" && // No es Innato
-            spellcasting.caster !== "5ec030b0f44b2b688355ab60" && // No es Brujo
-            spellLevelArray.map(
-              (level) =>
-                hasSpellSlotsOfLevel(level) && (
+          {spellLevelArray.length > 0 && (
+            <>
+              {spellcasting.caster === "00000" ? (
+                <>
                   <Grid item laptop={12}>
                     <Autocomplete
                       freeSolo
                       multiple
-                      id={"level" + level}
+                      fullWidth
+                      id={"at-will"}
                       filterSelectedOptions
-                      value={spellcasting.spells[level] ?? []}
+                      value={spellcasting.spells.atWill ?? []}
                       getOptionLabel={(option) => option.name}
-                      options={spellAutocomplete.filter((spell) => spell.stats.level === level).sort()}
+                      options={spellAutocomplete.sort()}
+                      renderInput={(params) => <TextField color="secondary" {...params} label={"A voluntad"} />}
                       renderTags={(value, getTagProps) =>
                         value.map((option, index) => (
                           <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
                         ))
                       }
-                      renderInput={(params) => (
-                        <TextField color="secondary" {...params} label={getSpellLevelText(level)} />
-                      )}
                       onChange={(event, newData) => {
                         const value = event.target.value;
 
                         if (typeof value === "string") {
                           setTimeout(() => {
                             toggleDialogOpen(true);
+                            setSectionToAdd("atWill");
                             setSpellToAdd({
+                              ...spellToAdd,
                               name: value,
                               stats: {
-                                level: level,
+                                level: 0,
                               },
                             });
                           });
                         } else {
                           setSpellcasting({
                             ...spellcasting,
-                            spells: { ...spellcasting.spells, [level]: newData },
+                            spells: { ...spellcasting.spells, atWill: newData },
                           });
                         }
                       }}
                     />
                   </Grid>
-                )
-            )}
-          {spellLevelArray.length > 0 &&
-            spellcasting.caster === "5ec030b0f44b2b688355ab60" && ( // Es Brujo
-              <>
-                <Grid item laptop={12}>
-                  <Autocomplete
-                    fullWidth
-                    multiple
-                    clearOnEscape
-                    freeSolo
-                    value={spellcasting.spells[0] ?? []}
-                    options={spellAutocomplete.filter((a) => a.stats?.level === 0)}
-                    getOptionLabel={(option) => option.name ?? option}
-                    renderTags={(value, getTagProps) =>
-                      value.map((option, index) => (
-                        <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
-                      ))
-                    }
-                    renderInput={(params) => <TextField color="secondary" {...params} label={"Trucos (a voluntad)"} />}
-                    onChange={(event, newData) => {
-                      const value = event.target.value;
-
-                      if (typeof value === "string") {
-                        setTimeout(() => {
-                          toggleDialogOpen(true);
-                          setSpellToAdd({
-                            name: value,
-                            stats: {
-                              level: 0,
-                            },
-                          });
-                        });
-                      } else {
-                        setSpellcasting({
-                          ...spellcasting,
-                          spells: { ...spellcasting.spells, 0: newData },
-                        });
+                  <Grid item laptop={12}>
+                    <Autocomplete
+                      freeSolo
+                      multiple
+                      fullWidth
+                      id={"per-day-3"}
+                      filterSelectedOptions
+                      value={spellcasting.spells.perDay3 ?? []}
+                      getOptionLabel={(option) => option.name}
+                      options={spellAutocomplete.sort()}
+                      renderInput={(params) => <TextField color="secondary" {...params} label={"3/día"} />}
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => (
+                          <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
+                        ))
                       }
-                    }}
-                  />
-                </Grid>
-                <Grid item laptop={12}>
-                  <Autocomplete
-                    fullWidth
-                    multiple
-                    clearOnEscape
-                    freeSolo
-                    value={spellcasting?.spells[getHighestSpellSlotLevel()]}
-                    options={spellAutocomplete
-                      ?.filter((a) => a.stats?.level > 0)
-                      .sort((a, b) => a.stats.level - b.stats.level)}
-                    getOptionLabel={(option) => option.name ?? option}
-                    renderTags={(value, getTagProps) =>
-                      value.map((option, index) => (
-                        <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
-                      ))
-                    }
-                    onChange={(event, newSpells) => {
-                      const value = event.target.value;
+                      onChange={(event, newData) => {
+                        const value = event.target.value;
 
-                      if (typeof value === "string") {
-                        setTimeout(() => {
-                          toggleDialogOpen(true);
-                          setSpellToAdd({
-                            name: value,
-                            stats: {
-                              level: 0,
-                            },
+                        if (typeof value === "string") {
+                          setTimeout(() => {
+                            toggleDialogOpen(true);
+                            setSectionToAdd("perDay3");
+                            setSpellToAdd({
+                              ...spellToAdd,
+                              name: value,
+                              stats: {
+                                level: 0,
+                              },
+                            });
                           });
-                        });
-                      } else {
-                        const spellcastingToAdd = { ...spellcasting.spells };
-                        const level = getHighestSpellSlotLevel();
-
-                        Object.keys(spellcastingToAdd).forEach((key) => {
-                          if (key > 0) {
-                            delete spellcastingToAdd[key];
-                          }
-                        });
-
-                        spellcastingToAdd[level] = newSpells;
-
-                        setSpellcasting({
-                          ...spellcasting,
-                          spells: spellcastingToAdd,
-                        });
+                        } else {
+                          setSpellcasting({
+                            ...spellcasting,
+                            spells: { ...spellcasting.spells, perDay3: newData },
+                          });
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item laptop={12}>
+                    <Autocomplete
+                      freeSolo
+                      multiple
+                      fullWidth
+                      id={"per-day-2"}
+                      filterSelectedOptions
+                      value={spellcasting.spells.perDay2 ?? []}
+                      getOptionLabel={(option) => option.name}
+                      options={spellAutocomplete.sort()}
+                      renderInput={(params) => <TextField color="secondary" {...params} label={"2/día"} />}
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => (
+                          <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
+                        ))
                       }
-                    }}
-                    renderInput={(params) => (
-                      <TextField {...params} label={getSpellLevelText(getHighestSpellSlotLevel())} />
-                    )}
-                  />
-                </Grid>
-              </>
-            )}
-          {spellLevelArray.length > 0 && spellcasting.caster === "00000" && (
-            <>
-              <Grid item laptop={12}>
-                <Autocomplete
-                  freeSolo
-                  multiple
-                  fullWidth
-                  id={"at-will"}
-                  filterSelectedOptions
-                  value={spellcasting.spells.atWill ?? []}
-                  getOptionLabel={(option) => option.name}
-                  options={spellAutocomplete.sort()}
-                  renderInput={(params) => <TextField color="secondary" {...params} label={"A voluntad"} />}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
-                    ))
-                  }
-                  onChange={(event, newData) => {
-                    const value = event.target.value;
+                      onChange={(event, newData) => {
+                        const value = event.target.value;
 
-                    if (typeof value === "string") {
-                      setTimeout(() => {
-                        toggleDialogOpen(true);
-                        setSectionToAdd("atWill");
-                        setSpellToAdd({
-                          name: value,
-                          stats: {
-                            level: 0,
-                          },
-                        });
-                      });
-                    } else {
-                      setSpellcasting({
-                        ...spellcasting,
-                        spells: { ...spellcasting.spells, atWill: newData },
-                      });
-                    }
-                  }}
-                />
-              </Grid>
-              <Grid item laptop={12}>
-                <Autocomplete
-                  freeSolo
-                  multiple
-                  fullWidth
-                  id={"per-day-3"}
-                  filterSelectedOptions
-                  value={spellcasting.spells.perDay3 ?? []}
-                  getOptionLabel={(option) => option.name}
-                  options={spellAutocomplete.sort()}
-                  renderInput={(params) => <TextField color="secondary" {...params} label={"3/día"} />}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
-                    ))
-                  }
-                  onChange={(event, newData) => {
-                    const value = event.target.value;
+                        if (typeof value === "string") {
+                          setTimeout(() => {
+                            toggleDialogOpen(true);
+                            setSectionToAdd("perDay2");
+                            setSpellToAdd({
+                              ...spellToAdd,
+                              name: value,
+                              stats: {
+                                level: "atWill",
+                              },
+                            });
+                          });
+                        } else {
+                          setSpellcasting({
+                            ...spellcasting,
+                            spells: { ...spellcasting.spells, perDay2: newData },
+                          });
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item laptop={12}>
+                    <Autocomplete
+                      freeSolo
+                      multiple
+                      fullWidth
+                      id={"per-day-1"}
+                      filterSelectedOptions
+                      value={spellcasting.spells.perDay1 ?? []}
+                      getOptionLabel={(option) => option.name}
+                      options={spellAutocomplete.sort()}
+                      renderInput={(params) => <TextField color="secondary" {...params} label={"1/día"} />}
+                      renderTags={(value, getTagProps) =>
+                        value.map((option, index) => (
+                          <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
+                        ))
+                      }
+                      onChange={(event, newData) => {
+                        const value = event.target.value;
 
-                    if (typeof value === "string") {
-                      setTimeout(() => {
-                        toggleDialogOpen(true);
-                        setSectionToAdd("perDay3");
-                        setSpellToAdd({
-                          name: value,
-                          stats: {
-                            level: 0,
-                          },
-                        });
-                      });
-                    } else {
-                      setSpellcasting({
-                        ...spellcasting,
-                        spells: { ...spellcasting.spells, perDay3: newData },
-                      });
-                    }
-                  }}
-                />
-              </Grid>
-              <Grid item laptop={12}>
-                <Autocomplete
-                  freeSolo
-                  multiple
-                  fullWidth
-                  id={"per-day-2"}
-                  filterSelectedOptions
-                  value={spellcasting.spells.perDay2 ?? []}
-                  getOptionLabel={(option) => option.name}
-                  options={spellAutocomplete.sort()}
-                  renderInput={(params) => <TextField color="secondary" {...params} label={"2/día"} />}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
-                    ))
-                  }
-                  onChange={(event, newData) => {
-                    const value = event.target.value;
+                        if (typeof value === "string") {
+                          setTimeout(() => {
+                            toggleDialogOpen(true);
+                            setSectionToAdd("perDay1");
+                            setSpellToAdd({
+                              ...spellToAdd,
+                              name: value,
+                              stats: {
+                                level: 0,
+                              },
+                            });
+                          });
+                        } else {
+                          setSpellcasting({
+                            ...spellcasting,
+                            spells: { ...spellcasting.spells, perDay1: newData },
+                          });
+                        }
+                      }}
+                    />
+                  </Grid>
+                </>
+              ) : (
+                <>
+                  {spellLevelArray.map(
+                    (level) =>
+                      hasSpellSlotsOfLevel(level) && (
+                        <Grid item laptop={12}>
+                          <Autocomplete
+                            freeSolo
+                            multiple
+                            id={"level" + level}
+                            filterSelectedOptions
+                            value={spellcasting.spells[level] ?? []}
+                            getOptionLabel={(option) => option.name}
+                            options={spellAutocomplete.filter((spell) => spell.stats.level === level).sort()}
+                            renderTags={(value, getTagProps) =>
+                              value.map((option, index) => (
+                                <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
+                              ))
+                            }
+                            renderInput={(params) => (
+                              <TextField color="secondary" {...params} label={getSpellLevelText(level)} />
+                            )}
+                            onChange={(event, newData) => {
+                              const value = event.target.value;
 
-                    if (typeof value === "string") {
-                      setTimeout(() => {
-                        toggleDialogOpen(true);
-                        setSectionToAdd("perDay2");
-                        setSpellToAdd({
-                          name: value,
-                          stats: {
-                            level: "atWill",
-                          },
-                        });
-                      });
-                    } else {
-                      setSpellcasting({
-                        ...spellcasting,
-                        spells: { ...spellcasting.spells, perDay2: newData },
-                      });
-                    }
-                  }}
-                />
-              </Grid>
-              <Grid item laptop={12}>
-                <Autocomplete
-                  freeSolo
-                  multiple
-                  fullWidth
-                  id={"per-day-1"}
-                  filterSelectedOptions
-                  value={spellcasting.spells.perDay1 ?? []}
-                  getOptionLabel={(option) => option.name}
-                  options={spellAutocomplete.sort()}
-                  renderInput={(params) => <TextField color="secondary" {...params} label={"1/día"} />}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip key={index} variant="outlined" label={option.name} {...getTagProps({ index })} />
-                    ))
-                  }
-                  onChange={(event, newData) => {
-                    const value = event.target.value;
-
-                    if (typeof value === "string") {
-                      setTimeout(() => {
-                        toggleDialogOpen(true);
-                        setSectionToAdd("perDay1");
-                        setSpellToAdd({
-                          name: value,
-                          stats: {
-                            level: 0,
-                          },
-                        });
-                      });
-                    } else {
-                      setSpellcasting({
-                        ...spellcasting,
-                        spells: { ...spellcasting.spells, perDay1: newData },
-                      });
-                    }
-                  }}
-                />
-              </Grid>
+                              if (typeof value === "string") {
+                                setTimeout(() => {
+                                  toggleDialogOpen(true);
+                                  setSpellToAdd({
+                                    ...spellToAdd,
+                                    name: value,
+                                    stats: {
+                                      level: level,
+                                    },
+                                  });
+                                });
+                              } else {
+                                setSpellcasting({
+                                  ...spellcasting,
+                                  spells: { ...spellcasting.spells, [level]: newData },
+                                });
+                              }
+                            }}
+                          />
+                        </Grid>
+                      )
+                  )}
+                </>
+              )}
             </>
           )}
         </Grid>

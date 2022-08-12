@@ -1,21 +1,4 @@
-import {
-  Code as CodeIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  FileDownload as FileDownloadIcon,
-} from "@mui/icons-material";
-import { Box, CircularProgress, Grid, IconButton, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { Layout, Metadata, Tooltip } from "components";
-import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
-import download from "downloadjs";
-import Api from "helpers/api";
-import { useSession } from "next-auth/react";
-import { getToken } from "next-auth/jwt";
-import Router from "next/router";
-import { useState } from "react";
-import { toast } from "react-toastify";
-import { useWidth } from "hooks/useWidth";
+import { getOperatorString, isArrayNotEmpty } from "@lierno/core-helpers";
 import {
   getAbilitiesString,
   getAttackStrings,
@@ -27,9 +10,20 @@ import {
   getSpeedString,
   getStatBonus,
 } from "@lierno/dnd-helpers";
-import { getOperatorString, isArrayNotEmpty } from "@lierno/core-helpers";
+import { Box, Grid, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { Layout, Metadata } from "components";
+import { CreatureMenu } from "components/CreatureMenu/CreatureMenu";
+import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
+import download from "downloadjs";
+import Api from "services/api";
+import { useWidth } from "hooks/useWidth";
+import { getToken } from "next-auth/jwt";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
-export default function CharacterProfile({ character, spells, items }) {
+export default function CharacterProfile({ character, spells, items, tier, classes }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const { data: session } = useSession();
   const theme = useTheme();
@@ -41,25 +35,6 @@ export default function CharacterProfile({ character, spells, items }) {
       .then((base64Url) => download(base64Url, `${character["name"]}.pdf`, "application/pdf"))
       .catch((err) => toast.error(err))
       .finally(() => setIsDownloading(false));
-  };
-
-  const downloadJson = () => {
-    setIsDownloading(true);
-    const charToDownload = { ...character };
-
-    delete charToDownload._id;
-    delete charToDownload.createdAt;
-    delete charToDownload.createdBy;
-    delete charToDownload.updatedAt;
-
-    const stringToDownload = JSON.stringify(charToDownload);
-    const bytes = new TextEncoder().encode(stringToDownload);
-    const blob = new Blob([bytes], {
-      type: "application/json;charset=utf-8",
-    });
-
-    download(blob, `${charToDownload["name"]}.json`, "application/json");
-    setIsDownloading(false);
   };
 
   const createStringDefinition = (charClass) => {
@@ -104,18 +79,22 @@ export default function CharacterProfile({ character, spells, items }) {
               ...theme.mixins.noScrollbar,
             }}
             data={{
+              id: character._id,
               sections: [
                 {
                   title: "Personalidad",
-                  content: character.flavor.personality,
+                  content: character?.flavor.personality,
                 },
-                { title: "Apariencia", content: character.flavor.appearance },
-                { title: "Historia", content: character.flavor.backstory },
+                { title: "Apariencia", content: character?.flavor.appearance },
+                { title: "Historia", content: character?.flavor.backstory },
               ],
-              image: character.flavor.portrait?.original,
+              image: character?.flavor.portrait?.original,
+              tier,
+              type: "character",
             }}
             Header={() => (
               <Box
+                data-testid="creature-header"
                 component="main"
                 sx={{
                   display: "flex",
@@ -123,7 +102,7 @@ export default function CharacterProfile({ character, spells, items }) {
                   gap: "1em",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  p: ".5em",
+                  p: "1em 1.2em",
                 }}
               >
                 <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
@@ -138,104 +117,7 @@ export default function CharacterProfile({ character, spells, items }) {
                   </Box>
                 </Box>
                 {!!session && session?.userId === character.createdBy && (
-                  <Box sx={{ display: "flex", height: "100%" }}>
-                    <Box component="div" sx={{ margin: "0 .25em" }}>
-                      <Tooltip title="Editar">
-                        <IconButton
-                          color="secondary"
-                          sx={{
-                            border: "1px solid rgba(63, 176, 172, 0.5);",
-                            borderRadius: "8px",
-                            padding: ".25em",
-                            transition: theme.transitions.create(["border"], {
-                              easing: theme.transitions.easing.sharp,
-                              duration: theme.transitions.duration.leavingScreen,
-                            }),
-                            "&:hover": {
-                              border: "1px solid rgba(63, 176, 172, 1);",
-                            },
-                          }}
-                        >
-                          <EditIcon onClick={() => Router.push(`/characters/add/${character._id}`)} fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                    <Box component="div" sx={{ margin: "0 .25em" }}>
-                      <Tooltip title="Eliminar">
-                        <IconButton
-                          color="secondary"
-                          sx={{
-                            border: "1px solid rgba(63, 176, 172, 0.5);",
-                            borderRadius: "8px",
-                            padding: ".25em",
-                            transition: theme.transitions.create(["border"], {
-                              easing: theme.transitions.easing.sharp,
-                              duration: theme.transitions.duration.leavingScreen,
-                            }),
-                            "&:hover": {
-                              border: "1px solid rgba(63, 176, 172, 1);",
-                            },
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                    <Box component="div" sx={{ margin: "0 .25em" }}>
-                      <Tooltip title="Descargar en PDF">
-                        <IconButton
-                          color="secondary"
-                          onClick={downloadPdf}
-                          disabled={isDownloading}
-                          sx={{
-                            border: "1px solid rgba(63, 176, 172, 0.5);",
-                            borderRadius: "8px",
-                            padding: ".25em",
-                            transition: theme.transitions.create(["border"], {
-                              easing: theme.transitions.easing.sharp,
-                              duration: theme.transitions.duration.leavingScreen,
-                            }),
-                            "&:hover": {
-                              border: "1px solid rgba(63, 176, 172, 1);",
-                            },
-                          }}
-                        >
-                          {isDownloading ? (
-                            <CircularProgress color="secondary" size={20} />
-                          ) : (
-                            <FileDownloadIcon fontSize="small" />
-                          )}
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                    <Box component="div" sx={{ margin: "0 .25em" }}>
-                      <Tooltip title="Descargar en JSON">
-                        <IconButton
-                          color="secondary"
-                          onClick={downloadJson}
-                          disabled={isDownloading}
-                          sx={{
-                            border: "1px solid rgba(63, 176, 172, 0.5);",
-                            borderRadius: "8px",
-                            padding: ".25em",
-                            transition: theme.transitions.create(["border"], {
-                              easing: theme.transitions.easing.sharp,
-                              duration: theme.transitions.duration.leavingScreen,
-                            }),
-                            "&:hover": {
-                              border: "1px solid rgba(63, 176, 172, 1);",
-                            },
-                          }}
-                        >
-                          {isDownloading ? (
-                            <CircularProgress color="secondary" size={20} />
-                          ) : (
-                            <CodeIcon fontSize="small" />
-                          )}
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </Box>
+                  <CreatureMenu creature={character} type="character" downloadPdf={downloadPdf} />
                 )}
               </Box>
             )}
@@ -254,6 +136,7 @@ export default function CharacterProfile({ character, spells, items }) {
               classes: character["stats"]["classes"],
               stats: character["stats"]["abilityScores"],
               proficiencyBonus: character["stats"]["proficiencyBonus"],
+              dataClasses: classes,
               proficiencies: [
                 {
                   key: "hitPoints",
@@ -279,7 +162,7 @@ export default function CharacterProfile({ character, spells, items }) {
                 {
                   key: "proficiencyBonus",
                   title: "Bonificador de competencia",
-                  content: getProficiencyBonus(character)
+                  content: getProficiencyBonus(character),
                 },
                 {
                   key: "speed",
@@ -376,12 +259,14 @@ export async function getServerSideProps(context) {
       });
     });
 
-    spells = await Api.fetchInternal("/spells", {
-      method: "POST",
-      body: JSON.stringify(spellIds.map((spell) => spell.spellId)),
+    spells = await Api.fetchInternal(`/spells?id=${JSON.stringify(spellIds.map((spell) => spell.spellId))}`, {
       headers,
     });
   }
+
+  const classes = await Api.fetchInternal("/classes/", {
+    headers,
+  }).catch(() => null);
 
   if (!!character.stats.equipment) {
     const objects = [];
@@ -408,11 +293,23 @@ export async function getServerSideProps(context) {
     });
   }
 
+  let tier = null;
+
+  if (!!character?.flavor.group) {
+    tier = await Api.fetchInternal(`/tier-by-creature?type=character&id=${character.flavor.group}`, {
+      headers,
+    })
+      .then((res) => res.map((el) => el._id))
+      .catch(() => null);
+  }
+
   return {
     props: {
       character,
       spells,
       items,
+      tier,
+      classes,
     },
   };
 }

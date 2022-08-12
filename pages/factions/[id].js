@@ -1,7 +1,7 @@
 import { Box, Divider, Grid, Tab, Tabs } from "@mui/material";
 import { Avatar, Container, Layout, Metadata } from "components";
 import { Table } from "components/Table";
-import Api from "helpers/api";
+import Api from "services/api";
 import { getToken } from "next-auth/jwt";
 import { useQueryState } from "hooks/useQueryState";
 import { getInitials } from "@lierno/core-helpers";

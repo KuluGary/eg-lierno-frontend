@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Api from "helpers/api";
+import Api from "services/api";
 import { CircularProgress, Box, Typography } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 

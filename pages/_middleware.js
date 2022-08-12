@@ -9,7 +9,7 @@ export async function middleware(req) {
   if (secureUrls.includes(pathname)) {
     const session = await getToken({ req, secret: process.env.SECRET, raw: true });
 
-    if (!session) return NextResponse.redirect("/login");
+    if (!session) return NextResponse.redirect("/");
   }
 
   // If user is authenticated, continue.

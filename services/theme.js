@@ -49,8 +49,9 @@ const lightTheme = {
     background: {
       body: "#FFFFFF",
       paper: "#FFFFFF",
+      main: "#FFFFFF",
       container: "#E2E5E8",
-      contrastText: "#212121"
+      contrastText: "#212121",
     },
     divider: "#8B9FA133",
   },
@@ -76,10 +77,10 @@ const lightTheme = {
       "&::-webkit-scrollbar": {
         display: "none",
       },
-     msOverflowStyle: "none" /* IE and Edge */,
-      scrollBarWidth: "none"
-    }
-  }
+      msOverflowStyle: "none" /* IE and Edge */,
+      scrollBarWidth: "none",
+    },
+  },
 };
 
 const darkTheme = {
@@ -134,7 +135,8 @@ const darkTheme = {
       body: "#15202b",
       paper: "#253341",
       container: "#192734",
-      contrastText: "#FAFAFA"
+      main: "#FAFAFA",
+      contrastText: "#FAFAFA",
     },
     divider: "#BDC8F033",
   },
@@ -161,9 +163,18 @@ const darkTheme = {
         display: "none",
       },
       msOverflowStyle: "none" /* IE and Edge */,
-      "scrollbar-width": "none"
-    }
-  }
+      scrollBarWidth: "none",
+    },
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: "none",
+        },
+      },
+    },
+  },
 };
 
-export { lightTheme,darkTheme };
+export { lightTheme, darkTheme };

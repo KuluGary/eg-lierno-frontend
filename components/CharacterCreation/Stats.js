@@ -18,7 +18,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDice } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 import { skills, saves } from "../../helpers/json/customizable_stats.json";
-import { getModifier } from "@lierno/dnd-helpers";
+import { getModifier, getStatBonus } from "@lierno/dnd-helpers";
+import { getOperatorString } from "@lierno/core-helpers";
 
 const scoreBonusOptions = [
   {
@@ -35,6 +36,7 @@ const scoreBonusOptions = [
       { label: "Clase de armadura", key: "stats.armorClass" },
       { label: "Bono de iniciativa", key: "initiativeBonus" },
       { label: "Percepción pasiva", key: "passivePerception" },
+      { label: "Puntos de vida", key: "stats.hitPoints.max" },
     ],
   },
 ];
@@ -465,7 +467,10 @@ export function Stats({ creature, setCreature }) {
               <Container>
                 <Button
                   onClick={() => {
-                    const conModifier = getModifier(creature?.stats.abilityScores.constitution);
+                    const { total: conTotal } = getStatBonus(`stats.abilityScores.constitution`, creature);
+                    const { bonus: hitPointBonus } = getStatBonus(`stats.hitPoints.max`, creature);
+
+                    const conModifier = getModifier(conTotal);
                     const modifiers = [];
 
                     if (isCharacter) {
@@ -489,15 +494,19 @@ export function Stats({ creature, setCreature }) {
                         }
                       }
                     }
-                    const newMaxHitPoints = modifiers.reduce((a, b) => a + b);
+                    const newMaxHitPoints = modifiers.reduce((a, b) => a + b) + hitPointBonus;
 
                     setCreature("stats.hitPoints.max", newMaxHitPoints);
                   }}
                 >
                   <FontAwesomeIcon size="lg" icon={faDice} style={{ marginRight: "1em" }} />
                   {isCharacter
-                    ? creature?.stats.classes?.map(({ classLevel, hitDie }) => `${classLevel}d${hitDie}`).join(" + ")
-                    : `${creature?.stats.hitDie?.num}d${creature?.stats.hitDie?.size}`}
+                    ? `${creature?.stats.classes
+                        ?.map(({ classLevel, hitDie }) => `${classLevel}d${hitDie}`)
+                        .join(" + ")} ${getOperatorString(getModifier(creature?.stats.abilityScores.constitution))}`
+                    : `${creature?.stats.hitDie?.num}d${creature?.stats.hitDie?.size} ${getOperatorString(
+                        getModifier(creature?.stats.abilityScores.constitution)
+                      )}`}
                 </Button>
               </Container>
             </Grid>

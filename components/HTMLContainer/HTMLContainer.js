@@ -15,8 +15,11 @@ export function HTMLContainer({ content, component = "div", numberOfLines }) {
     <Box
       sx={{
         ...(!!numberOfLines && maxNumberOfLinesStyle(numberOfLines)),
-        "& a": { color: (theme) => theme.palette.secondary.main },
-        "& li": { marginBlock: "1em" }
+        "& a": {
+          color: (theme) => theme.palette.secondary.main,
+          "&:hover": { textDecoration: "underline" },
+        },
+        "& li": { marginBlock: "1em" },
       }}
       component={component}
       dangerouslySetInnerHTML={{

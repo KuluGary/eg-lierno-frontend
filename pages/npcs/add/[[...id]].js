@@ -1,21 +1,20 @@
-import { Tabs, Box, Tab, Typography, useTheme, Container as MuiContainer, Button } from "@mui/material";
-import { useState } from "react";
+import { setNestedKey } from "@lierno/core-helpers";
+import { Box, Button, Container as MuiContainer, Tab, Tabs, Typography, useTheme } from "@mui/material";
 import { Container, Layout } from "components";
-import { Details, Stats, Proficiencies, Abilities, Equipment } from "components/CharacterCreation";
+import { Abilities, Details, Equipment, Proficiencies, Stats } from "components/CharacterCreation";
 import {
-  MuscleUp as MuscleUpIcon,
-  Juggler as JugglerIcon,
-  SpellBolt as SpellBoltIcon,
-  Character as CharacterIcon,
   Backpack as BackpackIcon,
+  Character as CharacterIcon,
+  Juggler as JugglerIcon,
+  MuscleUp as MuscleUpIcon,
+  SpellBolt as SpellBoltIcon,
 } from "components/icons";
-import { StringUtil } from "helpers/string-util";
+import Api from "services/api";
 import creature_template from "helpers/json/creature_template.json";
-import Api from "helpers/api";
 import { getToken } from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { setNestedKey } from "@lierno/core-helpers";
+import { useState } from "react";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -166,11 +165,17 @@ export async function getServerSideProps(context) {
     }).catch(() => null);
 
     if (npc?.stats.spells?.length > 0) {
-      const spellIds = npc.stats.spells.map((spell) => spell.spellId);
+      const spellIds = [];
 
-      spells = await Api.fetchInternal("/spells", {
-        method: "POST",
-        body: JSON.stringify(spellIds),
+      npc.stats.spells.forEach(({ spells }) => {
+        spellIds.push(
+          ...Object.values(spells)
+            .flat()
+            .map(({ spellId }) => spellId)
+        );
+      });
+
+      spells = await Api.fetchInternal(`/spells?id=${JSON.stringify(spellIds)}`, {
         headers,
       });
     }

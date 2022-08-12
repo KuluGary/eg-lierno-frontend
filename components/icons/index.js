@@ -17,3 +17,8 @@ export * from "./SwordWound";
 export * from "./DeathSkull";
 export * from "./Resistance";
 export * from "./CrackedShield";
+export * from "./Helm";
+export * from "./Baby";
+export * from "./Mustache";
+export * from "./Book";
+export * from "./Padlock";

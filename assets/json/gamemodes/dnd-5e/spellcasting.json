@@ -1,0 +1,91 @@
+{
+    "fullcaster" : {
+        "1": {
+            "spellSlots": [2]
+        },
+        "2": {
+            "spellSlots": [3]
+        },
+        "3": {
+            "spellSlots": [4, 2]
+        },
+        "4": {
+            "spellSlots": [4, 3]
+        },
+        "5": {
+            "spellSlots": [4, 3, 2]
+        },
+        "6": {
+            "spellSlots": [4, 3, 3]
+        },
+        "7": {
+            "spellSlots": [4, 3, 3, 1]
+        },
+        "8": {
+            "spellSlots": [4, 3, 3, 2]
+        },
+        "9": {
+            "spellSlots": [4, 3, 3, 3, 1]
+        },
+        "10": {
+            "spellSlots": [4, 3, 3, 3, 2]
+        },
+        "11": {
+            "spellSlots": [4, 3, 3, 3, 2, 1]
+        },
+        "12": {
+            "spellSlots": [4, 3, 3, 3, 2, 1]
+        },
+        "13": {
+            "spellSlots": [4, 3, 3, 3, 2, 1, 1]
+        },
+        "14": {
+            "spellSlots": [4, 3, 3, 3, 2, 1, 1]
+        },
+        "15": {
+            "spellSlots": [4, 3, 3, 3, 2, 1, 1, 1]
+        },
+        "16": {
+            "spellSlots": [4, 3, 3, 3, 2, 1, 1, 1]
+        },
+        "17": {
+            "spellSlots": [4, 3, 3, 3, 2, 1, 1, 1, 1]
+        },
+        "18": {
+            "spellSlots": [4, 3, 3, 3, 2, 1, 1, 1, 1]
+        },
+        "19": {
+            "spellSlots": [4, 3, 3, 3, 2, 1, 1, 1, 1]
+        },
+        "20": {
+            "spellSlots": [4, 3, 3, 3, 2, 1, 1, 1, 1]
+        }
+    },
+    "other": {
+        "Brujo": {
+            "1": {
+                "spellSlots": [1]
+            },
+            "2": {
+                "spellSlots": [2]
+            },
+            "3": {
+                "spellSlots": [2, 2]
+            },
+            "4": {
+                "spellSlots": [2,2]
+            },
+            "5": {
+                "spellSlots": [2,2,2]
+            }
+        },
+        "Artífice": {
+            "1": {
+                "spellSlots": [2]
+            },
+            "2": {
+                
+            }
+        }
+    }
+}

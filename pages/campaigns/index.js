@@ -1,7 +1,7 @@
 import { Typography, Box } from "@mui/material";
 import { Layout, Container } from "components";
 import { Table } from "components/Table";
-import Api from "helpers/api";
+import Api from "services/api";
 import Head from "next/head";
 import { getToken } from "next-auth/jwt";
 import Router from "next/router";

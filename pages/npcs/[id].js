@@ -7,23 +7,26 @@ import {
   getSavingThrowString,
   getSpeedString,
 } from "@lierno/dnd-helpers";
-import { Delete as DeleteIcon, Edit as EditIcon, FileDownload as FileDownloadIcon } from "@mui/icons-material";
-import { Box, CircularProgress, Grid, IconButton, Typography, MenuItem } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { Layout, Metadata } from "components";
+import { CreatureMenu } from "components/CreatureMenu/CreatureMenu";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
 import download from "downloadjs";
-import Api from "helpers/api";
+import Api from "services/api";
 import { ArrayUtil } from "helpers/string-util";
+import { useWidth } from "hooks/useWidth";
 import { getToken } from "next-auth/jwt";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
-import Router from "next/router";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-export default function NpcProfile({ npc, spells, items, classes }) {
+export default function NpcProfile({ npc, spells, items, classes, tier }) {
   const [isDownloading, setIsDownloading] = useState(false);
+  const { data: session } = useSession();
   const theme = useTheme();
+  const width = useWidth();
 
   const downloadPdf = () => {
     setIsDownloading(true);
@@ -48,102 +51,53 @@ export default function NpcProfile({ npc, spells, items, classes }) {
         <Grid item laptop={6} tablet={12}>
           <CreatureFlavor
             containerStyle={{
-              height: "90vh",
-              overflowY: "scroll",
+              height: width.down("tablet") ? "100%" : "90vh",
+              overflowY: width.down("tablet") ? "no-scroll" : "scroll",
               ...theme.mixins.noScrollbar,
             }}
             data={{
+              id: npc._id,
               sections: [
                 { title: "Personalidad", content: npc?.flavor.personality },
                 { title: "Apariencia", content: npc?.flavor.appearance },
                 { title: "Historia", content: npc?.flavor.backstory },
               ],
               image: npc?.flavor.portrait?.original,
+              tier,
+              type: "npc"
             }}
             Header={() => (
-              <Box
-                component="main"
-                sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingInline: "1em" }}
-              >
-                <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
-                  <Box>
-                    <Typography variant="h5" component="h1">
-                      {npc?.name}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      {[npc.flavor.class, npc.stats.race, npc.stats.alignment]
-                        .filter((el) => el && el.length > 0)
-                        .map((el, i) => (i > 0 ? el.toLowerCase() : el))
-                        .join(", ")}
-                    </Typography>
+              <>
+                <Box
+                  data-testid="creature-header"
+                  component="main"
+                  sx={{
+                    display: "flex",
+                    flexDirection: width.down("tablet") ? "column" : "row",
+                    gap: "1em",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    p: "1em 1.2em",
+                  }}
+                >
+                  <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
+                    <Box>
+                      <Typography variant="h5" component="h1">
+                        {npc?.name}
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        {[npc.flavor.class, npc.stats.race, npc.stats.alignment]
+                          .filter((el) => el && el.length > 0)
+                          .map((el, i) => (i > 0 ? el.toLowerCase() : el))
+                          .join(", ")}
+                      </Typography>
+                    </Box>
                   </Box>
+                  {!!session && session?.userId === npc.createdBy && (
+                    <CreatureMenu creature={npc} type="npc" downloadPdf={downloadPdf} />
+                  )}
                 </Box>
-                <Box sx={{ display: "flex", height: "100%" }}>
-                  <Box component="div" sx={{ margin: "0 .25em" }}>
-                    <IconButton
-                      color="secondary"
-                      sx={{
-                        border: "1px solid rgba(63, 176, 172, 0.5);",
-                        borderRadius: "8px",
-                        padding: ".25em",
-                        transition: theme.transitions.create(["border"], {
-                          easing: theme.transitions.easing.sharp,
-                          duration: theme.transitions.duration.leavingScreen,
-                        }),
-                        "&:hover": {
-                          border: "1px solid rgba(63, 176, 172, 1);",
-                        },
-                      }}
-                    >
-                      <EditIcon onClick={() => Router.push(`/npcs/add/${npc._id}`)} fontSize="small" />
-                    </IconButton>
-                  </Box>
-                  <Box component="div" sx={{ margin: "0 .25em" }}>
-                    <IconButton
-                      color="secondary"
-                      sx={{
-                        border: "1px solid rgba(63, 176, 172, 0.5);",
-                        borderRadius: "8px",
-                        padding: ".25em",
-                        transition: theme.transitions.create(["border"], {
-                          easing: theme.transitions.easing.sharp,
-                          duration: theme.transitions.duration.leavingScreen,
-                        }),
-                        "&:hover": {
-                          border: "1px solid rgba(63, 176, 172, 1);",
-                        },
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                  <Box component="div" sx={{ margin: "0 .25em" }}>
-                    <IconButton
-                      color="secondary"
-                      onClick={downloadPdf}
-                      disabled={isDownloading}
-                      sx={{
-                        border: "1px solid rgba(63, 176, 172, 0.5);",
-                        borderRadius: "8px",
-                        padding: ".25em",
-                        transition: theme.transitions.create(["border"], {
-                          easing: theme.transitions.easing.sharp,
-                          duration: theme.transitions.duration.leavingScreen,
-                        }),
-                        "&:hover": {
-                          border: "1px solid rgba(63, 176, 172, 1);",
-                        },
-                      }}
-                    >
-                      {isDownloading ? (
-                        <CircularProgress color="secondary" size={20} />
-                      ) : (
-                        <FileDownloadIcon fontSize="small" />
-                      )}
-                    </IconButton>
-                  </Box>
-                </Box>
-              </Box>
+              </>
             )}
           />
         </Grid>
@@ -167,7 +121,7 @@ export default function NpcProfile({ npc, spells, items, classes }) {
                   content: `${npc["stats"]["hitPoints"]["current"] ?? npc["stats"]["hitPoints"]["max"]} / ${
                     npc["stats"]["hitPoints"]["max"]
                   } (${npc["stats"]["hitDie"]["num"]}d${npc["stats"]["hitDie"]["size"]} ${getOperatorString(
-                    getModifier(npc["stats"]["abilityScores"]["constitution"]) * npc["stats"]["hitDie"]["num"]
+                    parseInt(getModifier(npc["stats"]["abilityScores"]["constitution"]) * npc["stats"]["hitDie"]["num"])
                   )})`,
                 },
                 {
@@ -280,9 +234,7 @@ export async function getServerSideProps(context) {
       });
     });
 
-    spells = await Api.fetchInternal("/spells", {
-      method: "POST",
-      body: JSON.stringify(spellIds.map((spell) => spell.spellId)),
+    spells = await Api.fetchInternal(`/spells?id=${JSON.stringify(spellIds.map((spell) => spell.spellId))}`, {
       headers,
     }).catch((_) => null);
   }
@@ -327,12 +279,23 @@ export async function getServerSideProps(context) {
     });
   }
 
+  let tier = null;
+
+  if (!!npc?.flavor.group) {
+    tier = await Api.fetchInternal(`/tier-by-creature?type=npc&id=${npc.flavor.group}`, {
+      headers,
+    })
+      .then((res) => res.map((el) => el._id))
+      .catch(() => null);
+  }
+
   return {
     props: {
       npc,
       spells,
       items,
       classes,
+      tier,
     },
   };
 }

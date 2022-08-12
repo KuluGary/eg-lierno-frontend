@@ -7,10 +7,10 @@ function getSteps() {
   return ["Selecciona tu imagen", "Modifica tu imagen", "Resultado"];
 }
 
-function getStepContent(stepIndex, setUpImg, upImg, cropImg, setCropImg, setDone, setImage) {
+function getStepContent(stepIndex, setUpImg, upImg, cropImg, setCropImg, setDone, setImage, handleNext) {
   switch (stepIndex) {
     case 0:
-      return <Step1 setUpImg={setUpImg} />;
+      return <Step1 setUpImg={setUpImg} handleNext={handleNext} />;
     case 1:
       return <Step2 upImg={upImg} setCropImg={setCropImg} />;
     case 2:
@@ -74,7 +74,7 @@ export default function ImageUploader({ open, setOpen, setImage }) {
         ))}
       </Stepper>
       <DialogContent>
-        {getStepContent(activeStep, setUpImg, upImg, cropImg, setCropImg, setDone, setImage)}
+        {getStepContent(activeStep, setUpImg, upImg, cropImg, setCropImg, setDone, setImage, handleNext)}
       </DialogContent>
       <DialogActions>
         <Button disabled={activeStep === 0} onClick={handleBack}>

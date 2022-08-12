@@ -2,7 +2,7 @@ import { useQueryState } from "hooks/useQueryState";
 import { useCallback, useEffect, useState } from "react";
 import { Table as MuiTable, TableBody, Box, CircularProgress } from "@mui/material";
 import { TableRow, TableFooter, TableHeader } from ".";
-import Api from "helpers/api";
+import Api from "services/api";
 import { FunctionUtil } from "helpers/function-util";
 import { usePersistedStorage } from "hooks/usePersistedStorage";
 import Card from "components/Card/Card";
@@ -31,7 +31,7 @@ function PaginatedTable({ src, schema, onEdit, onDelete, isEditable, headerProps
   };
 
   const fetchData = (limit = rowsPerPage, skip = page * rowsPerPage, qs = querySearch) => {
-    const urlParams = `?limit=${limit}&skip=${skip}&qs=${qs}`;
+    const urlParams = `?limit=${limit}&skip=${skip}&qs=${qs}&collapse=true`;
 
     Api.fetchInternal(`${fetchFrom}${urlParams}`).then((res) => {
       const { data, total } = res;
@@ -77,8 +77,7 @@ function PaginatedTable({ src, schema, onEdit, onDelete, isEditable, headerProps
 
               Object.entries(schema).forEach(
                 ([key, value]) =>
-                  (tableHeaders[key] =
-                    typeof value === "function" ? value(element) : getNestedKey(value, element))
+                  (tableHeaders[key] = typeof value === "function" ? value(element) : getNestedKey(value, element))
               );
 
               return (

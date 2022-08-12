@@ -1,5 +1,14 @@
 import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
-import { Box, Card as MuiCard, CardActions, CardContent, CardMedia, IconButton, Typography } from "@mui/material";
+import {
+  Badge,
+  Box,
+  Card as MuiCard,
+  CardActions,
+  CardContent,
+  CardMedia,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { Avatar } from "components/Avatar/Avatar";
 import { Link } from "components/Link/Link";
 import { useSession } from "next-auth/react";
@@ -7,7 +16,7 @@ import { useSession } from "next-auth/react";
 export default function Card({ data, onEdit = () => {}, onDelete = () => {}, src }) {
   const { data: session } = useSession();
   const editable = data.owner === session?.userId || data.owner === "*";
-  const { _id, avatar, name, subtitle } = data;
+  const { _id, avatar, name, subtitle, amount } = data;
   const parsedSrc = !!src ? src?.replace("{ID}", _id) : "#";
 
   return (
@@ -19,7 +28,13 @@ export default function Card({ data, onEdit = () => {}, onDelete = () => {}, src
         sx={{ filter: "brightness(35%)" }}
       />
       <CardContent sx={{ position: "absolute", top: 0, display: "flex", gap: "1em", alignItems: "center" }}>
-        <Avatar src={avatar} size={56} />
+        {amount && amount > 1 ? (
+          <Badge badgeContent={amount} color="secondary" overlap="circular">
+            <Avatar src={avatar} size={56} />
+          </Badge>
+        ) : (
+          <Avatar src={avatar} size={56} />
+        )}
         <Box component="div">
           <Link href={parsedSrc}>
             <Typography

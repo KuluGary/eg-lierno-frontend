@@ -1,7 +1,7 @@
 import { Box, Divider, Tab, Tabs, Typography } from "@mui/material";
 import { Container, Layout, Metadata } from "components";
 import { Table } from "components/Table";
-import Api from "helpers/api";
+import Api from "services/api";
 import { getToken } from "next-auth/jwt";
 import references from "helpers/json/references.json";
 import { useState } from "react";

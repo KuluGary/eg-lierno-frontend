@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { Container, HTMLContainer, Layout, Metadata } from "components";
-import Api from "helpers/api";
+import Api from "services/api";
 
 export default function Item({ item }) {
   return (

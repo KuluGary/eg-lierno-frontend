@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import { Container } from "components/Container/Container";
 import { Table } from "components/Table";
-import Api from "helpers/api";
+import Api from "services/api";
 import { useEffect, useState } from "react";
 
 export function CampaignFactions({ campaign }) {

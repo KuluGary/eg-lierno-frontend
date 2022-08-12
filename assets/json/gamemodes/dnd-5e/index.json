@@ -1,0 +1,12 @@
+{
+  "character": {
+    "flavor": {
+      "personality": "Personalidad",
+      "appearance": "Appearance",
+      "backstory": "Historia"
+    },
+    "stats": {
+      "hitPoints": ""
+    }
+  }
+}

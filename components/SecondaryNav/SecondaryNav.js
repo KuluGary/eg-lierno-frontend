@@ -160,8 +160,6 @@ export function SecondaryNav(props) {
   const width = useWidth();
   const { status } = useSession();
 
-  console.log(status);
-
   if (status !== "authenticated") return <React.Fragment />;
 
   if (width.down("tablet")) return <BottomNavigation {...props} />;

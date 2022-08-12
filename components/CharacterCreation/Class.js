@@ -1,4 +1,14 @@
-import { Button, FormControl, Grid, IconButton, MenuItem, Select, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  FormControl,
+  Grid,
+  IconButton,
+  ListSubheader,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { HTMLEditor } from "components";
 import { useRouter } from "next/router";
@@ -44,6 +54,13 @@ export function Class({ creature, setCreature, classes }) {
         creature.stats.classes.map(({ className, classLevel, subclassName, subclassDescription, hitDie }, index) => {
           const { data } = classes.find((extendedDataClass) => extendedDataClass.name === className);
 
+          const groupedClasses = (classes ?? []).reduce((groups, item) => {
+            const group = groups[item.game] || [];
+            group.push(item);
+            groups[item.game] = group;
+            return groups;
+          }, {});
+
           return (
             <Grid key={index} item laptop={12} container spacing={3}>
               <Grid item laptop={7}>
@@ -69,11 +86,23 @@ export function Class({ creature, setCreature, classes }) {
                       setCreature("stats.classes", newClasses);
                     }}
                   >
-                    {(classes ?? []).map(({ name }, index) => (
-                      <MenuItem key={index} value={name}>
-                        {getGenderedClass(name, creature.flavor.traits.pronoun?.toLowerCase())}
-                      </MenuItem>
-                    ))}
+                    {Object.entries(groupedClasses).map(([key, value], i) => {
+                      return [
+                        <ListSubheader
+                          sx={{
+                            borderBottom: (t) => `1px solid ${t.palette.divider}`,
+                            borderTop: (t) => i !== 0 && `1px solid ${t.palette.divider}`,
+                          }}
+                        >
+                          {key}
+                        </ListSubheader>,
+                        value.map(({ name }, index) => (
+                          <MenuItem key={index} value={name}>
+                            {getGenderedClass(name, creature.flavor.traits.pronoun?.toLowerCase())}
+                          </MenuItem>
+                        )),
+                      ];
+                    })}
                   </Select>
                 </FormControl>
               </Grid>

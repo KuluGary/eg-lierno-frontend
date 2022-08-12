@@ -3,9 +3,10 @@ import { Button, IconButton, Menu, MenuItem } from "@mui/material";
 import { useTheme } from "@mui/styles";
 import { Avatar } from "components/Avatar/Avatar";
 import { Link } from "components/Link/Link";
-import ColorModeContext from "helpers/color-context";
+import ColorModeContext from "services/color-context";
 import { signIn, signOut, useSession } from "next-auth/react";
 import React, { useContext, useState } from "react";
+import style from "./UserActions.style";
 
 export default function UserActions({ isMainScreen = false }) {
   const { data: session, status: sessionStatus } = useSession();
@@ -28,7 +29,7 @@ export default function UserActions({ isMainScreen = false }) {
     return (
       <Link
         href={"/api/auth/signing"}
-        sx={{ textDecoration: "none" }}
+        sx={style.unAuthLink}
         onClick={(e) => {
           e.preventDefault();
           signIn();
@@ -43,15 +44,7 @@ export default function UserActions({ isMainScreen = false }) {
   return (
     <>
       {isMainScreen && (
-        <Link
-          href="/characters"
-          sx={{
-            mr: 6,
-            color: "inherit",
-            textDecoration: "none",
-            "&:hover": { color: (t) => t.palette.secondary.main },
-          }}
-        >
+        <Link href="/characters" sx={style.goToAppLink}>
           Ir al Panel
         </Link>
       )}

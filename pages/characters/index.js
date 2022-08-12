@@ -1,9 +1,8 @@
-import { getCharacterSubtitle, getNpcSubtitle } from "@lierno/dnd-helpers";
 import { Box, Tab, Tabs, Typography } from "@mui/material";
 import { Container, FileUploaderModal, Layout } from "components";
 import { DeleteModal } from "components/DeleteModal/DeleteModal";
 import { PaginatedTable } from "components/Table";
-import Api from "helpers/api";
+import Api from "services/api";
 import { useMounted } from "hooks/useMounted";
 import { useQueryState } from "hooks/useQueryState";
 import Head from "next/head";
@@ -130,10 +129,11 @@ export default function Character() {
             <PaginatedTable
               schema={{
                 _id: "_id",
+                id: "id",
                 name: "name",
-                subtitle: (e) => getCharacterSubtitle(e),
-                avatar: "flavor.portrait.avatar",
-                owner: "createdBy",
+                avatar: "avatar",
+                description: "personality",
+                count: "count",
               }}
               loading={isLoading}
               fetchFrom={"/characters"}
@@ -158,10 +158,11 @@ export default function Character() {
             <PaginatedTable
               schema={{
                 _id: "_id",
-                subtitle: (e) => getNpcSubtitle(e) ?? "",
+                id: "id",
                 name: "name",
-                avatar: "flavor.portrait.avatar",
-                owner: "createdBy",
+                avatar: "avatar",
+                description: "personality",
+                count: "count",
               }}
               loading={isLoading}
               fetchFrom={"/npcs"}

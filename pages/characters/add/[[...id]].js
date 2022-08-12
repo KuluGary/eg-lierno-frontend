@@ -22,7 +22,7 @@ import {
   Backpack as BackpackIcon,
 } from "components/icons";
 import character_template from "helpers/json/character_template.json";
-import Api from "helpers/api";
+import Api from "services/api";
 import { getToken } from "next-auth/jwt";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -196,11 +196,17 @@ export async function getServerSideProps(context) {
     }
 
     if (character?.stats.spells?.length > 0) {
-      const spellIds = character.stats.spells.map((spell) => spell.spellId);
+      const spellIds = [];
 
-      spells = await Api.fetchInternal("/spells", {
-        method: "POST",
-        body: JSON.stringify(spellIds),
+      character.stats.spells.forEach(({ spells }) => {
+        spellIds.push(
+          ...Object.values(spells)
+            .flat()
+            .map(({ spellId }) => spellId)
+        );
+      });
+
+      spells = await Api.fetchInternal(`/spells?id=${JSON.stringify(spellIds)}`, {
         headers,
       });
     }

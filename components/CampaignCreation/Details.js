@@ -11,66 +11,11 @@ import {
   Typography,
 } from "@mui/material";
 import { HTMLEditor } from "components";
-import Api from "helpers/api";
+import Api from "services/api";
 import { useEffect, useState } from "react";
+// import ChipInput from "material-ui-chip-input";
 
 export function Details({ campaign, setCampaign }) {
-  const [friendList, setFriendList] = useState([]);
-  const [characterList, setCharacterList] = useState([]);
-
-  useEffect(() => {
-    fetchFriendListData();
-    fetchCharacterListData();
-  }, []);
-
-  useEffect(() => {
-    fetchCharacterListData();
-  }, [campaign.players]);
-
-  const fetchFriendListData = async () => {
-    Api.fetchInternal("/auth/user").then(async (res) => {
-      const newFriendList = [];
-
-      for await (const userId of res.metadata.friendList ?? []) {
-        await Api.fetchInternal("/auth/user/" + userId).then((res) =>
-          newFriendList.push({ label: res.username, id: userId })
-        );
-      }
-
-      setFriendList(newFriendList);
-    });
-  };
-
-  const fetchCharacterListData = async () => {
-    if (campaign.players.length > 0) {
-      const newCharacterList = [];
-
-      for await (const userId of campaign.players ?? []) {
-        await Api.fetchInternal("/user/" + userId + "/characters").then((res) => {
-          newCharacterList.push(...res);
-        });
-      }
-
-      if (campaign.dm) {
-        await Api.fetchInternal("/user/" + campaign.dm + "/characters").then((res) => {
-          newCharacterList.push(...res);
-        });
-      }
-
-      setCharacterList(newCharacterList);
-    }
-  };
-
-  const getUserById = (characterId) => {
-    if (characterId === campaign.dm) return "Dungeon Master";
-
-    const user = friendList.find((user) => user.id === characterId);
-
-    if (user) return user?.label;
-
-    return "Otros";
-  };
-
   return (
     <Grid container spacing={3}>
       <Grid item laptop={12}>
@@ -120,69 +65,15 @@ export function Details({ campaign, setCampaign }) {
           label="¿Partida finalizada?"
         />
       </Grid>
-      <Grid item laptop={6}>
+      <Grid item laptop={12}>
         <Autocomplete
+          id="free-solo-demo"
+          freeSolo
           multiple
-          id="tags-standard"
-          value={campaign.players}
-          options={friendList}
-          getOptionLabel={(option) => option.label}
-          renderTags={(value, getTagProps) =>
-            value.map((option, index) => (
-              <Chip
-                key={index}
-                variant="outlined"
-                label={friendList.find((friend) => friend.id === option)?.label}
-                {...getTagProps({ index })}
-              />
-            ))
-          }
-          renderInput={(params) => (
-            <TextField {...params} color="secondary" variant="outlined" placeholder="Añadir jugadores" />
-          )}
-          onChange={(_, newData) => {
-            setCampaign(
-              "players",
-              newData.map((element) => {
-                if (typeof element === "string") return element;
-
-                return element.id;
-              })
-            );
-          }}
-        />
-      </Grid>
-      <Grid item laptop={6}>
-        <Autocomplete
-          multiple
-          id="tags-standard"
-          value={campaign.characters}
-          options={characterList}
-          getOptionLabel={(option) => option.name}
-          groupBy={(option) => getUserById(option.createdBy)}
-          renderTags={(value, getTagProps) =>
-            value.map((option, index) => (
-              <Chip
-                key={index}
-                variant="outlined"
-                label={characterList.find((friend) => friend._id === option)?.name}
-                {...getTagProps({ index })}
-              />
-            ))
-          }
-          renderInput={(params) => (
-            <TextField {...params} color="secondary" variant="outlined" placeholder="Añadir personajes" />
-          )}
-          onChange={(_, newData) => {
-            setCampaign(
-              "characters",
-              newData.map((element) => {
-                if (typeof element === "string") return element;
-
-                return element.id;
-              })
-            );
-          }}
+          options={[]}
+          value={campaign?.players}
+          renderInput={(params) => <TextField {...params} label={"Añadir jugadores..."} />}
+          onChange={(e, newValue) => setCampaign("players", newValue)}
         />
       </Grid>
       <Grid item laptop={12}>

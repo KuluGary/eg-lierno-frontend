@@ -1,8 +1,8 @@
 import { Grid, Tab, Tabs, Box } from "@mui/material";
-import Api from "helpers/api";
+import Api from "services/api";
 import { useEffect, useState } from "react";
 import { Container } from "components";
-import { Table } from "components/Table";
+import { PaginatedTable, Table } from "components/Table";
 import Router from "next/router";
 
 function a11yProps(index) {
@@ -13,6 +13,7 @@ function a11yProps(index) {
 }
 
 export function CampaignCreatures({ campaign }) {
+  const [isLoading, setIsLoading] = useState(false);
   const [creatures, setCreatures] = useState({});
   const [value, setValue] = useState(0);
 
@@ -20,16 +21,16 @@ export function CampaignCreatures({ campaign }) {
     setValue(newValue);
   };
 
-  useEffect(() => fetchNewCreatures(), []);
+  // useEffect(() => fetchNewCreatures(), []);
 
-  const fetchNewCreatures = async () => {
-    const newCreatures = {
-      npcs: await Api.fetchInternal("/campaigns/" + campaign._id + "/npcs"),
-      monsters: await Api.fetchInternal("/campaigns/" + campaign._id + "/monsters")
-    };
+  // const fetchNewCreatures = async () => {
+  //   const newCreatures = {
+  //     npcs: await Api.fetchInternal("/campaigns/" + campaign._id + "/npcs"),
+  //     monsters: await Api.fetchInternal("/campaigns/" + campaign._id + "/monsters"),
+  //   };
 
-    setCreatures(newCreatures)
-  };
+  //   setCreatures(newCreatures);
+  // };
 
   return (
     <Grid item laptop={12} container spacing={2}>
@@ -54,24 +55,25 @@ export function CampaignCreatures({ campaign }) {
             id={`simple-tabpanel-${0}`}
             aria-labelledby={`simple-tab-${0}`}
           >
-            {!!creatures.npcs && (
-              <Table
-                schema={{
-                  _id: "_id",
-                  name: "name",
-                  avatar: "flavor.portrait.avatar",
-                  description: "flavor.description",
-                  owner: "createdBy"
-                }}
-                data={creatures.npcs}
-                src={"/npcs/{ID}"}
-                onEdit={(id) => Router.push(`/npcs/add/${id}`)}
-                onDelete={() => {}}
-                headerProps={{
-                  onAdd: () => Router.push("/npcs/add"),
-                }}
-              />
-            )}
+            <PaginatedTable
+              schema={{
+                _id: "_id",
+                id: "id",
+                name: "name",
+                avatar: "avatar",
+                description: "personality",
+                count: "count",
+                owner: "createdBy",
+              }}
+              loading={isLoading}
+              fetchFrom={`/campaigns/${campaign._id}/npcs`}
+              src={"/npcs/{ID}"}
+              onEdit={(id) => Router.push(`/npcs/add/${id}`)}
+              onDelete={() => {}}
+              headerProps={{
+                onAdd: () => Router.push("/npcs/add"),
+              }}
+            />
           </Box>
           <Box
             component="div"
@@ -87,7 +89,7 @@ export function CampaignCreatures({ campaign }) {
                   name: "name",
                   avatar: "flavor.portrait.original",
                   description: "flavor.description",
-                  owner: "createdBy"
+                  owner: "createdBy",
                 }}
                 data={creatures.monsters}
                 src={"/bestiary/{ID}"}

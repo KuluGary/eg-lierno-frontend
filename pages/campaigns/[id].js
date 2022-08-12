@@ -6,13 +6,11 @@ import {
   CampaignDiary,
   CampaignFactions,
   CampaignLogs,
-  CampaignMap,
-  CampaignTabletop,
+  CampaignMap
 } from "components/CampaignProfile";
-import Api from "helpers/api";
 import { useQueryState } from "hooks/useQueryState";
 import { getToken } from "next-auth/jwt";
-import { useState } from "react";
+import Api from "services/api";
 
 const tabs = [
   { label: "Detalles", Component: CampaignDetails },

@@ -1,6 +1,6 @@
 import { Box, Divider, Grid, List, ListItem, ListItemButton, ListItemIcon, Typography } from "@mui/material";
 import { Avatar, Container, HTMLContainer } from "components";
-import Api from "helpers/api";
+import Api from "services/api";
 import { useEffect, useRef, useState } from "react";
 
 const MessageContainer = ({ message, getAvatar, getDisplayName }) => {

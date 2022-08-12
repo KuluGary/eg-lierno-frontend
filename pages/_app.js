@@ -9,9 +9,9 @@ import PropTypes from "prop-types";
 import * as React from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ColorModeContext from "../helpers/color-context";
 import createEmotionCache from "../helpers/createEmotionCache";
-import { darkTheme, lightTheme } from "../helpers/theme";
+import ColorModeContext from "../services/color-context";
+import { darkTheme, lightTheme } from "../services/theme";
 import "../styles/globals.css";
 
 const ProgressBar = dynamic(() => import("components/ProgressBar"), {

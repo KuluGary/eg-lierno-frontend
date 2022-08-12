@@ -1,10 +1,9 @@
 import { Box, Divider, Grid, List, ListItem, ListItemText, Typography } from "@mui/material";
 import { Avatar, Container, Layout } from "components";
-import Api from "helpers/api";
+import Api from "services/api";
 import { getToken } from "next-auth/jwt";
 
 export default function Settings({ user }) {
-  console.log(user);
   const getISODate = (date) => {
     const d = new Date(date);
 
@@ -65,7 +64,6 @@ export async function getServerSideProps(context) {
 
   const token = await getToken({ req, secret, raw: true }).catch((e) => console.error(e));
 
-  console.log(token);
   const headers = {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -77,7 +75,6 @@ export async function getServerSideProps(context) {
   }
 
   const user = await Api.fetchInternal("/auth/user", { headers });
-  console.log(user);
 
   if (!user) return { notFound: true };
 

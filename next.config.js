@@ -1,13 +1,10 @@
 module.exports = {
-  reactStrictMode: true,
-  webpack: (cfg) => {
-    cfg.module.rules.push(
-        {
-            test: /\.md$/,
-            loader: 'frontmatter-markdown-loader',
-            options: { mode: ['react-component'] }
-        }
-    )
-    return cfg;
-}
-}
+  webpackDevMiddleware: (config) => {
+    config.watchOptions = {
+      poll: 1000,
+      aggregateTimeout: 300,
+    };
+
+    return config;
+  },
+};
