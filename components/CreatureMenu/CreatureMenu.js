@@ -83,7 +83,7 @@ export const CreatureMenu = ({ creature, type, downloadPdf }) => {
 
   const buttons = [
     { Icon: EditIcon, label: "Editar", func: onEdit },
-    { Icon: DeleteIcon, label: "Delete", func: onDelete },
+    { Icon: DeleteIcon, label: "Eliminar", func: onDelete },
     { Icon: FileCopyIcon, label: "Duplicar", func: onDuplicate },
     { Icon: FileDownloadIcon, label: "Descargar como PDF", func: downloadPdf },
     { Icon: CodeIcon, label: "Descargar como JSON", func: downloadJson },
