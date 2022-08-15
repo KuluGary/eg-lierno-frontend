@@ -163,6 +163,7 @@ export function Details({ creature, setCreature }) {
               backgroundSize: "cover",
               backgroundPositionX: "center",
               borderRadius: "12px",
+              outline: `1px solid ${theme.palette.divider}`,
             }}
           ></Box>
         )}

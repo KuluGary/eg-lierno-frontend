@@ -61,6 +61,12 @@ export default function MyApp(props) {
     [mode]
   );
 
+  React.useEffect(() => {
+    if (!getComputedStyle(document.documentElement).getPropertyValue("--primary-color")) {
+      document.documentElement.style.setProperty("--primary-color", theme.palette.secondary.main);
+    }
+  }, [theme]);
+
   return (
     <AuthProvider options={{ clientMaxAge: 0, keepAlive: 0 }} session={pageProps.session}>
       <ToastContainer

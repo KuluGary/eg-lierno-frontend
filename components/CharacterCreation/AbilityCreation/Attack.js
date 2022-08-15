@@ -284,6 +284,54 @@ export function Attack({ open, onClose, section, selectedIndex, creature, onSave
                       }
                     />
                   </Grid>
+                  <Grid item laptop={3}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      color="secondary"
+                      label="Bonificador al ataque"
+                      value={attack?.data.damage?.melee?.attackBonus ?? 0}
+                      onChange={(e) =>
+                        setAttack({
+                          ...attack,
+                          data: {
+                            ...attack.data,
+                            damage: {
+                              ...attack.data.damage,
+                              melee: {
+                                ...(attack.data.damage.melee ?? {}),
+                                attackBonus: parseInt(e.target.value),
+                              },
+                            },
+                          },
+                        })
+                      }
+                    />
+                  </Grid>
+                  <Grid item laptop={3}>
+                    <TextField
+                      fullWidth
+                      type="number"
+                      color="secondary"
+                      label="Bonificador al daño"
+                      value={attack?.data.damage?.melee?.damageBonus ?? 0}
+                      onChange={(e) =>
+                        setAttack({
+                          ...attack,
+                          data: {
+                            ...attack.data,
+                            damage: {
+                              ...attack.data.damage,
+                              melee: {
+                                ...(attack.data.damage.melee ?? {}),
+                                damageBonus: parseInt(e.target.value),
+                              },
+                            },
+                          },
+                        })
+                      }
+                    />
+                  </Grid>
                 </Grid>
               </Container>
             </Collapse>
@@ -436,6 +484,54 @@ export function Attack({ open, onClose, section, selectedIndex, creature, onSave
                       />
                     </Grid>
                     <Grid item laptop={3} />
+                    <Grid item laptop={3}>
+                      <TextField
+                        fullWidth
+                        type="number"
+                        color="secondary"
+                        label="Bonificador al ataque"
+                        value={attack?.data.damage?.distance?.attackBonus ?? 0}
+                        onChange={(e) =>
+                          setAttack({
+                            ...attack,
+                            data: {
+                              ...attack.data,
+                              damage: {
+                                ...attack.data.damage,
+                                distance: {
+                                  ...(attack.data.damage.distance ?? {}),
+                                  attackBonus: parseInt(e.target.value),
+                                },
+                              },
+                            },
+                          })
+                        }
+                      />
+                    </Grid>
+                    <Grid item laptop={3}>
+                      <TextField
+                        fullWidth
+                        type="number"
+                        color="secondary"
+                        label="Bonificador al daño"
+                        value={attack?.data.damage?.distance?.damageBonus ?? 0}
+                        onChange={(e) =>
+                          setAttack({
+                            ...attack,
+                            data: {
+                              ...attack.data,
+                              damage: {
+                                ...attack.data.damage,
+                                distance: {
+                                  ...(attack.data.damage.distance ?? {}),
+                                  damageBonus: parseInt(e.target.value),
+                                },
+                              },
+                            },
+                          })
+                        }
+                      />
+                    </Grid>
                   </Grid>
                 </Box>
               </Container>
