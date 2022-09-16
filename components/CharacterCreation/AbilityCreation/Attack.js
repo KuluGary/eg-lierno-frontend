@@ -1,23 +1,22 @@
-import { useEffect, useState } from "react";
+import { useTheme } from "@emotion/react";
 import {
+  Box,
   Checkbox,
+  Collapse,
   Divider,
+  FormControl,
   FormControlLabel,
   Grid,
-  Box,
-  TextField,
-  FormControl,
   InputLabel,
-  Select,
   MenuItem,
-  Collapse,
-  Typography,
+  Select,
+  TextField,
 } from "@mui/material";
-import { FullScreenModal } from "components/Modal";
-import { ModalFooter, ModalHeader } from ".";
 import { Container } from "components";
+import { FullScreenModal } from "components/Modal";
 import { statLabels } from "helpers/creature-calculations";
-import { useTheme } from "@emotion/react";
+import { useEffect, useState } from "react";
+import { ModalFooter, ModalHeader } from ".";
 
 const defaultFormData = {
   melee: {

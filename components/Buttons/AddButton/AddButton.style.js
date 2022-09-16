@@ -1,3 +1,6 @@
+/**
+ * @see {@link https://mui.com/system/the-sx-prop|MUI Docs}
+ */
 const style = {
   container: {
     margin: ".5em",

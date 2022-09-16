@@ -12,6 +12,7 @@ import {
 import { Avatar } from "components/Avatar/Avatar";
 import { Link } from "components/Link/Link";
 import { useSession } from "next-auth/react";
+import style from "./Card.style";
 
 export default function Card({ data, onEdit = () => {}, onDelete = () => {}, src }) {
   const { data: session } = useSession();
@@ -20,14 +21,9 @@ export default function Card({ data, onEdit = () => {}, onDelete = () => {}, src
   const parsedSrc = !!src ? src?.replace("{ID}", _id) : "#";
 
   return (
-    <MuiCard sx={{ width: 345, position: "relative" }} variant="outlined">
-      <CardMedia
-        component="img"
-        height="140"
-        image={avatar ?? "https://picsum.photos/140"}
-        sx={{ filter: "brightness(35%)" }}
-      />
-      <CardContent sx={{ position: "absolute", top: 0, display: "flex", gap: "1em", alignItems: "center" }}>
+    <MuiCard sx={style.cardContainer} variant="outlined">
+      <CardMedia component="img" height="140" image={avatar ?? "https://picsum.photos/140"} sx={style.cardMedia} />
+      <CardContent sx={style.cardContent}>
         {amount && amount > 1 ? (
           <Badge badgeContent={amount} color="secondary" overlap="circular">
             <Avatar src={avatar} size={56} />
@@ -37,24 +33,16 @@ export default function Card({ data, onEdit = () => {}, onDelete = () => {}, src
         )}
         <Box component="div">
           <Link href={parsedSrc}>
-            <Typography
-              variant="subtitle1"
-              sx={{
-                fontWeight: 500,
-                "&:hover": {
-                  textDecoration: "underline",
-                },
-              }}
-            >
+            <Typography variant="subtitle1" sx={style.cardTitle}>
               {name}
             </Typography>
           </Link>
-          <Typography variant="subtitle2" sx={{ opacity: 0.75, fontWeight: 400 }}>
+          <Typography variant="subtitle2" sx={style.cardSubtitle}>
             {subtitle}
           </Typography>
         </Box>
       </CardContent>
-      <CardActions sx={{ display: "flex", justifyContent: "center", gap: "2em" }}>
+      <CardActions sx={style.cardActions}>
         {!!editable && !!onEdit && (
           <IconButton color="secondary" onClick={onEdit}>
             <EditIcon fontSize="small" />

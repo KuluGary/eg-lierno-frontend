@@ -163,7 +163,7 @@ const darkTheme = {
         display: "none",
       },
       msOverflowStyle: "none" /* IE and Edge */,
-      scrollBarWidth: "none",
+      scrollbarWidth: "none"
     },
   },
   components: {

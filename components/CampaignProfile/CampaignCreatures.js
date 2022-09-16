@@ -1,9 +1,8 @@
-import { Grid, Tab, Tabs, Box } from "@mui/material";
-import Api from "services/api";
-import { useEffect, useState } from "react";
+import { Box, Grid, Tab, Tabs } from "@mui/material";
 import { Container } from "components";
-import { PaginatedTable, Table } from "components/Table";
+import { PaginatedTable } from "components/Table";
 import Router from "next/router";
+import { useState } from "react";
 
 function a11yProps(index) {
   return {
@@ -13,24 +12,12 @@ function a11yProps(index) {
 }
 
 export function CampaignCreatures({ campaign }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [creatures, setCreatures] = useState({});
+  const [isLoading] = useState(false);
   const [value, setValue] = useState(0);
 
   const handleChange = (_, newValue) => {
     setValue(newValue);
   };
-
-  // useEffect(() => fetchNewCreatures(), []);
-
-  // const fetchNewCreatures = async () => {
-  //   const newCreatures = {
-  //     npcs: await Api.fetchInternal("/campaigns/" + campaign._id + "/npcs"),
-  //     monsters: await Api.fetchInternal("/campaigns/" + campaign._id + "/monsters"),
-  //   };
-
-  //   setCreatures(newCreatures);
-  // };
 
   return (
     <Grid item laptop={12} container spacing={2}>
@@ -48,60 +35,64 @@ export function CampaignCreatures({ campaign }) {
               <Tab label="Monstruos" {...a11yProps(1)} />
             </Tabs>
           </Box>
-          <Box
-            component="div"
-            role="tabpanel"
-            hidden={value !== 0}
-            id={`simple-tabpanel-${0}`}
-            aria-labelledby={`simple-tab-${0}`}
-          >
-            <PaginatedTable
-              schema={{
-                _id: "_id",
-                id: "id",
-                name: "name",
-                avatar: "avatar",
-                description: "personality",
-                count: "count",
-                owner: "createdBy",
-              }}
-              loading={isLoading}
-              fetchFrom={`/campaigns/${campaign._id}/npcs`}
-              src={"/npcs/{ID}"}
-              onEdit={(id) => Router.push(`/npcs/add/${id}`)}
-              onDelete={() => {}}
-              headerProps={{
-                onAdd: () => Router.push("/npcs/add"),
-              }}
-            />
-          </Box>
-          <Box
-            component="div"
-            role="tabpanel"
-            hidden={value !== 1}
-            id={`simple-tabpanel-${1}`}
-            aria-labelledby={`simple-tab-${1}`}
-          >
-            {!!creatures.monsters && (
-              <Table
+          {value === 0 && (
+            <Box
+              component="div"
+              role="tabpanel"
+              hidden={value !== 0}
+              id={`simple-tabpanel-${0}`}
+              aria-labelledby={`simple-tab-${0}`}
+            >
+              <PaginatedTable
                 schema={{
                   _id: "_id",
+                  id: "id",
                   name: "name",
-                  avatar: "flavor.portrait.original",
-                  description: "flavor.description",
+                  avatar: "avatar",
+                  description: "personality",
+                  count: "count",
                   owner: "createdBy",
                 }}
-                data={creatures.monsters}
+                loading={isLoading}
+                fetchFrom={`/campaigns/${campaign._id}/npcs`}
+                src={"/npcs/{ID}"}
+                onEdit={(id) => Router.push(`/npcs/add/${id}`)}
+                onDelete={() => {}}
+                headerProps={{
+                  onAdd: () => Router.push("/npcs/add"),
+                }}
+              />
+            </Box>
+          )}
+          {value === 1 && (
+            <Box
+              component="div"
+              role="tabpanel"
+              hidden={value !== 1}
+              id={`simple-tabpanel-${1}`}
+              aria-labelledby={`simple-tab-${1}`}
+            >
+              <PaginatedTable
+                schema={{
+                  _id: "_id",
+                  id: "id",
+                  name: "name",
+                  avatar: "avatar",
+                  description: "personality",
+                  count: "count",
+                  owner: "createdBy",
+                }}
+                loading={isLoading}
+                fetchFrom={`/campaigns/${campaign._id}/monsters`}
                 src={"/bestiary/{ID}"}
-                onView={(id) => Router.push(`/bestiary/${id}`)}
                 onEdit={(id) => Router.push(`/bestiary/add/${id}`)}
                 onDelete={() => {}}
                 headerProps={{
                   onAdd: () => Router.push("/bestiary/add"),
                 }}
               />
-            )}
-          </Box>
+            </Box>
+          )}
         </Container>
       </Grid>
     </Grid>

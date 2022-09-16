@@ -7,10 +7,11 @@ const style = {
     maxHeight: "35vh",
     float: "left",
     margin: ".5em 1em 0 0",
+    shapeOutside: "square()",
+    backgroundClip: "content-box"
   },
   flavorContainer: {
-    padding: "2em 1em" 
-  }
+    padding: "2em 1em",  },
 };
 
 export default style;

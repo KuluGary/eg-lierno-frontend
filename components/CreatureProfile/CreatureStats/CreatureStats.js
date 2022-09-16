@@ -3,7 +3,9 @@ import { Box, Divider, Tab, Table, Tabs, Typography } from "@mui/material";
 import { ExpandedTableRow } from "components/Table";
 import { useState } from "react";
 import { Container, HTMLContainer } from "../..";
-import StatComponent from "../StatComponent/StatComponent";
+import Ability from "./components/Ability/Ability";
+import Proficiency from "./components/Proficiency/Proficiency";
+import StatComponent from "./components/Stat/Stat";
 import style from "./CreatureStats.style";
 
 export function CreatureStats({ Header, containerStyle, data }) {
@@ -23,30 +25,21 @@ export function CreatureStats({ Header, containerStyle, data }) {
             );
           })}
         </Box>
+
         <Divider />
+
         <Box data-testid="stats-proficiencies" component="div" sx={{ paddingInline: 3 }}>
           <Box component="ul" sx={style.proficiencyContainer}>
             {data.proficiencies
               ?.filter(({ title, content }) => !!title && !!content)
-              .map(({ key, title, content }, index) => {
-                return (
-                  <Box key={index} component="li" sx={style.proficiencyElement}>
-                    <Box sx={style.proficiencyElementTextContainer}>
-                      <Typography
-                        variant="body1"
-                        data-testid={`${title.toLowerCase().replaceAll(" ", "-")}-title`}
-                        sx={style.proficiencyElementTitle}
-                      >
-                        {`${title}. `}
-                      </Typography>
-                      <Typography variant="body1">{content}</Typography>
-                    </Box>
-                  </Box>
-                );
-              })}
+              .map((proficiency, index) => (
+                <Proficiency key={index} {...proficiency} />
+              ))}
           </Box>
         </Box>
+
         <Divider />
+
         <Tabs
           value={tab}
           onChange={handleTabChange}
@@ -60,57 +53,15 @@ export function CreatureStats({ Header, containerStyle, data }) {
               <Tab key={index} id={`tab-${index}`} aria-controls={`tabpanel-${index}`} label={title} />
             ))}
         </Tabs>
+
         <Divider />
+        
         <Box component="div">
           {data.abilities
             ?.filter(({ content }) => content?.length > 0 || Object.keys(content ?? {})?.length > 0)
-            .map(({ title, content }, index) => {
-              if (title === "Hechizos") {
-                const { characterSpells, spellData } = content;
-
-                return (
-                  <Box
-                    key={index}
-                    component="div"
-                    role="tabpanel"
-                    id={`tabpanel-${index}`}
-                    aria-labelledby={`tab-${index}`}
-                  >
-                    <Table size="small">
-                      {tab === index &&
-                        characterSpells.map((spells, index) => {
-                          return (
-                            <ExpandedTableRow
-                              index={index}
-                              title={getSpellcastingName(spells.caster, data.classes)}
-                              content={
-                                <HTMLContainer
-                                  content={getSpellStrings(spells, spellData, data.character, data.dataClasses)}
-                                />
-                              }
-                            />
-                          );
-                        })}
-                    </Table>
-                  </Box>
-                );
-              }
-
-              return (
-                <Table size="small" data-testid={`abilities-container-${index}`}>
-                  {tab === index &&
-                    content
-                      ?.filter(({ name, description }) => !!name || !!description)
-                      .map(({ name, description }, index) => (
-                        <ExpandedTableRow
-                          index={index}
-                          title={name}
-                          content={<HTMLContainer content={description} />}
-                        />
-                      ))}
-                </Table>
-              );
-            })}
+            .map((ability, index) => (
+              <Ability show={tab === index} key={index} index={index} {...ability} {...data} />
+            ))}
         </Box>
       </Container>
     </Box>

@@ -1,26 +1,10 @@
 import { Box } from "@mui/material";
-
-const maxNumberOfLinesStyle = (numberOfLines) => ({
-  wordBreak: "break-word",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  display: "-webkit-box",
-  lineHeight: "16px",
-  WebkitLineClamp: `${numberOfLines}`,
-  WebkitBoxOrient: "vertical",
-});
+import { style, maxNumberOfLinesStyle } from "./HTMLContainer.style";
 
 export function HTMLContainer({ content, component = "div", numberOfLines }) {
   return (
     <Box
-      sx={{
-        ...(!!numberOfLines && maxNumberOfLinesStyle(numberOfLines)),
-        "& a": {
-          color: (theme) => theme.palette.secondary.main,
-          "&:hover": { textDecoration: "underline" },
-        },
-        "& li": { marginBlock: "1em" },
-      }}
+      sx={[style.container, maxNumberOfLinesStyle(numberOfLines)]}
       component={component}
       dangerouslySetInnerHTML={{
         __html: content,

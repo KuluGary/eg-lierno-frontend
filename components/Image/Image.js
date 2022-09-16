@@ -1,9 +1,8 @@
-import { Box, useTheme, Zoom } from "@mui/material";
+import { Box, Zoom } from "@mui/material";
 import { useState } from "react";
 import style from "./Image.style";
 
-export default function Image({ src, sx, modal }) {
-  const theme = useTheme();
+export default function Image({ src, sx = {}, modal }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -22,15 +21,7 @@ export default function Image({ src, sx, modal }) {
           </Zoom>
         </Box>
       )}
-      <Box
-        component="img"
-        src={src}
-        onClick={() => setModalOpen(!modalOpen)}
-        sx={{
-          ...style.imageStyles,
-          ...(!!sx && sx),
-        }}
-      />
+      <Box component="img" src={src} onClick={() => setModalOpen(!modalOpen)} sx={[style.imageStyles, sx]} />
     </>
   );
 }

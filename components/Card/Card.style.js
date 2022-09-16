@@ -3,7 +3,8 @@
  */
 const style = {
   cardContainer: {
-    margin: "0 .25em" 
+    width: 345,
+    position: "relative",
   },
   cardMedia: {
     filter: "brightness(35%)",
@@ -15,13 +16,13 @@ const style = {
     gap: "1em",
     alignItems: "center",
   },
-  subtitleName: {
+  cardTitle: {
     fontWeight: 500,
     "&:hover": {
       textDecoration: "underline",
     },
   },
-  subtitleDescription: {
+  cardSubtitle: {
     opacity: 0.75,
     fontWeight: 400,
   },
@@ -29,9 +30,6 @@ const style = {
     display: "flex",
     justifyContent: "center",
     gap: "2em",
-  },
-  buttonContainer: {
-    margin: "0 .25em",
   },
 };
 

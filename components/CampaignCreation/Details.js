@@ -1,7 +1,6 @@
 import {
   Autocomplete,
   Checkbox,
-  Chip,
   FormControl,
   FormControlLabel,
   Grid,
@@ -11,9 +10,6 @@ import {
   Typography,
 } from "@mui/material";
 import { HTMLEditor } from "components";
-import Api from "services/api";
-import { useEffect, useState } from "react";
-// import ChipInput from "material-ui-chip-input";
 
 export function Details({ campaign, setCampaign }) {
   return (

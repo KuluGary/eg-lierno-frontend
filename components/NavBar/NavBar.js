@@ -61,7 +61,6 @@ export function NavBar({ open, toggleDrawer, mode = "normal", containerRef = nul
             {open ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
         )}
-        {/* <Logo sx={{ flexGrow: 1 }} /> */}
         <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
           Lierno
         </Typography>

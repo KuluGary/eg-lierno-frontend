@@ -1,4 +1,4 @@
-import { getOperatorString, isArrayNotEmpty } from "@lierno/core-helpers";
+import { getOperatorString } from "@lierno/core-helpers";
 import { getModifier } from "@lierno/dnd-helpers";
 import { Box, Divider, Table, TableBody, TableCell, TableRow, Typography, useTheme } from "@mui/material";
 import { HTMLContainer } from "components/HTMLContainer/HTMLContainer";
@@ -6,13 +6,12 @@ import { Shield as ShieldIcon } from "components/icons";
 import { FullScreenModal } from "components/Modal";
 import customizable_stats from "helpers/json/customizable_stats.json";
 import { convert as convertHtmlToString } from "html-to-text";
-import { useEffect, useState } from "react";
-import style from "./StatComponent.style";
+import { useState } from "react";
+import style from "./Stat.style";
 
 export default function StatComponent({ stat, label, bonusList, base }) {
   const { stats, checks } = customizable_stats;
   const [openModal, setOpenModal] = useState(false);
-  const [tooltip, setTooltip] = useState("");
   const theme = useTheme();
   const statLabels = {
     strength: "FUE",
@@ -22,18 +21,6 @@ export default function StatComponent({ stat, label, bonusList, base }) {
     wisdom: "SAB",
     charisma: "CAR",
   };
-
-  useEffect(() => {
-    if (isArrayNotEmpty(bonusList)) {
-      const statList = bonusList.map(
-        ({ bonus, descriptions }) => `${getOperatorString(bonus)} ${convertHtmlToString(descriptions)}`
-      );
-
-      statList.unshift(`Base: ${base}`);
-
-      setTooltip(<HTMLContainer content={statList.join("<hr />")} />);
-    }
-  }, [bonusList]);
 
   return (
     <>

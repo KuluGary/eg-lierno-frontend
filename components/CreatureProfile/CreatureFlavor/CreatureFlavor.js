@@ -5,9 +5,11 @@ import Image from "../../Image/Image";
 import style from "./CreatureFlavor.style";
 
 export function CreatureFlavor({ Header, data, containerStyle }) {
+  const { tier, image, sections } = data;
+
   return (
     <Container header={!!Header && <Header />} sx={{ ...(!!containerStyle && containerStyle) }} noPadding>
-      {data?.tier?.length > 1 && (
+      {tier?.length > 1 && (
         <Box sx={style.tierTabContainer}>
           <Tabs
             textColor="secondary"
@@ -15,8 +17,9 @@ export function CreatureFlavor({ Header, data, containerStyle }) {
             value={data.tier.indexOf(data.id)}
             aria-label="tier tabs"
           >
-            {data.tier.map((t, i) => (
+            {tier.map((t, i) => (
               <Tab
+                key={`tier-tab-${i}`}
                 label={`${data.type === "character" ? "Nivel" : "Tier"} ${i + 1}`}
                 id={`tier-tab-${i}`}
                 aria-controls={`$tier-tabpalen-${i}`}
@@ -30,19 +33,17 @@ export function CreatureFlavor({ Header, data, containerStyle }) {
         </Box>
       )}
       <Box id="creature-flavor" component="div" sx={style.flavorContainer}>
-        {data.image && <Image src={data.image} sx={style.portrait} modal />}
-        {data.sections?.map(({ title, content }, index) => {
+        {image && <Image src={data.image} sx={style.portrait} modal />}
+        {sections?.map(({ title, content }) => {
           if (!content) return <></>;
 
           return (
-            <Box id={`section-${title.toLowerCase()}`} component="section" key={index}>
+            <>
               <Typography variant="h6" component="h1">
                 {title}
               </Typography>
-              <Box component="p">
-                <HTMLContainer content={content} />
-              </Box>
-            </Box>
+              <HTMLContainer content={content} />
+            </>
           );
         })}
       </Box>

@@ -18,17 +18,17 @@ export default function Login({ providers }) {
   };
 
   const handleChange = (e) => {
-    const { value, attributes } = e.target;
+    const { value, name } = e.target;
 
-    if (!!regex[attributes.id.value]) {
-      if (!regex[attributes.id.value].test(value)) {
-        setErrors({ ...errors, [attributes.id.value]: errorMessages[attributes.id.value] });
+    if (!!regex[name]) {
+      if (!regex[name].test(value)) {
+        setErrors({ ...errors, [name]: errorMessages[name] });
       } else {
-        setErrors({ ...errors, [attributes.id.value]: "" });
+        setErrors({ ...errors, [name]: "" });
       }
     }
 
-    setCredentials({ ...credentials, [attributes.id.value]: value });
+    setCredentials({ ...credentials, [name]: value });
   };
 
   const hasErrors = () =>
