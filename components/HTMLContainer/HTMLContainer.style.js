@@ -1,14 +1,19 @@
 const maxNumberOfLinesStyle = (numberOfLines) => {
   if (!numberOfLines) return {};
 
+  const lineHeight = 16;
+  const containerHeight = numberOfLines + lineHeight * 2.5;
+
   return {
     wordBreak: "break-word",
     overflow: "hidden",
     textOverflow: "ellipsis",
     display: "-webkit-box",
-    lineHeight: "16px",
+    lineHeight: `${lineHeight}px`,
     WebkitLineClamp: `${numberOfLines}`,
     WebkitBoxOrient: "vertical",
+    visibility: "visible",
+    maxHeight: `${containerHeight}px`,
   };
 };
 
