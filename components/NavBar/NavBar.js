@@ -1,6 +1,8 @@
 import { ChevronLeft as ChevronLeftIcon, Menu as MenuIcon } from "@mui/icons-material";
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { Box } from "@mui/system";
+import { Link } from "components/Link/Link";
 import { useWidth } from "hooks/useWidth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -47,20 +49,25 @@ export function NavBar({ open, toggleDrawer, mode = "normal", containerRef = nul
       open={props.open}
       sx={navStyle[isMainScreen ? "mainScreen" : "default"]}
     >
-      <Toolbar sx={{ pr: "24px", display: "flex", justifyContent: "space-between" }}>
-        {sessionStatus === "authenticated" && !isMainScreen && width.up("tablet") && (
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={toggleDrawer}
-            sx={{
-              marginRight: "36px",
-            }}
-          >
-            {open ? <ChevronLeftIcon /> : <MenuIcon />}
-          </IconButton>
-        )}
+      <Toolbar sx={navStyle["toolbar"]}>
+        <Box sx={navStyle["buttonContainer"]}>
+          <Box sx={navStyle["skipLink"]} component={Link} href="#main-content" shallow={true}>
+            Saltar al contenido
+          </Box>
+          {sessionStatus === "authenticated" && !isMainScreen && width.up("tablet") && (
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={toggleDrawer}
+              sx={{
+                marginRight: "36px",
+              }}
+            >
+              {open ? <ChevronLeftIcon /> : <MenuIcon />}
+            </IconButton>
+          )}
+        </Box>
         <Typography component="h1" variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
           Lierno
         </Typography>

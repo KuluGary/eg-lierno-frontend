@@ -56,6 +56,30 @@ const style = ({ theme, drawerWidth, open, isMainScreen, isIntersecting }) => ({
       }),
     }),
   },
+  toolbar: {
+    pr: "24px",
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  buttonContainer: {
+    display: "flex",
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  skipLink: {
+    textDecoration: "underline",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    width: 0,
+    transition: "width 150ms ease-in-out",
+
+    "&:focus": {
+      width: "100%",
+      paddingInline: "1em",
+    },
+  },
 });
 
 export default style;
