@@ -37,7 +37,6 @@ export const CreatureMenu = ({ creature, type, downloadPdf }) => {
   const createDuplicateData = (creature) => {
     const newData = { ...creature };
 
-    delete newData._id;
     delete newData.createdAt;
     delete newData.createdBy;
     delete newData.updatedAt;
