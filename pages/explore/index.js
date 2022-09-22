@@ -1,10 +1,10 @@
 import { Box, Divider, Tab, Tabs, Typography } from "@mui/material";
 import { Container, Layout, Metadata } from "components";
 import { Table } from "components/Table";
-import Api from "services/api";
-import { getToken } from "next-auth/jwt";
 import references from "helpers/json/references.json";
-import { useState } from "react";
+import { useQueryState } from "hooks/useQueryState";
+import { getToken } from "next-auth/jwt";
+import Api from "services/api";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -24,10 +24,10 @@ function TabPanel(props) {
 }
 
 export default function ExplorePage({ items, spells }) {
-  const [tabValue, setTabValue] = useState(0);
-  const [itemTabValue, setItemTabValue] = useState(0);
-  const [spellTabValue, setSpellTabValue] = useState(0);
-  const [referenceTabValue, setReferenceTabValue] = useState(0);
+  const [tabValue, setTabValue] = useQueryState("category", 0, "number");
+  const [itemTabValue, setItemTabValue] = useQueryState("item", 0, "number");
+  const [spellTabValue, setSpellTabValue] = useQueryState("spell", 0, "number");
+  const [referenceTabValue, setReferenceTabValue] = useQueryState("reference", 0, "number");
   const itemLabels = {
     armor: "Armadura",
     items: "Objetos",
@@ -99,8 +99,9 @@ export default function ExplorePage({ items, spells }) {
                   _id: "_id",
                   name: "name",
                   description: "description",
+                  avatar: "image.small",
                 }}
-                src={"/items/{ID}"}
+                src={"/item/{ID}"}
                 data={items[key]}
               />
             </TabPanel>
