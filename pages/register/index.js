@@ -6,7 +6,7 @@ import { Copyright, Link } from "components";
 import { StringUtil } from "helpers/string-util";
 import Router from "next/router";
 import { toast } from "react-toastify";
-import Api from "helpers/api";
+import Api from "services/api";
 
 export default function Register() {
   const regex = StringUtil.regex;
@@ -82,7 +82,7 @@ export default function Register() {
     })
       .then((res) => {
         toast.success(res.message);
-        Router.push("/")
+        Router.push("/");
       })
       .catch((err) => toast.error(err.toString()));
   };
@@ -99,8 +99,7 @@ export default function Register() {
         tablet={4}
         laptop={6}
         sx={{
-          backgroundImage:
-            "url(art/login-bg.jpg)",
+          backgroundImage: "url(art/login-bg.jpg)",
           backgroundRepeat: "no-repeat",
           backgroundColor: (t) => (t.palette.mode === "light" ? t.palette.grey[50] : t.palette.grey[900]),
           backgroundSize: "cover",
@@ -108,7 +107,7 @@ export default function Register() {
         }}
       />
       <Grid item mobile={12} tablet={8} laptop={6} component={Paper} elevation={6} square>
-      <Box
+        <Box
           sx={{
             my: 8,
             mx: 4,
@@ -117,99 +116,106 @@ export default function Register() {
             alignItems: "center",
           }}
         >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Regístrate en Lierno App
-            </Typography>
-            <Typography component="div" variant="subtitle2" textAlign="center" marginTop=".5em">
-              En Lierno App podrás llevar la cuenta de tus personajes y campañas de forma fácil e intuitiva.
-            </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, maxWidth: "60%" }}>
-              <Grid container spacing={2}>
-                <Grid item mobile={12} laptop={6}>
-                  <TextField
-                    autoComplete="given-name"
-                    name="firstName"
-                    required
-                    fullWidth
-                    id="first_name"
-                    label="Nombre"
-                    autoFocus
-                    onChange={handleChange}
-                    error={!!errors["metadata"]["first_name"]}
-                    helperText={errors["metadata"]["first_name"]}
-                  />
-                </Grid>
-                <Grid item mobile={12} laptop={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="last_name"
-                    label="Apellidos"
-                    name="lastName"
-                    autoComplete="family-name"
-                    onChange={handleChange}
-                    error={!!errors["metadata"]["last_name"]}
-                    helperText={errors["metadata"]["last_name"]}
-                  />
-                </Grid>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Regístrate en Lierno App
+          </Typography>
+          <Typography component="div" variant="subtitle2" textAlign="center" marginTop=".5em">
+            En Lierno App podrás llevar la cuenta de tus personajes y campañas de forma fácil e intuitiva.
+          </Typography>
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3, maxWidth: "60%" }}>
+            <Grid container spacing={2}>
+              <Grid item mobile={12} laptop={6}>
+                <TextField
+                  autoComplete="given-name"
+                  name="firstName"
+                  required
+                  fullWidth
+                  id="first_name"
+                  label="Nombre"
+                  autoFocus
+                  onChange={handleChange}
+                  error={!!errors["metadata"]["first_name"]}
+                  helperText={errors["metadata"]["first_name"]}
+                />
+              </Grid>
+              <Grid item mobile={12} laptop={6}>
+                <TextField
+                  required
+                  fullWidth
+                  id="last_name"
+                  label="Apellidos"
+                  name="lastName"
+                  autoComplete="family-name"
+                  onChange={handleChange}
+                  error={!!errors["metadata"]["last_name"]}
+                  helperText={errors["metadata"]["last_name"]}
+                />
+              </Grid>
 
-                <Grid item mobile={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="email"
-                    label="Cuenta de email"
-                    name="email"
-                    autoComplete="email"
-                    onChange={handleChange}
-                    error={!!errors["metadata"]["email"]}
-                    helperText={errors["metadata"]["email"]}
-                  />
-                </Grid>
-                <Grid item mobile={12}>
-                  <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="username"
-                    label="Nombre de usuario"
-                    name="username"
-                    autoComplete="username"
-                    autoFocus
-                    onChange={handleChange}
-                    error={!!errors["username"]}
-                    helperText={errors["username"]}
-                  />
-                </Grid>
-                <Grid item mobile={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="password"
-                    label="Contraseña"
-                    type="password"
-                    id="password"
-                    autoComplete="new-password"
-                    onChange={handleChange}
-                    error={!!errors["password"]}
-                    helperText={errors["password"]}
-                  />
-                </Grid>
+              <Grid item mobile={12}>
+                <TextField
+                  required
+                  fullWidth
+                  id="email"
+                  label="Cuenta de email"
+                  name="email"
+                  autoComplete="email"
+                  onChange={handleChange}
+                  error={!!errors["metadata"]["email"]}
+                  helperText={errors["metadata"]["email"]}
+                />
               </Grid>
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} disabled={hasErrors()}>
-                Registrarse
-              </Button>
-              <Grid container justifyContent="flex-end">
-                <Grid item>
-                  <Link href="/login" variant="body2">
-                    ¿Ya tienes una cuenta? Entrar
-                  </Link>
-                </Grid>
+              <Grid item mobile={12}>
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Nombre de usuario"
+                  name="username"
+                  autoComplete="username"
+                  autoFocus
+                  onChange={handleChange}
+                  error={!!errors["username"]}
+                  helperText={errors["username"]}
+                />
               </Grid>
-            </Box>
+              <Grid item mobile={12}>
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="Contraseña"
+                  type="password"
+                  id="password"
+                  autoComplete="new-password"
+                  onChange={handleChange}
+                  error={!!errors["password"]}
+                  helperText={errors["password"]}
+                />
+              </Grid>
+            </Grid>
+            <Button
+              type="submit"
+              fullWidth
+              variant="outlined"
+              color="secondary"
+              sx={{ marginBlock: 3, p: 1 }}
+              disabled={hasErrors()}
+            >
+              Registrarse
+            </Button>
+            <Grid container justifyContent="flex-end">
+              <Grid item>
+                <Link href="/login" variant="body2">
+                  ¿Ya tienes una cuenta? Entrar
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
           <Copyright sx={{ mt: 5 }} />
         </Box>
       </Grid>

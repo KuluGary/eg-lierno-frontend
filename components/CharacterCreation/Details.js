@@ -15,7 +15,7 @@ import { useState } from "react";
 import { HTMLEditor } from "components";
 import { useRouter } from "next/router";
 import ImageUploader from "components/ImageUploader/ImageUploader";
-import { getGendered } from "@lierno/core-helpers"
+import { getGendered } from "@lierno/core-helpers";
 
 export function Details({ creature, setCreature }) {
   const router = useRouter();
@@ -44,12 +44,7 @@ export function Details({ creature, setCreature }) {
         "Este alineamiento es el de los que prefieren evitar las cuestiones morales y no se ponen de ningún lado, sino que hacen lo que les parece mejor en cada momento. ",
     },
     {
-      label: getGendered(
-        "Caótico neutral",
-        "Caótica neutral",
-        "Caótique neutral",
-        creature?.flavor?.traits?.pronoun
-      ),
+      label: getGendered("Caótico neutral", "Caótica neutral", "Caótique neutral", creature?.flavor?.traits?.pronoun),
       description: "Estas criaturas siguen sus caprichos, poniendo su libertad personal por encima de todo lo demás.",
     },
     {
@@ -87,7 +82,7 @@ export function Details({ creature, setCreature }) {
         setOpen={setOpenUploader}
         setImage={(content) =>
           Object.entries(content).forEach(([key, value]) => setCreature(`flavor.portrait.${key}`, value))
-        }        
+        }
       />
       <Grid item laptop={12}>
         <Typography variant="h5" component="h1">
@@ -168,6 +163,7 @@ export function Details({ creature, setCreature }) {
               backgroundSize: "cover",
               backgroundPositionX: "center",
               borderRadius: "12px",
+              outline: `1px solid ${theme.palette.divider}`,
             }}
           ></Box>
         )}
@@ -281,6 +277,12 @@ export function Details({ creature, setCreature }) {
                   <AddPhotoAlternateIcon color="action" />
                 </IconButton>
               ),
+            }}
+            sx={{
+              userSelect: "none",
+              "& .MuiOutlinedInput-input": {
+                opacity: 0.5,
+              },
             }}
           />
         </Grid>

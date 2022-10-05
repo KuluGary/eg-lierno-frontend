@@ -1,6 +1,7 @@
 import { Box, Divider, Typography } from "@mui/material";
 import { Container, HTMLContainer, Layout, Metadata } from "components";
-import Api from "helpers/api";
+import SpellSubtitle from "components/Subtitle/SpellSubtitle/SpellSubtitle";
+import Api from "services/api";
 
 export default function Spell({ spell }) {
   return (
@@ -11,10 +12,8 @@ export default function Spell({ spell }) {
           <Typography variant="h5" component="h1" sx={{ mb: 1 }}>
             {spell.name}
           </Typography>
-          <Typography variant="subtitle1">
-            {`${
-              spell.stats.level === 0 ? "Truco " : `Hechizo de nivel ${spell.stats.level} `
-            } de ${spell.stats.school.toLowerCase()}`}
+          <Typography variant="subtitle1" sx={{ fontWeight: 500, fontStyle: "italic" }}>
+            <SpellSubtitle spell={spell} />
           </Typography>
         </Box>
         <Divider />

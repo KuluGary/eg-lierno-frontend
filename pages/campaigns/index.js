@@ -1,10 +1,11 @@
 import { Typography, Box } from "@mui/material";
 import { Layout, Container } from "components";
 import { Table } from "components/Table";
-import Api from "helpers/api";
+import Api from "services/api";
 import Head from "next/head";
 import { getToken } from "next-auth/jwt";
 import Router from "next/router";
+import { getNestedKey } from "@lierno/core-helpers";
 
 export default function Campaigns({ campaigns }) {
   return (
@@ -23,12 +24,14 @@ export default function Campaigns({ campaigns }) {
         }
       >
         <Table
-          schema={{
-            _id: "_id",
-            name: "name",
+          getRowData={(element) => ({
+            _id: getNestedKey("_id", element),
+            subtitle: getNestedKey("flavor.game", element),
+            name: getNestedKey("name", element),
+            owner: getNestedKey("dm", element),
+            description: getNestedKey("flavor.synopsis", element),
             avatar: null,
-            owner: "dm",
-          }}
+          })}
           data={campaigns}
           src={"/campaigns/{ID}"}
           onEdit={(id) => Router.push(`/campaigns/add/${id}`)}

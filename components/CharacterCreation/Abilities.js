@@ -37,12 +37,16 @@ const Section = ({ data, title, onDragEnd, section, setModalOpen, setSelectedInd
             let name = element.name;
 
             if (section === "spells") {
-              if (!!classes) {
-                const caster = classes.find((charClass) => charClass._id === element.caster)?.name;
-                
-                name = "Lanzamiento de conjuros " + caster?.toLowerCase();
-              } else {
+              let caster = element.caster;
+
+              if (!caster) {
                 name = "Lanzamiento de conjuros";
+              } else if (caster === "00000") {
+                name = "Lanzamiento de conjuros innato";
+              } else {
+                caster = classes.find((charClass) => charClass._id === caster)?.name;
+
+                name = "Lanzamiento de conjuros " + caster?.toLowerCase();
               }
             }
 
@@ -114,7 +118,7 @@ export function Abilities({ creature, setCreature, classes }) {
     newElements.splice(index, 1);
 
     setCreature(`stats.${section}`, newElements);
-  }
+  };
 
   return (
     <Grid container spacing={3}>

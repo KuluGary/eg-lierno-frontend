@@ -9,9 +9,9 @@ import PropTypes from "prop-types";
 import * as React from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ColorModeContext from "../helpers/color-context";
 import createEmotionCache from "../helpers/createEmotionCache";
-import { darkTheme, lightTheme } from "../helpers/theme";
+import ColorModeContext from "../services/color-context";
+import { darkTheme, lightTheme } from "../services/theme";
 import "../styles/globals.css";
 
 const ProgressBar = dynamic(() => import("components/ProgressBar"), {
@@ -60,6 +60,12 @@ export default function MyApp(props) {
       }),
     [mode]
   );
+
+  React.useEffect(() => {
+    if (!getComputedStyle(document.documentElement).getPropertyValue("--primary-color")) {
+      document.documentElement.style.setProperty("--primary-color", theme.palette.secondary.main);
+    }
+  }, [theme]);
 
   return (
     <AuthProvider options={{ clientMaxAge: 0, keepAlive: 0 }} session={pageProps.session}>

@@ -1,2 +1,2 @@
-export * from "./CreatureFlavor";
-export * from "./CreatureStats";
+export * from "./CreatureFlavor/CreatureFlavor";
+export * from "./CreatureStats/CreatureStats";

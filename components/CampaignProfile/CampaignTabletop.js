@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { Avatar, Container, TabletopCanvas } from "components";
 import { Table } from "components/Table";
-import Api from "helpers/api";
+import Api from "services/api";
 import { useSocket } from "hooks/useSocket";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";

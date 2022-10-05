@@ -1,9 +1,10 @@
-import { Grid, Tab, Tabs, Box } from "@mui/material";
-import Api from "helpers/api";
-import { useEffect, useState } from "react";
+import { getNestedKey } from "@lierno/core-helpers";
+import { getNpcSubtitle } from "@lierno/dnd-helpers";
+import { Box, Grid, Tab, Tabs } from "@mui/material";
 import { Container } from "components";
-import { Table } from "components/Table";
+import { PaginatedTable } from "components/Table";
 import Router from "next/router";
+import { useState } from "react";
 
 function a11yProps(index) {
   return {
@@ -13,22 +14,11 @@ function a11yProps(index) {
 }
 
 export function CampaignCreatures({ campaign }) {
-  const [creatures, setCreatures] = useState({});
+  const [isLoading] = useState(false);
   const [value, setValue] = useState(0);
 
   const handleChange = (_, newValue) => {
     setValue(newValue);
-  };
-
-  useEffect(() => fetchNewCreatures(), []);
-
-  const fetchNewCreatures = async () => {
-    const newCreatures = {
-      npcs: await Api.fetchInternal("/campaigns/" + campaign._id + "/npcs"),
-      monsters: await Api.fetchInternal("/campaigns/" + campaign._id + "/monsters")
-    };
-
-    setCreatures(newCreatures)
   };
 
   return (
@@ -47,23 +37,32 @@ export function CampaignCreatures({ campaign }) {
               <Tab label="Monstruos" {...a11yProps(1)} />
             </Tabs>
           </Box>
-          <Box
-            component="div"
-            role="tabpanel"
-            hidden={value !== 0}
-            id={`simple-tabpanel-${0}`}
-            aria-labelledby={`simple-tab-${0}`}
-          >
-            {!!creatures.npcs && (
-              <Table
-                schema={{
-                  _id: "_id",
-                  name: "name",
-                  avatar: "flavor.portrait.avatar",
-                  description: "flavor.description",
-                  owner: "createdBy"
-                }}
-                data={creatures.npcs}
+          {value === 0 && (
+            <Box
+              component="div"
+              role="tabpanel"
+              hidden={value !== 0}
+              id={`simple-tabpanel-${0}`}
+              aria-labelledby={`simple-tab-${0}`}
+            >
+              <PaginatedTable
+                getRowData={(element) => ({
+                  _id: getNestedKey("_id", element),
+                  id: getNestedKey("id", element),
+                  name: getNestedKey("name", element),
+                  avatar: getNestedKey("avatar", element),
+                  description: getNestedKey("personality", element),
+                  subtitle: (
+                    <Box mt={0.5} mb={1}>
+                      {getNpcSubtitle({
+                        flavor: { class: element.class },
+                        stats: { race: element.race },
+                      })}
+                    </Box>
+                  ),
+                })}
+                loading={isLoading}
+                fetchFrom={`/campaigns/${campaign._id}/npcs`}
                 src={"/npcs/{ID}"}
                 onEdit={(id) => Router.push(`/npcs/add/${id}`)}
                 onDelete={() => {}}
@@ -71,35 +70,35 @@ export function CampaignCreatures({ campaign }) {
                   onAdd: () => Router.push("/npcs/add"),
                 }}
               />
-            )}
-          </Box>
-          <Box
-            component="div"
-            role="tabpanel"
-            hidden={value !== 1}
-            id={`simple-tabpanel-${1}`}
-            aria-labelledby={`simple-tab-${1}`}
-          >
-            {!!creatures.monsters && (
-              <Table
-                schema={{
-                  _id: "_id",
-                  name: "name",
-                  avatar: "flavor.portrait.original",
-                  description: "flavor.description",
-                  owner: "createdBy"
-                }}
-                data={creatures.monsters}
+            </Box>
+          )}
+          {value === 1 && (
+            <Box
+              component="div"
+              role="tabpanel"
+              hidden={value !== 1}
+              id={`simple-tabpanel-${1}`}
+              aria-labelledby={`simple-tab-${1}`}
+            >
+              <PaginatedTable
+                getRowData={(element) => ({
+                  _id: getNestedKey("_id", element),
+                  id: getNestedKey("id", element),
+                  name: getNestedKey("name", element),
+                  avatar: getNestedKey("avatar", element),
+                  description: getNestedKey("personality", element),                  
+                })}
+                loading={isLoading}
+                fetchFrom={`/campaigns/${campaign._id}/monsters`}
                 src={"/bestiary/{ID}"}
-                onView={(id) => Router.push(`/bestiary/${id}`)}
                 onEdit={(id) => Router.push(`/bestiary/add/${id}`)}
                 onDelete={() => {}}
                 headerProps={{
                   onAdd: () => Router.push("/bestiary/add"),
                 }}
               />
-            )}
-          </Box>
+            </Box>
+          )}
         </Container>
       </Grid>
     </Grid>

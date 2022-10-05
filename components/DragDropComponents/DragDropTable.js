@@ -1,5 +1,5 @@
 import { TableBody, TableRow, useTheme } from "@mui/material";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { Draggable, Droppable } from "react-beautiful-dnd";
 
 export function DragDropTable({ items, id }) {
   const theme = useTheme();

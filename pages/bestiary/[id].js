@@ -3,11 +3,17 @@ import { Edit as EditIcon, Delete as DeleteIcon, FileDownload as FileDownloadIco
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
 import { Layout, Metadata } from "components";
 import { useTheme } from "@mui/material/styles";
-import Api from "helpers/api";
+import Api from "services/api";
 import { getToken } from "next-auth/jwt";
 import Router from "next/router";
 import { getOperatorString } from "@lierno/core-helpers";
-import { getAbilitiesString, getExperienceByCr, getModifier, getSavingThrowString, getSpeedString } from "@lierno/dnd-helpers";
+import {
+  getAbilitiesString,
+  getExperienceByCr,
+  getModifier,
+  getSavingThrowString,
+  getSpeedString,
+} from "@lierno/dnd-helpers";
 
 export default function MonsterProfile({ monster, spells }) {
   const theme = useTheme();
@@ -112,7 +118,7 @@ export default function MonsterProfile({ monster, spells }) {
           <CreatureStats
             containerStyle={{
               height: "90vh",
-              overflowY: "scroll",  
+              overflowY: "scroll",
               ...theme.mixins.noScrollbar,
             }}
             data={{
@@ -125,8 +131,7 @@ export default function MonsterProfile({ monster, spells }) {
                   content: `${monster["stats"]["hitPoints"]["max"]} (${monster["stats"]["hitDie"]["num"]}d${
                     monster["stats"]["hitDie"]["size"]
                   } ${getOperatorString(
-                    getModifier(monster["stats"]["abilityScores"]["constitution"]) *
-                      monster["stats"]["hitDie"]["num"]
+                    getModifier(monster["stats"]["abilityScores"]["constitution"]) * monster["stats"]["hitDie"]["num"]
                   )})`,
                 },
                 {
@@ -230,9 +235,7 @@ export async function getServerSideProps(context) {
       });
     });
 
-    spells = await Api.fetchInternal("/spells", {
-      method: "POST",
-      body: JSON.stringify(spellIds.map((spell) => spell.spellId)),
+    spells = await Api.fetchInternal(`/spells?id=${JSON.stringify(spellIds.map((spell) => spell.spellId))}`, {
       headers,
     });
   }

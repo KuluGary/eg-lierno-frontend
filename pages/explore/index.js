@@ -1,10 +1,14 @@
+import { getNestedKey } from "@lierno/core-helpers";
 import { Box, Divider, Tab, Tabs, Typography } from "@mui/material";
 import { Container, Layout, Metadata } from "components";
+import ItemSubtitle from "components/Subtitle/ItemSubtitle/ItemSubtitle";
+import SpellSubtitle from "components/Subtitle/SpellSubtitle/SpellSubtitle";
 import { Table } from "components/Table";
-import Api from "helpers/api";
-import { getToken } from "next-auth/jwt";
 import references from "helpers/json/references.json";
-import { useState } from "react";
+import { SPELL_ICON_DICTIONARY } from "helpers/string-util";
+import { useQueryState } from "hooks/useQueryState";
+import { getToken } from "next-auth/jwt";
+import Api from "services/api";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -23,11 +27,12 @@ function TabPanel(props) {
   );
 }
 
-export default function ExplorePage({ items, spells }) {
-  const [tabValue, setTabValue] = useState(0);
-  const [itemTabValue, setItemTabValue] = useState(0);
-  const [spellTabValue, setSpellTabValue] = useState(0);
-  const [referenceTabValue, setReferenceTabValue] = useState(0);
+export default function ExplorePage({ items, spells, classes }) {
+  const [tabValue, setTabValue] = useQueryState("category", 0, "number");
+  const [itemTabValue, setItemTabValue] = useQueryState("item", 0, "number");
+  const [classTabValue, setClassTabValue] = useQueryState("class", 0, "number");
+  const [spellTabValue, setSpellTabValue] = useQueryState("spell", 0, "number");
+  const [referenceTabValue, setReferenceTabValue] = useQueryState("reference", 0, "number");
   const itemLabels = {
     armor: "Armadura",
     items: "Objetos",
@@ -52,6 +57,8 @@ export default function ExplorePage({ items, spells }) {
 
   const handleItemTabValue = (_, newValue) => setItemTabValue(newValue);
 
+  const handleClassTabValue = (_, newValue) => setClassTabValue(newValue);
+
   const handleSpellTabValue = (_, newValue) => setSpellTabValue(newValue);
 
   const handleReferenceTabValue = (_, newValue) => setReferenceTabValue(newValue);
@@ -69,8 +76,9 @@ export default function ExplorePage({ items, spells }) {
           aria-label="simple tabs example"
         >
           <Tab id="explore-tabpanel-0" aria-controls="explore-tabpanel-0" label="Objetos" />
-          <Tab id="explore-tabpanel-1" aria-controls="explore-tabpanel-1" label="Hechizos" />
-          <Tab id="explore-tabpanel-2" aria-controls="explore-tabpanel-2" label="Referencia rápida" />
+          <Tab id="explore-tabpanel-1" aria-controls="explore-tabpanel-1" label="Clases" />
+          <Tab id="explore-tabpanel-1" aria-controls="explore-tabpanel-2" label="Hechizos" />
+          <Tab id="explore-tabpanel-2" aria-controls="explore-tabpanel-3" label="Referencia rápida" />
         </Tabs>
         <Divider />
         <TabPanel value={tabValue} index={0}>
@@ -95,18 +103,53 @@ export default function ExplorePage({ items, spells }) {
           {Object.keys(items).map((key, index) => (
             <TabPanel key={key} value={itemTabValue} index={index}>
               <Table
-                schema={{
-                  _id: "_id",
-                  name: "name",
-                  description: "description",
-                }}
-                src={"/items/{ID}"}
+                getRowData={(element) => ({
+                  _id: getNestedKey("_id", element),
+                  name: getNestedKey("name", element),
+                  description: getNestedKey("description", element),
+                  avatar: getNestedKey("image.small", element),
+                  subtitle: (
+                    <Box mt={0.5} mb={1}>
+                      <ItemSubtitle item={element} />
+                    </Box>
+                  ),
+                })}
+                src={"/item/{ID}"}
                 data={items[key]}
               />
             </TabPanel>
           ))}
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
+          <Tabs
+            textColor="secondary"
+            indicatorColor="secondary"
+            variant="scrollable"
+            value={classTabValue}
+            onChange={handleClassTabValue}
+            aria-label="item tabs"
+          >
+            {Object.keys(classes).map((key, index) => (
+              <Tab key={key} id={`item-tabpanel-${index}`} aria-controls={`item-tabpanel-${index}`} label={key} />
+            ))}
+          </Tabs>
+          <Divider />
+          {Object.keys(classes).map((key, index) => (
+            <TabPanel key={key} value={classTabValue} index={index}>
+              <Table
+                getRowData={(element) => ({
+                  _id: getNestedKey("_id", element),
+                  name: getNestedKey("name", element),
+                  description: getNestedKey("description", element),
+                  avatar: getNestedKey("icon", element),
+                })}
+                src={"/class/{ID}"}
+                data={classes[key]}
+              />
+            </TabPanel>
+          ))}
+        </TabPanel>
+        <TabPanel value={tabValue} index={2}>
           <Tabs
             textColor="secondary"
             indicatorColor="secondary"
@@ -128,18 +171,24 @@ export default function ExplorePage({ items, spells }) {
           {Object.keys(spells).map((key, index) => (
             <TabPanel key={key} value={spellTabValue} index={index}>
               <Table
-                schema={{
-                  _id: "_id",
-                  name: "name",
-                  description: "stats.description",
-                }}
+                getRowData={(element) => ({
+                  _id: getNestedKey("_id", element),
+                  name: getNestedKey("name", element),
+                  description: getNestedKey("stats.description", element),
+                  avatar: `${SPELL_ICON_DICTIONARY[element.stats.school]}`,
+                  subtitle: (
+                    <Box mt={0.5} mb={1}>
+                      <SpellSubtitle spell={element} />
+                    </Box>
+                  ),
+                })}
                 src={"/spell/{ID}"}
                 data={spells[key]}
               />
             </TabPanel>
           ))}
         </TabPanel>
-        <TabPanel value={tabValue} index={2}>
+        <TabPanel value={tabValue} index={3}>
           <Tabs
             textColor="secondary"
             indicatorColor="secondary"
@@ -161,12 +210,16 @@ export default function ExplorePage({ items, spells }) {
           {Object.keys(references).map((key, index) => (
             <TabPanel key={key} value={referenceTabValue} index={index}>
               <Table
-                schema={{
-                  _id: "title",
-                  name: "title",
-                  subtitle: "subtitle",
-                  description: "description",
-                }}
+                getRowData={(element) => ({
+                  _id: getNestedKey("title", element),
+                  name: getNestedKey("title", element),
+                  subtitle: (
+                    <Box mt={0.5} mb={1}>
+                      {getNestedKey("subtitle", element)}
+                    </Box>
+                  ),
+                  description: getNestedKey("description", element),
+                })}
                 src={"/reference/{ID}"}
                 data={references[key]}
               />
@@ -214,10 +267,21 @@ export async function getServerSideProps(context) {
     })
     .catch(() => null);
 
+  let classes = {};
+
+  await Api.fetchInternal("/classes", { headers })
+    .then((apiClasses) => {
+      for (const charClass of apiClasses) {
+        classes[charClass.game] = [...(classes[charClass.game] ?? []), charClass];
+      }
+    })
+    .catch(() => null);
+
   return {
     props: {
       items,
       spells,
+      classes,
     },
   };
 }

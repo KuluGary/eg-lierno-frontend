@@ -1,13 +1,13 @@
 import { setNestedKey } from "@lierno/core-helpers";
 import { Box, Button, Container as MuiContainer, Tab, Tabs, Typography } from "@mui/material";
 import { Container, Layout } from "components";
-import { Details, Discord, Map } from "components/CampaignCreation";
-import Api from "helpers/api";
-import { StringUtil } from "helpers/string-util";
+import { Details } from "components/CampaignCreation";
 import { getToken } from "next-auth/jwt";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import Api from "services/api";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -38,18 +38,24 @@ function a11yProps(index) {
 
 const tabs = [
   { label: "Detalles", Component: Details },
-  { label: "Mapa", Component: Map },
-  { label: "Discord", Component: Discord },
+  // { label: "Mapa", Component: Map },
+  // { label: "Discord", Component: Discord },
 ];
 
 export default function AddCampaign({ campaignData }) {
   const router = useRouter();
   const [activeStep, setActiveStep] = useState(0);
-  const [campaign, setCampaign] = useState({ ...(campaignData ?? {}) });
-
-  useEffect(() => {
-    Api.fetchInternal("/auth/user").then((res) => handleCampaignChange("dm", res._id));
-  }, []);
+  const { data: session } = useSession();
+  const [campaign, setCampaign] = useState({
+    ...(campaignData ?? {
+      name: "",
+      dm: null,
+      completed: false,
+      flavor: {},
+      players: [],
+      characters: [],
+    }),
+  });
 
   const handleStepChange = (_, newValue) => {
     setActiveStep(newValue);
@@ -60,15 +66,18 @@ export default function AddCampaign({ campaignData }) {
   };
 
   const handleSubmit = () => {
-    if (campaign._id) {
-      Api.fetchInternal(`/campaigns/${campaign._id}`, {
+    const newCampaign = { ...campaign };
+    newCampaign.dm = session.userId;
+
+    if (newCampaign._id) {
+      Api.fetchInternal(`/campaigns/${newCampaign._id}`, {
         method: "PUT",
-        body: JSON.stringify(campaign),
+        body: JSON.stringify(newCampaign),
       }).then(() => router.back());
     } else {
       Api.fetchInternal("/campaigns", {
         method: "POST",
-        body: JSON.stringify(campaign),
+        body: JSON.stringify(newCampaign),
       }).then(() => router.back());
     }
   };
