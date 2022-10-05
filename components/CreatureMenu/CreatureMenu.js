@@ -34,9 +34,10 @@ export const CreatureMenu = ({ creature, type, downloadPdf }) => {
     }).then(() => Router.back());
   };
 
-  const createDuplicateData = (creature) => {
+  const createDuplicateData = (creature, deleteId = true) => {
     const newData = { ...creature };
 
+    deleteId && delete newData._id;
     delete newData.createdAt;
     delete newData.createdBy;
     delete newData.updatedAt;
@@ -70,7 +71,7 @@ export const CreatureMenu = ({ creature, type, downloadPdf }) => {
   };
 
   const downloadJson = () => {
-    const downloadData = createDuplicateData(creature);
+    const downloadData = createDuplicateData(creature, false);
 
     const bytes = new TextEncoder().encode(downloadData);
     const blob = new Blob([bytes], {

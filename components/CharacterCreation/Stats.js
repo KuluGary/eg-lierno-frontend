@@ -34,8 +34,9 @@ const scoreBonusOptions = [
     label: "Otros",
     children: [
       { label: "Clase de armadura", key: "stats.armorClass" },
-      { label: "Bono de iniciativa", key: "initiativeBonus" },
-      { label: "Percepción pasiva", key: "passivePerception" },
+      { label: "Bono de iniciativa", key: "stats.initiativeBonus" },
+      { label: "Percepción pasiva", key: "stats.passivePerception" },
+      { label: "Investigación pasiva", key: "stats.passiveInvestigation" },
       { label: "Puntos de vida", key: "stats.hitPoints.max" },
     ],
   },

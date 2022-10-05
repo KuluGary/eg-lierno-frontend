@@ -1,10 +1,12 @@
 import { Box, Divider, Grid, Tab, Tabs } from "@mui/material";
 import { Avatar, Container, Layout, Metadata } from "components";
-import { Table } from "components/Table";
+import { PaginatedTable, Table } from "components/Table";
 import Api from "services/api";
 import { getToken } from "next-auth/jwt";
 import { useQueryState } from "hooks/useQueryState";
-import { getInitials } from "@lierno/core-helpers";
+import { getInitials, getNestedKey } from "@lierno/core-helpers";
+import { getNpcSubtitle } from "@lierno/dnd-helpers";
+import { useRouter } from "next/router";
 
 function a11yProps(index) {
   return {
@@ -15,6 +17,7 @@ function a11yProps(index) {
 
 export default function FactionProfile({ faction, npcs }) {
   const [activeStep, setActiveStep] = useQueryState("step", 0, "number");
+  const { query } = useRouter();
 
   const handleStepChange = (_, newValue) => setActiveStep(newValue);
 
@@ -51,24 +54,31 @@ export default function FactionProfile({ faction, npcs }) {
               id={`simple-tabpanel-${0}`}
               aria-labelledby={`simple-tab-${0}`}
             >
-              {!!npcs && (
-                <Table
-                  schema={{
-                    _id: "_id",
-                    name: "name",
-                    avatar: "flavor.portrait.avatar",
-                    description: "flavor.description",
-                    owner: "createdBy",
-                  }}
-                  data={npcs}
-                  src={"/npcs/{ID}"}
-                  onEdit={(id) => Router.push(`/npcs/add/${id}`)}
-                  onDelete={() => {}}
-                  headerProps={{
-                    onAdd: () => Router.push("/characters/add"),
-                  }}
-                />
-              )}
+              <PaginatedTable
+                getRowData={(element) => ({
+                  _id: getNestedKey("_id", element),
+                  id: getNestedKey("id", element),
+                  name: getNestedKey("name", element),
+                  avatar: getNestedKey("avatar", element),
+                  description: getNestedKey("personality", element),
+                  subtitle: (
+                    <Box mt={0.5} mb={1}>
+                      {getNpcSubtitle({
+                        flavor: { class: element.class },
+                        stats: { race: element.race },
+                      })}
+                    </Box>
+                  ),
+                })}
+                loading={false}
+                fetchFrom={`/factions/${query.id}/npcs`}
+                src={"/npcs/{ID}"}
+                onEdit={(id) => Router.push(`/npcs/add/${id}`)}
+                onDelete={(id) => handleOpenDeleteModal(`/npc/${id}`)}
+                headerProps={{
+                  onAdd: () => Router.push("/npcs/add"),
+                }}
+              />
             </Box>
           </Container>
         </Grid>
@@ -93,11 +103,11 @@ export async function getServerSideProps(context) {
     headers["Authorization"] = "Bearer " + token;
   }
 
-  const faction = await Api.fetchInternal("/factions/" + query.id).catch(() => null);
+  const faction = await Api.fetchInternal("/factions/" + query.id, { headers }).catch(() => null);
   let npcs = null;
 
   if (!!faction) {
-    npcs = await Api.fetchInternal("/factions/" + query.id + "/npcs").catch(() => null);
+    npcs = await Api.fetchInternal("/factions/" + query.id + "/npcs", { headers }).catch(() => null);
   }
 
   return {

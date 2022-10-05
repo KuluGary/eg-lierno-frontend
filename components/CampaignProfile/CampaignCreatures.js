@@ -1,3 +1,5 @@
+import { getNestedKey } from "@lierno/core-helpers";
+import { getNpcSubtitle } from "@lierno/dnd-helpers";
 import { Box, Grid, Tab, Tabs } from "@mui/material";
 import { Container } from "components";
 import { PaginatedTable } from "components/Table";
@@ -44,15 +46,21 @@ export function CampaignCreatures({ campaign }) {
               aria-labelledby={`simple-tab-${0}`}
             >
               <PaginatedTable
-                schema={{
-                  _id: "_id",
-                  id: "id",
-                  name: "name",
-                  avatar: "avatar",
-                  description: "personality",
-                  count: "count",
-                  owner: "createdBy",
-                }}
+                getRowData={(element) => ({
+                  _id: getNestedKey("_id", element),
+                  id: getNestedKey("id", element),
+                  name: getNestedKey("name", element),
+                  avatar: getNestedKey("avatar", element),
+                  description: getNestedKey("personality", element),
+                  subtitle: (
+                    <Box mt={0.5} mb={1}>
+                      {getNpcSubtitle({
+                        flavor: { class: element.class },
+                        stats: { race: element.race },
+                      })}
+                    </Box>
+                  ),
+                })}
                 loading={isLoading}
                 fetchFrom={`/campaigns/${campaign._id}/npcs`}
                 src={"/npcs/{ID}"}
@@ -73,15 +81,13 @@ export function CampaignCreatures({ campaign }) {
               aria-labelledby={`simple-tab-${1}`}
             >
               <PaginatedTable
-                schema={{
-                  _id: "_id",
-                  id: "id",
-                  name: "name",
-                  avatar: "avatar",
-                  description: "personality",
-                  count: "count",
-                  owner: "createdBy",
-                }}
+                getRowData={(element) => ({
+                  _id: getNestedKey("_id", element),
+                  id: getNestedKey("id", element),
+                  name: getNestedKey("name", element),
+                  avatar: getNestedKey("avatar", element),
+                  description: getNestedKey("personality", element),                  
+                })}
                 loading={isLoading}
                 fetchFrom={`/campaigns/${campaign._id}/monsters`}
                 src={"/bestiary/{ID}"}

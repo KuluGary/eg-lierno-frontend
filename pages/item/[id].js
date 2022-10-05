@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { Container, HTMLContainer, Layout, Metadata } from "components";
 import Image from "components/Image/Image";
-import ItemSubtitle from "components/ItemSubtitle/ItemSubtitle";
+import ItemSubtitle from "components/Subtitle/ItemSubtitle/ItemSubtitle";
 import Api from "services/api";
 export default function Item({ item }) {
   const image = item?.image?.large ?? item?.image?.small;
@@ -14,7 +14,9 @@ export default function Item({ item }) {
         <Typography variant="h5" component="h1" sx={{ mb: 1 }}>
           {item.name}
         </Typography>
-        <ItemSubtitle item={item} />
+        <Typography variant="subtitle1" sx={{ fontWeight: 500, fontStyle: "italic" }}>
+          <ItemSubtitle item={item} />
+        </Typography>
         <Box component="ul">
           {item.properties.map((property, index) => (
             <Box component="li" key={index}>

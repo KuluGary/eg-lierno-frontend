@@ -3,6 +3,7 @@ import { Container } from "components/Container/Container";
 import { Table } from "components/Table";
 import Api from "services/api";
 import { useEffect, useState } from "react";
+import { getNestedKey } from "@lierno/core-helpers";
 
 export function CampaignFactions({ campaign }) {
   const [factions, setFactions] = useState();
@@ -21,13 +22,13 @@ export function CampaignFactions({ campaign }) {
         <Container noPadding>
           {!!factions && (
             <Table
-              schema={{
-                _id: "_id",
-                name: "name",
-                avatar: "image",
-                description: "description",
-                owner: "createdBy",
-              }}
+              getRowData={(element) => ({
+                _id: getNestedKey("_id", element),
+                name: getNestedKey("name", element),
+                avatar: getNestedKey("image", element),
+                description: getNestedKey("description", element),
+                owner: getNestedKey("createdBy", element),
+              })}
               data={factions}
               src={"/factions/{ID}"}
             />

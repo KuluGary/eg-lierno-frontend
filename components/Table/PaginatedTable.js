@@ -8,7 +8,7 @@ import { usePersistedStorage } from "hooks/usePersistedStorage";
 import Card from "components/Card/Card";
 import { getNestedKey } from "@lierno/core-helpers";
 
-function PaginatedTable({ src, schema, onEdit, onDelete, isEditable, headerProps, fetchFrom, loading }) {
+function PaginatedTable({ src, onEdit, onDelete, isEditable, headerProps, fetchFrom, loading, getRowData }) {
   const [displayData, setDisplayData] = useState(null);
   const [rowsPerPage, setRowsPerPage] = usePersistedStorage("rowsPerTable", 5);
   const [querySearch, setQuerySearch] = useState("");
@@ -72,22 +72,16 @@ function PaginatedTable({ src, schema, onEdit, onDelete, isEditable, headerProps
         <TableBody sx={tableView ? {} : { display: "flex", gap: "1em", flexWrap: "wrap", justifyContent: "center" }}>
           {displayData?.length > 0 &&
             displayData.map((element) => {
-              const tableHeaders = { ...schema };
-              const Component = tableView ? TableRow : Card;
-
-              Object.entries(schema).forEach(
-                ([key, value]) =>
-                  (tableHeaders[key] = typeof value === "function" ? value(element) : getNestedKey(value, element))
-              );
+              const rowData = getRowData(element);
 
               return (
-                <Component
+                <TableRow
                   key={element._id}
                   onEdit={!!onEdit ? () => onEdit(element._id) : null}
                   src={src}
                   onDelete={!!onDelete ? () => onDelete(element._id) : null}
                   isEditable={isEditable}
-                  data={{ ...tableHeaders }}
+                  data={rowData}
                 />
               );
             })}

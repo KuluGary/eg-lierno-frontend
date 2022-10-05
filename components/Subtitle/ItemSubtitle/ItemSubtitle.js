@@ -1,4 +1,3 @@
-import { Typography } from "@mui/material";
 import style from "./ItemSubtitle.style";
 const rarityLabels = {
   common: "Común",
@@ -22,10 +21,10 @@ const ItemSubtitle = ({ item }) => {
   const { rarity, type } = item;
 
   return (
-    <Typography variant={"subtitle1"} sx={[style.subtitle]}>
+    <>
       {`${itemLabels[type]}`}
       {rarity && <span style={style.rarities[rarity]}>{`, ${rarityLabels[rarity].toLowerCase()}`}</span>}
-    </Typography>
+    </>
   );
 };
 

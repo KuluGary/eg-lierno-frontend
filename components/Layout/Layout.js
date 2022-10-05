@@ -1,15 +1,13 @@
-import { useState } from "react";
 import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useState } from "react";
 import { NavBar, SecondaryNav } from "../";
-import { useWidth } from "hooks/useWidth";
 import style from "./Layout.style";
 
 export function Layout({ children }) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const toggleDrawer = () => setOpen(!open);
-  const width = useWidth();
 
   return (
     <>

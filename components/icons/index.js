@@ -10,6 +10,8 @@ export * from "./Barbute";
 export * from "./SwordShield";
 export * from "./Shield";
 export * from "./HeartBeat";
+export * from "./HeartMinus";
+export * from "./HeartPlus";
 export * from "./Sprint";
 export * from "./Brain";
 export * from "./Ear";

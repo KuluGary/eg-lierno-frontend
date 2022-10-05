@@ -1,9 +1,10 @@
 import { getSpellcastingName, getSpellStrings, getStatBonus } from "@lierno/dnd-helpers";
-import { Box, Divider, Tab, Table, Tabs, Typography } from "@mui/material";
+import { Box, Button, Divider, Grid, Input, Tab, Table, Tabs, TextField, Typography } from "@mui/material";
 import { ExpandedTableRow } from "components/Table";
 import { useState } from "react";
 import { Container, HTMLContainer } from "../..";
 import Ability from "./components/Ability/Ability";
+import HitPoints from "./components/HitPoints/HitPoints";
 import Proficiency from "./components/Proficiency/Proficiency";
 import StatComponent from "./components/Stat/Stat";
 import style from "./CreatureStats.style";
@@ -55,7 +56,7 @@ export function CreatureStats({ Header, containerStyle, data }) {
         </Tabs>
 
         <Divider />
-        
+
         <Box component="div">
           {data.abilities
             ?.filter(({ content }) => content?.length > 0 || Object.keys(content ?? {})?.length > 0)

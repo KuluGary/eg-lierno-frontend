@@ -29,6 +29,17 @@ const CLASS_GENDER_DICTIONARY = {
   },
 };
 
+export const SPELL_ICON_DICTIONARY = {
+  Abjuración: "https://www.dndbeyond.com/attachments/2/707/abjuration.png",
+  Evocación: "https://www.dndbeyond.com/attachments/2/703/evocation.png",
+  Conjuración: "https://www.dndbeyond.com/attachments/2/708/conjuration.png",
+  Transmutación: "https://www.dndbeyond.com/attachments/2/722/transmutation.png",
+  Encantamiento: "https://www.dndbeyond.com/attachments/2/702/enchantment.png",
+  Nigromancia: "https://www.dndbeyond.com/attachments/2/720/necromancy.png",
+  Adivinación: "https://www.dndbeyond.com/attachments/2/709/divination.png",
+  Ilusión: "https://www.dndbeyond.com/attachments/2/704/illusion.png",
+};
+
 export const StringUtil = {
   regex: {
     email: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,

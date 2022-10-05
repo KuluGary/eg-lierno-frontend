@@ -191,12 +191,13 @@ export function Proficiencies({ creature, setCreature }) {
             renderTags={(value, getTagProps) =>
               value.map((option, index) => {
                 const key = Object.keys(skills).find((key) => skills[key].name === option);
+                const stat = saves[creature.stats.skills[key].modifier]?.name;
 
                 return (
                   <Chip
                     key={index}
                     variant="outlined"
-                    label={option}
+                    label={`${option} (${stat})`}
                     {...getTagProps({ index })}
                     onDelete={() => {
                       setCreature(`stats.skills.${key}.proficient`, false);

@@ -2,8 +2,10 @@ import { getOperatorString, isArrayNotEmpty } from "@lierno/core-helpers";
 import {
   getAbilitiesString,
   getAttackStrings,
-  getGenderedClass,
+  getCharacterSubtitle,
+  getInitiativeBonus,
   getModifier,
+  getPassiveInvestigation,
   getPassivePerception,
   getProficiencyBonus,
   getSavingThrowString,
@@ -15,60 +17,44 @@ import { useTheme } from "@mui/material/styles";
 import { Layout, Metadata } from "components";
 import { CreatureMenu } from "components/CreatureMenu/CreatureMenu";
 import { CreatureFlavor, CreatureStats } from "components/CreatureProfile";
+import HitPoints from "components/CreatureProfile/CreatureStats/components/HitPoints/HitPoints";
 import download from "downloadjs";
-import Api from "services/api";
 import { useWidth } from "hooks/useWidth";
 import { getToken } from "next-auth/jwt";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Api from "services/api";
 
 export default function CharacterProfile({ character, spells, items, tier, classes }) {
-  const [isDownloading, setIsDownloading] = useState(false);
   const { data: session } = useSession();
   const theme = useTheme();
   const width = useWidth();
+  const [currentCharacter, setCurrentCharacter] = useState(character);
 
   const downloadPdf = () => {
-    setIsDownloading(true);
-    Api.fetchInternal("/characters/sheet/pdf/" + character["_id"])
-      .then((base64Url) => download(base64Url, `${character["name"]}.pdf`, "application/pdf"))
-      .catch((err) => toast.error(err))
-      .finally(() => setIsDownloading(false));
+    Api.fetchInternal("/characters/sheet/pdf/" + currentCharacter["_id"])
+      .then((base64Url) => download(base64Url, `${currentCharacter["name"]}.pdf`, "application/pdf"))
+      .catch((err) => toast.error(err));
   };
 
-  const createStringDefinition = (charClass) => {
-    let classes = "";
+  const modifyHitPoints = (key, amount) => {
+    const newChar = { ...currentCharacter };
 
-    if (charClass.length > 0) {
-      classes = charClass
-        .map((charClasses) => {
-          const classString =
-            getGenderedClass(charClasses["className"], character.flavor.traits.pronoun) +
-            " nivel " +
-            charClasses["classLevel"];
-          let subclassString = "";
+    newChar.stats.hitPoints[key] = amount;
 
-          if (charClasses["subclassName"]) {
-            subclassString = `( ${charClasses["subclassName"]} )`;
-          }
-
-          return classString + " " + subclassString;
-        })
-        .join(" / ");
-    } else {
-      classes = `${getGenderedClass("Novato", character.flavor.pronoun)} nivel 0`;
-    }
-
-    return classes;
+    Api.fetchInternal("/characters/" + newChar._id, {
+      method: "PUT",
+      body: JSON.stringify(newChar),
+    }).then(() => setCurrentCharacter(newChar));
   };
 
   return (
     <Layout>
       <Metadata
-        title={(character?.name ?? "") + " | Lierno App"}
-        image={character?.flavor.portrait?.avatar}
-        description={character?.flavor.personality}
+        title={(currentCharacter?.name ?? "") + " | Lierno App"}
+        image={currentCharacter?.flavor.portrait?.avatar}
+        description={currentCharacter?.flavor.personality}
       />
       <Grid container spacing={1} sx={{ height: "100%" }}>
         <Grid item laptop={6} mobile={12}>
@@ -79,16 +65,16 @@ export default function CharacterProfile({ character, spells, items, tier, class
               ...theme.mixins.noScrollbar,
             }}
             data={{
-              id: character._id,
+              id: currentCharacter._id,
               sections: [
                 {
                   title: "Personalidad",
-                  content: character?.flavor.personality,
+                  content: currentCharacter?.flavor.personality,
                 },
-                { title: "Apariencia", content: character?.flavor.appearance },
-                { title: "Historia", content: character?.flavor.backstory },
+                { title: "Apariencia", content: currentCharacter?.flavor.appearance },
+                { title: "Historia", content: currentCharacter?.flavor.backstory },
               ],
-              image: character?.flavor.portrait?.original,
+              image: currentCharacter?.flavor.portrait?.original,
               tier,
               type: "character",
             }}
@@ -98,7 +84,6 @@ export default function CharacterProfile({ character, spells, items, tier, class
                 component="main"
                 sx={{
                   display: "flex",
-                  flexDirection: width.down("tablet") ? "column" : "row",
                   gap: "1em",
                   justifyContent: "space-between",
                   alignItems: "center",
@@ -110,14 +95,11 @@ export default function CharacterProfile({ character, spells, items, tier, class
                     <Typography variant="h5" component="h1">
                       {character?.name}
                     </Typography>
-                    <Typography variant="subtitle1">
-                      {character.stats.race?.name + ", "}
-                      {createStringDefinition(character.stats.classes)}
-                    </Typography>
+                    <Typography variant="subtitle1">{getCharacterSubtitle(currentCharacter)}</Typography>
                   </Box>
                 </Box>
-                {!!session && session?.userId === character.createdBy && (
-                  <CreatureMenu creature={character} type="character" downloadPdf={downloadPdf} />
+                {!!session && session?.userId === currentCharacter.createdBy && (
+                  <CreatureMenu creature={currentCharacter} type="character" downloadPdf={downloadPdf} />
                 )}
               </Box>
             )}
@@ -132,27 +114,33 @@ export default function CharacterProfile({ character, spells, items, tier, class
               ...theme.mixins.noScrollbar,
             }}
             data={{
-              character: character,
-              classes: character["stats"]["classes"],
-              stats: character["stats"]["abilityScores"],
-              proficiencyBonus: character["stats"]["proficiencyBonus"],
+              character: currentCharacter,
+              classes: currentCharacter["stats"]["classes"],
+              stats: currentCharacter["stats"]["abilityScores"],
+              proficiencyBonus: currentCharacter["stats"]["proficiencyBonus"],
               dataClasses: classes,
               proficiencies: [
                 {
                   key: "hitPoints",
                   title: "Puntos de vida",
-                  content: `${character.stats.hitPoints.current ?? character.stats.hitPoints.max} / ${
-                    character.stats.hitPoints.max
-                  } (${character.stats.classes
-                    .map((charClass) => `${charClass.classLevel}d${charClass.hitDie}`)
-                    .join(", ")} + ${getModifier(character.stats.abilityScores.constitution)})`,
+                  content: (
+                    <HitPoints modifyHitPoints={modifyHitPoints} hitPoints={currentCharacter.stats.hitPoints}>
+                      {`${currentCharacter.stats.hitPoints.current}${
+                        currentCharacter.stats.hitPoints.temp
+                          ? ` ${getOperatorString(currentCharacter.stats.hitPoints.temp)}`
+                          : ""
+                      } / ${currentCharacter.stats.hitPoints.max} (${currentCharacter.stats.classes
+                        .map((charClass) => `${charClass.classLevel}d${charClass.hitDie}`)
+                        .join(", ")} + ${getModifier(currentCharacter.stats.abilityScores.constitution)})`}
+                    </HitPoints>
+                  ),
                 },
                 {
                   key: "armorClass",
                   title: "Clase de armadura",
-                  content: `${getStatBonus("stats.armorClass", character, "stats.armorClass")?.total} (${
-                    isArrayNotEmpty(character.stats.equipment.armor)
-                      ? character.stats.equipment.armor
+                  content: `${getStatBonus("stats.armorClass", currentCharacter, "stats.armorClass")?.total} (${
+                    isArrayNotEmpty(currentCharacter.stats.equipment.armor)
+                      ? currentCharacter.stats.equipment.armor
                           .filter((armor) => armor.equipped)
                           .map((armor) => items.find((item) => item.id === armor.id)?.name?.toLowerCase())
                           .join(", ")
@@ -162,50 +150,50 @@ export default function CharacterProfile({ character, spells, items, tier, class
                 {
                   key: "proficiencyBonus",
                   title: "Bonificador de competencia",
-                  content: getProficiencyBonus(character),
+                  content: getProficiencyBonus(currentCharacter),
                 },
                 {
                   key: "speed",
                   title: "Velocidad",
-                  content: getSpeedString(character.stats.speed),
+                  content: getSpeedString(currentCharacter.stats.speed),
                 },
                 {
                   key: "savingThrows",
                   title: "Tiradas de salvación con competencia",
-                  content: getSavingThrowString(character),
+                  content: getSavingThrowString(currentCharacter),
                 },
                 {
                   key: "skills",
                   title: "Habilidades con competencia",
-                  content: getAbilitiesString(character),
+                  content: getAbilitiesString(currentCharacter),
                 },
                 {
                   key: "senses",
                   title: "Sentidos",
                   content: `Percepción pasiva ${getPassivePerception(
-                    character
-                  )}, bono de Iniciativa ${getOperatorString(
-                    getModifier(getStatBonus("initiativeBonus", character, "stats.abilityScores.dexterity")?.total)
-                  )}`,
+                    currentCharacter
+                  )}, investigación pasiva ${getPassiveInvestigation(
+                    currentCharacter
+                  )}, bono de Iniciativa ${getOperatorString(getInitiativeBonus(currentCharacter))}`,
                 },
               ],
               abilities: [
-                { title: "Ataques", content: getAttackStrings(character) },
+                { title: "Ataques", content: getAttackStrings(currentCharacter) },
                 {
                   title: "Acciones",
-                  content: [...character.stats.actions, ...character.stats.bonusActions],
+                  content: [...currentCharacter.stats.actions, ...currentCharacter.stats.bonusActions],
                 },
-                { title: "Reacciones", content: character.stats.reactions },
+                { title: "Reacciones", content: currentCharacter.stats.reactions },
                 {
                   title: "Habilidades",
-                  content: character.stats.additionalAbilities,
+                  content: currentCharacter.stats.additionalAbilities,
                 },
                 {
                   title: "Hechizos",
                   content:
-                    character.stats.spells?.length > 0
+                    currentCharacter.stats.spells?.length > 0
                       ? {
-                          characterSpells: character.stats.spells,
+                          characterSpells: currentCharacter.stats.spells,
                           spellData: spells,
                         }
                       : null,
@@ -213,7 +201,7 @@ export default function CharacterProfile({ character, spells, items, tier, class
                 { title: "Objetos", content: items },
                 {
                   title: "Trasfondo",
-                  content: [character.flavor.background].map((back) => ({
+                  content: [currentCharacter.flavor.background].map((back) => ({
                     ...back,
                     description: back.trait,
                   })),

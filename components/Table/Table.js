@@ -4,7 +4,7 @@ import { useQueryState } from "hooks/useQueryState";
 import { useEffect, useState } from "react";
 import { TableRow, TableFooter, TableHeader } from ".";
 
-function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerProps }) {
+function Table({ data = [], onEdit, onDelete, src, isEditable, headerProps, getRowData }) {
   const [displayData, setDisplayData] = useState(data);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [querySearch, setQuerySearch] = useState("");
@@ -18,7 +18,6 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
       setDisplayData(data);
     }
   }, []);
-
 
   const onSearch = (event) => {
     const { value } = event.target;
@@ -49,22 +48,20 @@ function Table({ schema, data = [], onEdit, onDelete, src, isEditable, headerPro
         <TableBody>
           {displayData &&
             displayData.length > 0 &&
-            displayData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((element) => (
-              <TableRow
-                key={element._id}
-                onEdit={!!onEdit ? () => onEdit(element._id) : null}
-                src={src}
-                onDelete={onDelete}
-                isEditable={isEditable}
-                data={{
-                  _id: getNestedKey(schema["_id"], element),
-                  name: getNestedKey(schema["name"], element),
-                  avatar: schema["avatar"] && getNestedKey(schema["avatar"], element),
-                  description: schema["description"] && getNestedKey(schema["description"], element),
-                  owner: schema["owner"] && (getNestedKey(schema["owner"], element) ?? "*"),
-                }}
-              />
-            ))}
+            displayData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((element) => {
+              const rowData = getRowData(element);
+
+              return (
+                <TableRow
+                  key={element._id}
+                  onEdit={!!onEdit ? () => onEdit(element._id) : null}
+                  src={src}
+                  onDelete={onDelete}
+                  isEditable={isEditable}
+                  data={rowData}
+                />
+              );
+            })}
         </TableBody>
         <TableFooter
           page={page}

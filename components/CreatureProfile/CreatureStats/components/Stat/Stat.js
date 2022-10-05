@@ -63,6 +63,7 @@ export default function StatComponent({ stat, label, bonusList, base }) {
           </Box>
         </Box>
       </FullScreenModal>
+      
       <Box data-testid={`${label}-stat`} component="div" onClick={() => setOpenModal(true)} sx={style.statContainer}>
         <Box component="div" sx={style.abilityScoreContainer}>
           <Box component="div" sx={style.abilityScoreLabelContainer}>

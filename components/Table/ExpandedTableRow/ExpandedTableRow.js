@@ -1,25 +1,26 @@
-import { useState } from "react";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { KeyboardArrowUp } from "@mui/icons-material";
 import { Collapse, IconButton, TableCell, TableRow, Typography } from "@mui/material";
+import { useState } from "react";
+import style from "./ExpandedTableRow.style";
 
 export function ExpandedTableRow({ icon, title, content, index }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <TableRow key={index} sx={{ "& > *": { borderBottom: "unset" } }}>
-        {!!icon && <TableCell sx={{ width: "1rem" }}>{icon}</TableCell>}
+      <TableRow key={index} sx={style.tableRowContainer}>
+        {!!icon && <TableCell sx={style.tableCellIcon}>{icon}</TableCell>}
         <TableCell>
           <Typography variant="overline">{title}</Typography>
         </TableCell>
         <TableCell align="right">
           <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-            {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            <KeyboardArrowUp sx={[style.arrowIcon, style[open ? "arrowIconOpen" : "arrowIconClosed"]]} />
           </IconButton>
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0, borderBottom: !open && 0 }} colSpan={3}>
+        <TableCell sx={[style.tableRowBody, { borderBottom: !open && 0 }]} colSpan={3}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             {content}
           </Collapse>

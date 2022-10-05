@@ -19,7 +19,6 @@ const tabs = [
   { label: "Facciones", Component: CampaignFactions },
   { label: "Mapa", Component: CampaignMap },
   { label: "Historial", Component: CampaignLogs },
-  // { label: "Tablero", Component: CampaignTabletop },
 ];
 
 function a11yProps(index) {

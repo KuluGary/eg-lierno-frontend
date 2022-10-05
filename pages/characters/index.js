@@ -8,6 +8,8 @@ import { useQueryState } from "hooks/useQueryState";
 import Head from "next/head";
 import Router from "next/router";
 import { useState } from "react";
+import { getNestedKey } from "@lierno/core-helpers";
+import { getCharacterSubtitle, getNpcSubtitle } from "@lierno/dnd-helpers";
 
 function a11yProps(index) {
   return {
@@ -127,14 +129,22 @@ export default function Character() {
         >
           {value === 0 && (
             <PaginatedTable
-              schema={{
-                _id: "_id",
-                id: "id",
-                name: "name",
-                avatar: "avatar",
-                description: "personality",
-                count: "count",
-              }}
+              getRowData={(element) => ({
+                _id: getNestedKey("_id", element),
+                id: getNestedKey("id", element),
+                name: getNestedKey("name", element),
+                avatar: getNestedKey("avatar", element),
+                description: getNestedKey("personality", element),
+                subtitle: (
+                  <Box mt={0.5} mb={1}>
+                    {getCharacterSubtitle({
+                      flavor: { traits: { pronoun: element.pronoun } },
+                      stats: { classes: element.classes, race: element.race },
+                    })}
+                  </Box>
+                ),
+                count: getNestedKey("count", element),
+              })}
               loading={isLoading}
               fetchFrom={"/characters"}
               src={"/characters/{ID}"}
@@ -156,14 +166,22 @@ export default function Character() {
         >
           {value === 1 && (
             <PaginatedTable
-              schema={{
-                _id: "_id",
-                id: "id",
-                name: "name",
-                avatar: "avatar",
-                description: "personality",
-                count: "count",
-              }}
+              getRowData={(element) => ({
+                _id: getNestedKey("_id", element),
+                id: getNestedKey("id", element),
+                name: getNestedKey("name", element),
+                avatar: getNestedKey("avatar", element),
+                description: getNestedKey("personality", element),
+                subtitle: (
+                  <Box mt={0.5} mb={1}>
+                    {getNpcSubtitle({
+                      flavor: { class: element.class },
+                      stats: { race: element.race },
+                    })}
+                  </Box>
+                ),
+                count: getNestedKey("count", element),
+              })}
               loading={isLoading}
               fetchFrom={"/npcs"}
               src={"/npcs/{ID}"}
